@@ -1,6 +1,8 @@
 #include "../inc/webserv.hpp"
 
 void    error(std::string msg) {
-    perror("error: " + msg.c_str());
-    EXIT_FAILURE;
+	std::string ret = "error ";
+	ret.append(msg);
+    perror(ret.c_str());
+	exit(EXIT_FAILURE);
 }

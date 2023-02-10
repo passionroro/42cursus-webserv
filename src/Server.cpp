@@ -1,11 +1,11 @@
 #include "Server.hpp"
 
-Server::Server() : _conn_fd(), _socket_fd(), _serv_addr(), _select_fd() {
+Server::Server() :  _socket_fd(), _conn_fd(), _select_fd(),  _serv_addr() {
     _serv_addr.sin_family = AF_INET;
     _serv_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
     _serv_addr.sin_port = htons(PORT);
 
-    startServer()
+    startServer();
     return ;
 }
 
@@ -18,13 +18,12 @@ void Server::startServer() {
 
 void Server::receiveData() {
     char pkt[1024];
-
-    if (recv(accept_fd, &pkt, 1024, 0) < 0)
+    if (recv(_conn_fd, &pkt, 1024, 0) < 0)
         error("recv(): error: failed to receive data");
 }
 
 void Server::acceptConnection() {
-    if ((_conn_fd = accept(socket_fd, (struct sockaddr*)NULL, NULL)) < 0)
+	if ((_conn_fd = accept(_socket_fd, (struct sockaddr*)NULL, NULL)) < 0)
         error("accept(): fatal\n");
 }
 
