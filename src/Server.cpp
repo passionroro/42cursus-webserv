@@ -10,15 +10,18 @@ Server::Server() :  _socket_fd(), _conn_fd(), _select_fd(),  _serv_addr() {
 }
 
 void Server::startServer() {
-    if ((_socket_fd = socket(AF_INET, SOCK_STREAM /*TCP Stream*/, 0)) < 0)
+    if ((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         error("socket(): fatal.\n");
+
+    //memset(&_serv_addr, '0', sizeof(_serv_addr));
+
     if (bind(_socket_fd, (struct sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
         error("bind(): fatal.\n");
 }
 
 void Server::receiveData() {
-    char pkt[1024];
-    if (recv(_conn_fd, &pkt, 1024, 0) < 0)
+    char pkt[BUFFER_SIZE];
+    if (recv(_conn_fd, &pkt, BUFFER_SIZE, 0) < 0)
         error("recv(): error: failed to receive data");
 }
 
