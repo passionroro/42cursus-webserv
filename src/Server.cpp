@@ -10,10 +10,11 @@ Server::Server() :  _socket_fd(), _conn_fd(), _select_fd(),  _serv_addr() {
 }
 
 void Server::startServer() {
-    if ((_socket_fd = socket(AF_INET, SOCK_STREAM /*TCP Stream*/, 0)) < 0)
-        error("socket(): fatal.\n");
+    if ((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        error("socket(): fatal");
+
     if (bind(_socket_fd, (struct sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
-        error("bind(): fatal.\n");
+        error("bind(): fatal");
 }
 
 void Server::receiveData() {
@@ -23,20 +24,21 @@ void Server::receiveData() {
 }
 
 void Server::acceptConnection() {
-	if ((_conn_fd = accept(_socket_fd, (struct sockaddr*)NULL, NULL)) < 0)
-        error("accept(): fatal\n");
+    if ((_conn_fd = accept(_socket_fd, (struct sockaddr*)NULL, NULL)) < 0)
+        error("accept(): fatal");
 }
 
 void Server::startListen() {
 
     if (listen(_socket_fd, BACKLOG) < 0)
-        error("listen(): fatal\n");
+        error("listen(): fatal");
 
-    while (true) {
+
+    while (g_exit) {
         selectEvent();
-        acceptConnection();
-        receiveData();
-        //sendData();
+        acceptConnection(); // waiting for connect()
+        receiveData();      // Request : GET /path/file.html HTTP/1.1
+        //sendData();       // Response
         close(_conn_fd);
     }
 }
@@ -50,17 +52,21 @@ void Server::selectEvent() {
     ret = select(_socket_fd + 1, &_select_fd, NULL, NULL, &tv);
 
     if (ret == 0)
-        error("select(): timeout.\n");
+        error("select(): timeout");
     else if (ret == 1)
-        error("select(): error.\n");
+        error("select(): error");
 }
 
 void Server::closeServer() {
-    close(_socket_fd);
-    close(_conn_fd);
+    std::cout << "Closing server" << std::endl;
+    if (_socket_fd)
+        close(_socket_fd);
+    if (_conn_fd)
+        close(_conn_fd);
     exit (EXIT_SUCCESS);
 }
 
 Server::~Server() {
+    std::cout << "Server Destructor called" << std::endl;
     closeServer();
 }

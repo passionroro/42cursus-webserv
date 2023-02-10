@@ -21,6 +21,7 @@ private:
     void    acceptConnection();
     void    selectEvent();
     void    receiveData();
+    void    multiThreading();
 };
 
 #endif

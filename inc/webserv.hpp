@@ -12,13 +12,17 @@
 # include <sys/socket.h>
 # include <sys/select.h>
 # include <sys/types.h>
+# include <signal.h>
 # include <arpa/inet.h>
 # include <poll.h>
+# include <csignal>
 # include <netdb.h>
 
 /*--- FUNCTIONS ---*/
 // utils.cpp
 void    error(std::string msg);
+void    signal_handler(void);
 
+extern int  g_exit;
 
 #endif
