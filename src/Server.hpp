@@ -15,6 +15,7 @@ private:
     int                 _conn_fd;
     fd_set              _select_fd;
     struct sockaddr_in  _serv_addr;
+	unsigned int 		_serv_addr_len;
 
     void    startServer();
     void    closeServer();

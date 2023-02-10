@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-Server::Server() :  _socket_fd(), _conn_fd(), _select_fd(),  _serv_addr() {
+Server::Server() :  _socket_fd(), _conn_fd(), _select_fd(),  _serv_addr(), _serv_addr_len(sizeof(_serv_addr)){
     _serv_addr.sin_family = AF_INET;
     _serv_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
     _serv_addr.sin_port = htons(PORT);
@@ -15,18 +15,19 @@ void Server::startServer() {
 
     //memset(&_serv_addr, '0', sizeof(_serv_addr));
 
-    if (bind(_socket_fd, (struct sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
+    if (bind(_socket_fd, (struct sockaddr*)&_serv_addr, _serv_addr_len) < 0)
         error("bind(): fatal.\n");
 }
 
 void Server::receiveData() {
     char pkt[BUFFER_SIZE];
-    if (recv(_conn_fd, &pkt, BUFFER_SIZE, 0) < 0)
+    if (recv(_conn_fd, pkt, BUFFER_SIZE, 0) < 0)
         error("recv(): error: failed to receive data");
+	
 }
 
 void Server::acceptConnection() {
-	if ((_conn_fd = accept(_socket_fd, (struct sockaddr*)NULL, NULL)) < 0)
+	if ((_conn_fd = accept(_socket_fd, (struct sockaddr*)&_serv_addr, &_serv_addr_len)) < 0)
         error("accept(): fatal\n");
 }
 
