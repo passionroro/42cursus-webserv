@@ -1,67 +1,79 @@
 #include "../inc/webserv.hpp"
 // server in c++ from scratch using select()
 
+/*
+    socket(): create a socket - Get the file descriptor!
+    bind(): bind to an address - What port am I on?
+    listen(): listen on a port, and wait for a connection to be established.
+    accept(): accept the connection from a client.
+    recv() - the same way we read from a file.
+    shutdown to end read.
+    close to releases data.
+ */
+void    error(std::string msg) {
+    perror(msg.c_str());
+    exit (EXIT_FAILURE);
+}
+
 void    run_server(void) {
     struct sockaddr_in  serv_addr;
     struct timeval      tv;
     fd_set              fd;
-    int                 listen_fd;
-    int                 conn_fd;
+    int                 socket_fd;
+    int                 accept_fd;
     int                 ret;
 
-    listen_fd = socket(AF_INET, SOCK_STREAM, 0);
-    
+    if ((socket_fd = socket(AF_INET, SOCK_STREAM /*TCP Stream*/, 0)) < 0)
+        error("socket(): fatal.\n");
+
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
     serv_addr.sin_port = htons(PORT);
 
-    bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    bind(socket_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
-    if (listen(listenfd, 1) < 0) {
-        perror("listen(): fatal.");
-        exit (EXIT_FAILURE);
-    }
+    if (listen(socket_fd, 1) < 0)
+        error("listen(): fatal.\n");
 
     while (true) {
         FD_ZERO(&fd);
-        FD_SET(listen_fd, &fd);
-        ret = select(listen_fd + 1, &fd, NULL, NULL, &tv);
+        FD_SET(socket_fd, &fd);
+        ret = select(socket_fd + 1, &fd, NULL, NULL, &tv);
 
-        if (ret == 0) {
-            perror("select(): timeout.");
-            exit (EXIT_FAILURE);
-        }
-        else if (ret == 1) {
-            perror("select(): error.");
-            exit (EXIT_FAILURE);
-        }
+        if (ret == 0)
+            error("select(): timeout.");
+        else if (ret == 1)
+            error("select(): error.");
 
-        conn_fd = accept(listenfd, (struct sockaddr*)NULL, NULL);
+        accept_fd = accept(socket_fd, (struct sockaddr*)NULL, NULL);
 
-        /*Packet Data Type*/int pkt;
-        if (recv(listen_fd, &pkt, sizeof(/*Packet Data Type*/int), 0) < 0) {
-            perror("recv(): error: failed to receive data");
-            exit (EXIT_FAILURE);
-        }
+        char pkt[1024];
+        if (recv(accept_fd, &pkt, 1024, 0) < 0)
+            error("recv(): error: failed to receive data");
 
-        std::cout << "Received data !" << std::endl;
+        std::cout << "Received data !" << std::endl << pkt << std::endl;
 
-        close(conn_fd);
-        //break ;
+        close(accept_fd);
     }
 }
 
-int    run_webserv(void) {
+void    run_client(void) {
+    return ;
+}
+
+void    run_webserv(void) {
     pid_t   pid;
 
-    if ((pid == fork()) < 0) {
+    if ((pid = fork()) < 0) {
         perror("fork(): fatal.");
         exit (EXIT_FAILURE);
     }
     if (pid == 0)
-        run_server();
-    else
         run_client();
+    else {
+        run_server();
+        exit (EXIT_SUCCESS);
+    }
 }
 
 int main(int argc, char **argv) {
@@ -70,8 +82,7 @@ int main(int argc, char **argv) {
         return (1);
     }
 
-    if (run_webserv())
-        return (1);
+    run_webserv();
 
     return (0);
 }
