@@ -4,6 +4,7 @@
 /*--- DEFINES ---*/
 # define PORT 8080
 # define LOCALHOST "127.0.0.1"
+# define BACKLOG 5
 
 /*--- INCLUDES AND LIBRARIES ---*/
 # include <iostream>
@@ -14,5 +15,10 @@
 # include <arpa/inet.h>
 # include <poll.h>
 # include <netdb.h>
+
+/*--- FUNCTIONS ---*/
+// utils.cpp
+void    error(std::string msg);
+
 
 #endif
