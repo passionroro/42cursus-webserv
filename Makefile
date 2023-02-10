@@ -1,7 +1,10 @@
 NAME			=	webserv
 SRC_DIR			=	src
 OBJ_DIR			=	obj
-SOURCE			=	main.cpp			\
+SOURCE			=	main.cpp\
+					utils.cpp\
+					Server.cpp\
+					Client.cpp\
 
 
 CXX				= 	c++
