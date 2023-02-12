@@ -28,7 +28,7 @@ fclean: clean
 	$(RM) $(NAME)
 
 $(OBJ_DIR):
-	mkdir -p $(dir $(OBJECT))
+	@mkdir -p $(dir $(OBJECT))
 
 re: fclean all
 

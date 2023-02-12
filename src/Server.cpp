@@ -1,69 +1,49 @@
 #include "Server.hpp"
 
-Server::Server() : _m_socket(), _m_master() {}
+Server::Server() : _socket_fd(), _fd(), _serv_addr() { }
 
-void Server::serverInit() {
-    if ((_m_socket = int(AF_INET, SOCK_STREAM, 0)) < 0)
-        error("int(): fatal");
+void Server::serverInit(int port) {
+    if ((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        error("socket(): fatal");
 
     _serv_addr.sin_family = AF_INET;
-    _serv_addr.sin_port = htons(PORT);
+    _serv_addr.sin_port = htons(port);
     _serv_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
 
-    if (bind(_m_socket, (sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
+    if (bind(_socket_fd, (sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
         error("bind(): fatal");
 
-    if (listen(_m_socket, 10) < 0)
+    if (listen(_socket_fd, 10) < 0)
         error("listen(): fatal");
 
-    FD_ZERO(&_m_master);
-    FD_SET(_m_socket, &_m_master);
+    std::cout << "listening on " << LOCALHOST << ":" << port << std::endl;
 }
 
 void Server::serverRun() {
-    while (g_exit)
-    {
-        fd_set  copy = _m_master;
-        int     socketCount = select(0, &copy, nullptr, nullptr, nullptr);
+    while (g_exit) {
+        sleep(1);
+        FD_ZERO(&_fd);
+        FD_SET(_socket_fd, &_fd);
+        int socketCount = select(_socket_fd + 1, &_fd, NULL, NULL, NULL);
+        if (socketCount < 0)
+            error("select(): fatal");
 
-        for (int i = 0; i < socketCount; i++) {
-            int socket = copy.fd_array[i];
+        std::cout << "Waiting for connection..." << std::endl;
+        _serv_addr_len = sizeof(_serv_addr);
+        int client = accept(_socket_fd, (struct sockaddr*)&_serv_addr, &_serv_addr_len);
 
-            if (socket == _m_socket) {
-                int client = accept(_m_socket, nullptr, nullptr);
+        char pkt[BUFFER_SIZE] = {0};
+        if (recv(client, &pkt, BUFFER_SIZE, 0) < 0)
+            error("recv(): error: failed to receive data");
 
-                FD_SET(client, &_m_master);
-                onClientConnected(client);
-            }
-            else {
-                char buf[BUFFER_SIZE] = {0};
-
-                if (recv(socket, buf, BUFFER_SIZE, 0) <= 0){
-                    onClientDisconnected(socket);
-                    close(socket);
-                    FD_CLR(socket, &_m_master);
-                }
-                else {
-                    onMessageReceived(socket, buf, bytesIn);
-                }
-            }
-        }
-    }
-
-    FD_CLR(_m_socket, &_m_master);
-    close(_m_socket);
-
-    while (_m_master.fd_count > 0)
-    {
-        FD_CLR(_m_master.fd_array[0], &_m_master);
-        close(_m_master.fd_array[0]);
+        close(client);
     }
 }
 
 void Server::broadcastToClients(int sendingClient, const char *msg, int length) {
-    for (int i = 0; i < _m_master.fd_count; i++) {
-        int outSock = _m_master.fd_array[i];
-        if (outSock != m_socket && outSock != sendingClient) {
+    for (int i = 0; i < 2; i++) {
+        int outSock = _fd.fds_bits[i];
+        if (outSock != _socket_fd && outSock != sendingClient) {
             send(outSock, msg, length, 0);
         }
     }
@@ -73,11 +53,13 @@ void Server::onClientConnected(int clientSocket) {
     std::cout << "on [" << clientSocket << "]: client connected" << std::endl;
 }
 
-void Server::onClientDisonnected(int clientSocket) {
+void Server::onClientDisconnected(int clientSocket) {
     std::cout << "on [" << clientSocket << "]: client disconnected" << std::endl;
 }
 
-void Server::onMessageReceived(int clientSocket, const char *msg, int length) {
-    std::cout << "on [" << clientSocket << "]: msg of len " << length << "received: " << std::endl;
+void Server::onMessageReceived(int clientSocket, const char *msg) {
+    std::cout << "on [" << clientSocket << "]: msg received: " << std::endl;
     std::cout << msg << std::endl;
 }
+
+Server::~Server() {}
