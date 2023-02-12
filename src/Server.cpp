@@ -16,7 +16,7 @@ void Server::serverInit(int port) {
     if (listen(_socket_fd, 10) < 0)
         error("listen(): fatal");
 
-    std::cout << "listening on " << LOCALHOST << ":" << port << std::endl;
+    std::cout << "Server listening on " << LOCALHOST << ":" << port << std::endl;
 }
 
 void Server::serverRun() {
@@ -24,8 +24,7 @@ void Server::serverRun() {
         sleep(1);
         FD_ZERO(&_fd);
         FD_SET(_socket_fd, &_fd);
-        int socketCount = select(_socket_fd + 1, &_fd, NULL, NULL, NULL);
-        if (socketCount < 0)
+        if (select(_socket_fd + 1, &_fd, NULL, NULL, NULL) < 0)
             error("select(): fatal");
 
         std::cout << "Waiting for connection..." << std::endl;
