@@ -2,7 +2,6 @@
 # define SERVER_HPP
 
 # include "../inc/webserv.hpp"
-
 class Server {
 public:
     Server();

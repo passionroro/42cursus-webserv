@@ -1,20 +1,18 @@
 #include "Server.hpp"
 
 Server::Server() :  _socket_fd(), _conn_fd(), _select_fd(),  _serv_addr(), _serv_addr_len(sizeof(_serv_addr)){
+	
+	
     _serv_addr.sin_family = AF_INET;
-    _serv_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
+    _serv_addr.sin_addr.s_addr = (inet_addr)(LOCALHOST);
     _serv_addr.sin_port = htons(PORT);
-
+	if ((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+		error("socket(): fatal.\n");
     startServer();
     return ;
 }
 
 void Server::startServer() {
-    if ((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        error("socket(): fatal.\n");
-
-    //memset(&_serv_addr, '0', sizeof(_serv_addr));
-
     if (bind(_socket_fd, (struct sockaddr*)&_serv_addr, _serv_addr_len) < 0)
         error("bind(): fatal.\n");
 }
@@ -52,8 +50,8 @@ void Server::selectEvent() {
     FD_ZERO(&_select_fd);
     FD_SET(_socket_fd, &_select_fd);
     ret = select(_socket_fd + 1, &_select_fd, NULL, NULL, &tv);
-
-    if (ret == 0)
+	
+	if (ret == 0)
         error("select(): timeout.\n");
     else if (ret == 1)
         error("select(): error.\n");
