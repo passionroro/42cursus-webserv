@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-Server::Server() : _socket_fd(), _fd(), _serv_addr() { }
+Server::Server() : _socket_fd(), _serv_addr() { }
 
 void Server::serverInit(int port) {
     if ((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -19,46 +19,61 @@ void Server::serverInit(int port) {
     std::cout << "Server listening on " << LOCALHOST << ":" << port << std::endl;
 }
 
+#include <fstream>
+void    open_send_file(int client) {
+    std::ifstream       ifs;
+    ifs.open("home/www/index.html", std::ifstream::in);
+    if (!ifs.is_open())
+        error("open()");
+
+    std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+    str.insert(0, "HTTP/1.1 200 OK\\r\\n\\r\\n");
+
+    std::cout << str.c_str() << std::endl;
+
+    send(client, str.c_str(), str.length(), 0);
+
+    std::cout << "sent!" << std::endl;
+
+    ifs.close();
+}
+
+
 void Server::serverRun() {
-    while (g_exit) {
-        sleep(1);
-        FD_ZERO(&_fd);
-        FD_SET(_socket_fd, &_fd);
-        if (select(_socket_fd + 1, &_fd, NULL, NULL, NULL) < 0)
-            error("select(): fatal");
 
-        std::cout << "Waiting for connection..." << std::endl;
-        _serv_addr_len = sizeof(_serv_addr);
-        int client = accept(_socket_fd, (struct sockaddr*)&_serv_addr, &_serv_addr_len);
+    std::cout << "Waiting for connection..." << std::endl;
+    _serv_addr_len = sizeof(_serv_addr);
+    int client = accept(_socket_fd, (struct sockaddr*)&_serv_addr, &_serv_addr_len);
 
-        char pkt[BUFFER_SIZE] = {0};
-        if (recv(client, &pkt, BUFFER_SIZE, 0) < 0)
-            error("recv(): error: failed to receive data");
+    std::cout << "Connection received" << std::endl;
+    if (client == -1)
+        error("accept(): client fatal");
 
-        close(client);
-    }
-}
+    std::cout << "Client connected on " << inet_ntoa(_serv_addr.sin_addr) << ":" << _serv_addr.sin_port << std::endl;
 
-void Server::broadcastToClients(int sendingClient, const char *msg, int length) {
-    for (int i = 0; i < 2; i++) {
-        int outSock = _fd.fds_bits[i];
-        if (outSock != _socket_fd && outSock != sendingClient) {
-            send(outSock, msg, length, 0);
+    open_send_file(client);
+
+    char buf[BUFFER_SIZE];
+    //while (g_exit) {
+        memset(buf, 0, BUFFER_SIZE);
+
+        int ret = recv(client, buf, BUFFER_SIZE, 0);
+        if (ret == -1)
+            error("Connection issue");
+        if (ret == 0) {
+            std::cout << "Client disconnected." << std::endl;
+            //break ;
+            return ;
         }
-    }
+
+        std::cout << "Received: " << std::string(buf, 0, ret) << std::endl;
+        std::cout << "--- end of request" << std::endl;
+    //}
+
+
+    close(client);
+    close(_socket_fd);
 }
 
-void Server::onClientConnected(int clientSocket) {
-    std::cout << "on [" << clientSocket << "]: client connected" << std::endl;
-}
 
-void Server::onClientDisconnected(int clientSocket) {
-    std::cout << "on [" << clientSocket << "]: client disconnected" << std::endl;
-}
-
-void Server::onMessageReceived(int clientSocket, const char *msg) {
-    std::cout << "on [" << clientSocket << "]: msg received: " << std::endl;
-    std::cout << msg << std::endl;
-}
-
-Server::~Server() {}
+Server::~Server() { }

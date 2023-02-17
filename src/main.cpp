@@ -4,22 +4,22 @@
 bool g_exit;
 
 void    run_webserv(void) {
-    pid_t           pid;
+  //  pid_t           pid;
 
     srand(time(0));
     int port = rand() % 10 + 8080;
 
-    if ((pid = fork()) < 0)
+    /*if ((pid = fork()) < 0)
         error("fork(): fatal");
     if (pid == 0) {
         Client client;
         client.clientConnect(port);
     }
-    else {
+    else {*/
         Server  server;
         server.serverInit(port);
         server.serverRun();
-    }
+  //  }
 }
 
 void    signal_handler(int sig) {
