@@ -6,6 +6,9 @@ WebServer::WebServer(std::string const & config_file)
 	_servers.push_back(Server(4242, 8080));
 	std::cout << "setup: host: " << _servers[0].getHost() << std::endl;
 	std::cout << "port: " << _servers[0].getPort() << std::endl;
+	_servers.push_back(Server(8484, 12000));
+	std::cout << "setup: host: " << _servers[1].getHost() << std::endl;
+	std::cout << "port: " << _servers[1].getPort() << std::endl;
 }
 
 WebServer::~WebServer(void)
