@@ -11,6 +11,7 @@ public:
 	WebServer(std::string const & config_file);
 	~WebServer(void);
 
+	int		setup(void);
 	void	run(void);
 	void	handleResponse(void);
 	void	handleRequest(void);
@@ -24,7 +25,7 @@ private:
 	fd_set	_read;
 	fd_set	_write;
 
-	struct timeval	timeout;
+	struct timeval	_timeout;
 
 	std::vector<Server>	_servers;
 
