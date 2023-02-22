@@ -34,3 +34,10 @@ void	Server::accept(void)
 		std::cerr << "Error: accept" << std::endl;
 	_socket = socket;
 }
+
+// getters
+
+unsigned int	Server::getHost(void) const { return _host; }
+short			Server::getPort(void) const { return _port; }
+int				Server::getListenFd(void) const { return _listen_fd; }
+int				Server::getSocket(void) const { return _socket; }
