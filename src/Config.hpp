@@ -7,6 +7,12 @@ class	Config {
 
 public:
 
+	Config(void);
+	~Config(void);
+
+	void	parse(std::string const & file);
+
+
 private:
 
 };
