@@ -4,8 +4,6 @@
 # include "webserv.hpp"
 # include "Config.hpp"
 
-# define SERVER_BACKLOG 1000 // to define in header webserv.hpp i think
-
 typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
 
@@ -17,6 +15,9 @@ public:
 
 	void	accept(void);
 	int		setup(void);
+
+	int	recv(void);
+	int	send(void);
 
 	unsigned int	getHost(void) const;
 	short			getPort(void) const;

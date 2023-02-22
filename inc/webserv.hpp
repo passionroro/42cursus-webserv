@@ -7,13 +7,17 @@
 # include <arpa/inet.h>
 # include <stdlib.h>
 # include <fcntl.h>
+# include <unistd.h>
 
 # include <string>
 # include <iostream>
 
-#include <vector>
-#include <map>
-#include <list>
+# include <vector>
+# include <map>
+# include <list>
+
+# define SERVER_BACKLOG 1000
+# define BUFSIZE 4096
 
 class	Server;
 class	Config;
