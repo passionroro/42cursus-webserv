@@ -15,8 +15,13 @@ public:
 
 	Server(unsigned int host, short port); // maybe ?
 
-	void	createSocket(void);
-	void	setup(void);
+	void	accept(void);
+	int		setup(void);
+
+	unsigned int	getHost(void) const;
+	short			getPort(void) const;
+	int	getListenFd(void) const;
+	int	getSocket(void) const;
 
 private:
 
