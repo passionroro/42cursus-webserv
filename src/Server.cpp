@@ -62,9 +62,19 @@ int	Server::recv(void)
 	return (0);
 }
 
-int	Server::send(void)
+int	Server::send(int socket)
 {
-	return (1);
+	std::string	str = "HTTP/1.0 200 OK\r\n\r\nIt works!";
+
+	if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
+	{
+		close(socket);
+		return (-1);
+	}
+	else
+	{
+		return (0);
+	}
 }
 
 // getters
