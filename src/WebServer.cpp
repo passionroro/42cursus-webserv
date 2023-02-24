@@ -46,9 +46,14 @@ void	WebServer::handleResponse(void)
 		std::cout << "handle response" << std::endl;
 
 		// todo send response
-		std::string	test = "HTTP/1.0 200 OK\r\n\r\nIt works!\r\n\r\n";
-		::send(socket, test.c_str(), test.size(), 0);
-		FD_CLR(socket, &_write);
+		if (!_servers[i].send(socket))
+		{
+			FD_CLR(socket, &_write);
+			//close(socket);
+		}
+		//std::string	test = "HTTP/1.0 200 OK\r\n\r\nIt works!\r\n\r\n";
+		//::send(socket, test.c_str(), test.size(), 0);
+		//FD_CLR(socket, &_write);
 
 	}
 }
@@ -64,7 +69,13 @@ void	WebServer::handleRequest(void)
 
 		// todo recv request
 		if (!_servers[i].recv())
+		{
 			FD_SET(socket, &_write);
+		}
+		else
+		{
+			FD_CLR(socket, &_current);
+		}
 	}
 }
 
@@ -81,7 +92,6 @@ void	WebServer::handleConnection(void)
 		if (socket != -1)
 		{
 			FD_SET(socket, &_current);
-			//_servers.addback(); // ok a voir du coup
 			if (socket > _max_fd)
 				_max_fd = socket;
 		}
@@ -109,9 +119,9 @@ void	WebServer::run(void)
 		if (ret > 0)
 		{
 			//std::cout << "select worked! ret: " << ret << std::endl;
-			handleResponse();
 			handleRequest();
 			handleConnection();
+			handleResponse();
 			ret = 0;
 		}
 		else
