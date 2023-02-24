@@ -19,6 +19,7 @@
 # include <netdb.h>
 # include <fstream>
 # include <vector>
+# include <algorithm>
 
 /*--- FUNCTIONS ---*/
 // utils.cpp

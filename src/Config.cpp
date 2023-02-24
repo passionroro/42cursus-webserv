@@ -22,34 +22,67 @@ void	Config::setup(std::string const & filename)
     parse();
 }
 
-void    parseChar(char c, std::string tmp, std::string _file) {
+/* ft_split of char '\n' from file into a vector of strings */
+void Config::vectorize() {
+	int start;
+    int end = 0;
+    bool begin = true;
+    while (end != -1) {
+        start = end + 1;
+        if (begin)
+            start = 0;
+        begin = false;
+		end = _file.find('\n', start);
+        std::string tmp = _file.substr(start, end - start);
+		if (!tmp.empty())
+            cfg.push_back(tmp);
+	}
+}
 
+/* ft_strtrim spaces of each strings from the vector */
+void Config::trim() {
+    ite = cfg.end();
+    for (it = cfg.begin(); it != ite; it++) {
+        size_t pos;
+        while ((pos = it->find(' ')) != std::string::npos)
+            it->erase(pos, 1);
+    }
+}
+
+void Config::debug() {
+    for (it = cfg.begin(); it != ite; it++) {
+        std::cout << "|" << *it << "|" << std::endl;
+    }
+}
+
+// a key-value can be :
+// - 2 simple strings -> "name":"Joe"
+// - 1 key and an array -> "Subjects":["Math","Phy","Chem"]"
+// note: a value that doesn't end with a ',' will not enter this condition
+// it should enter ONLY if the key-value is at the end of a array/object
+void    parseKeyValue(std::string str) {
+    std::cout << str << " | " << "key-value" << std::endl;
 }
 
 void Config::parse() {
 
-    char parse[7] = {' ', '{', '}', '[', ']', ',', '\n'};
-    std::string tmp = _file;
-    for (int i = 0; i < 7; i++) {
-        int start;
-        int end = 0;
-        while (end != -1) {
-            start = end + 1;
-            if (end == 0)
-                start = 0;
-            end = _file.find(parse[i], start);
-            tmp.append(_file.substr(start, end - start));
-        }
+    vectorize();
+    trim();
+//    debug();
+
+    ite = cfg.end();
+    if (*cfg.begin() != "{")
+        error("cfg: object: begin");
+    for (it = cfg.begin(); it != ite; it++) {
+        if (it->front() == '\"' && it->back() == ',')
+            parseKeyValue(*it);
+        if (it->back() == ':' || it->back() == '{')
+            parse
     }
 
 
-//    std::vector<std::string>    cfg;
-//    std::vector<std::string>::iterator it;
-//    std::vector<std::string>::iterator ite = cfg.end();
-//    for (it = cfg.begin(); it != ite; ++it) {
-//        std::cout << "|" << *it << "|" << std::endl;
-//    }
 }
+
 
 /* DESTRUCTOR */
 Config::~Config(void)

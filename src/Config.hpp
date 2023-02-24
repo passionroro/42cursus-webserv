@@ -12,16 +12,20 @@ public:
     ~Config(void);
 
     void	setup(std::string const & file);
+
+protected:
     void    parse(void);
+	void	vectorize(void);
+    void    trim(void);
+    void    debug(void);
 
 
 private:
     std::ifstream       ifs;
     std::string         _file;
-
-//    std::ifstream   _stream;
-//    std::string     _filename;
-//    std::vector<Server> _servers;
+	std::vector<std::string>	cfg;
+	std::vector<std::string>::iterator	it;
+	std::vector<std::string>::iterator	ite;
 };
 
 #endif
