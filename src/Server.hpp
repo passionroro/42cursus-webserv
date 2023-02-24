@@ -17,7 +17,7 @@ public:
 	int		setup(void);
 
 	int	recv(void);
-	int	send(void);
+	int	send(int socket);
 
 	unsigned int	getHost(void) const;
 	short			getPort(void) const;
