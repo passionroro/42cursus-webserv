@@ -7,7 +7,14 @@ request::~request() {}
 int request::is_valid(std::string &request) {
 	std::vector<std::string> r_line;
 	std::string R_line;
+	int spacenb = 0;
 	R_line = request.substr(0,request.find('\r'));
+	for (int i = 0; i < (int)R_line.size(); ++i) {
+		if(isspace(R_line[i]))
+			spacenb++;
+	}
+	if(spacenb != 2)
+		return 400;
 	size_t pos = 0;
 	while ((pos = R_line.find(' ')) != std::string::npos) {
 		r_line.push_back(R_line.substr(0, pos));
@@ -27,10 +34,11 @@ int request::is_valid(std::string &request) {
 	if (_version != "HTTP/1.1")
 		return 400;
 //	std::cout << _method << std::endl << _path << std::endl << _version;
-	parse_headers(request);
+	if (parse_headers(request)!= 0 )
+		return 400;
 	request.erase(0, 1);
 	_body = request;
-	return 0;
+	return 200;
 }
 
 bool request::check_path(std::string s) {
@@ -51,14 +59,13 @@ int request::parse_headers(std::string &request) {
 		request.erase(0, pos + 1);
 		pos_2 = request.find('\n');
 		h_value = (request.substr(0, pos_2));
-		request.erase(0, pos_2 + 1);
-		if ((pos = h_key.find(' ')) != std::string::npos)
-			h_key.erase(pos);
-		if ((pos = h_value.find(' ')) != std::string::npos)
-			h_value.erase(pos, 1);
+		if (h_value[0] == ' ')
+			h_value.erase(0, 1);
+		request.erase(0,pos_2 + 1);
+		if (h_key.find(' ') != std::string::npos)
+			return 400;
 		_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
-	std::cout << _headers.at("Host");
 	return 0;
 }
 

@@ -2,15 +2,15 @@
 
 class response{
 public:
-	response();
+	response(int code);
 	~response();
 	
-	void get_status(std::string code, std::string text);
+	void get_status(int code, std::string text);
 	void get_headers();
 	std::string send_response();
 private:
 	std::string 	_version;
-	std::string		_status_code;
+	int				_status_code;
 	std::string 	_status_text;
 	std::string 	_headers;
 	

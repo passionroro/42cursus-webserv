@@ -3,6 +3,7 @@ SRC_DIR			=	src
 OBJ_DIR			=	obj
 SOURCE			=	main.cpp			\
 					request.cpp\
+					response.cpp\
 
 
 CXX				= 	c++
