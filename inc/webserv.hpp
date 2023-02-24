@@ -17,6 +17,8 @@
 # include <arpa/inet.h>
 # include <poll.h>
 # include <netdb.h>
+# include <fstream>
+# include <vector>
 
 /*--- FUNCTIONS ---*/
 // utils.cpp

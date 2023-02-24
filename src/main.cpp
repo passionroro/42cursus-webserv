@@ -1,6 +1,5 @@
 #include "../inc/webserv.hpp"
-#include "Server.hpp"
-// server/client communication in c++ from scratch using select()
+#include "Config.hpp"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -8,8 +7,8 @@ int main(int argc, char **argv) {
         return (1);
     }
 
-    Server  server;
-    server.startListen();
+    Config config;
+    config.setup(argv[1]);
 
     return (0);
 }

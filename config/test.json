@@ -1,0 +1,11 @@
+{
+  "firstName": "Sean",
+  "lastName": "Brown",
+  "Student ID": 21453,
+  "Car": {
+    "Model": "Opel Corsa",
+    "Color": "Red"
+  },
+  "Department": "Computer Sc.",
+  "Subjects":["Math", "Phy", "Chem"]
+}

@@ -2,7 +2,7 @@ NAME			=	webserv
 SRC_DIR			=	src
 OBJ_DIR			=	obj
 SOURCE			=	main.cpp\
-					Server.cpp\
+					Config.cpp\
 					utils.cpp\
 
 
@@ -27,7 +27,7 @@ fclean: clean
 	$(RM) $(NAME)
 
 $(OBJ_DIR):
-	mkdir -p $(dir $(OBJECT))
+	@mkdir -p $(dir $(OBJECT))
 
 re: fclean all
 

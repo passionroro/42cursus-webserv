@@ -3,25 +3,40 @@
 
 # include "../inc/webserv.hpp"
 
-class Server {
-public:
-    Server();
-    ~Server();
+typedef struct sockaddr_in saddr_in;
+typedef struct sockaddr saddr;
 
-    void    startListen();
+class	Server {
+
+public:
+
+    Server(unsigned int host, short port); // maybe ?
+
+    void	accept(void);
+    int		setup(void);
+
+    int	recv(void);
+    int	send(void);
+
+    unsigned int	getHost(void) const;
+    short			getPort(void) const;
+    int	getListenFd(void) const;
+    int	getSocket(void) const;
 
 private:
-    int                 _socket_fd;
-    int                 _conn_fd;
-    fd_set              _select_fd;
-    struct sockaddr_in  _serv_addr;
-	unsigned int 		_serv_addr_len;
 
-    void    startServer();
-    void    closeServer();
-    void    acceptConnection();
-    void    selectEvent();
-    void    receiveData();
+    unsigned int	_host;
+    short			_port;
+
+    int			_listen_fd;
+    int			_socket;
+
+    saddr_in	_addr;
+
+private:
+
+    Server(void);
+
 };
 
 #endif
