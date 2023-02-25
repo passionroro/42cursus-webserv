@@ -4,13 +4,13 @@
 
   "firstName": "Sean",
   "lastName": "Brown",
-  "Student ID": 21453,
+  "Student_ID": 21453,
   "Car": {
     "Model": "Opel Corsa",
     "Color": "Red"
   },
   "Department": "Computer Sc.",
-  "Subjects":["Math", "Phy", "Chem"],
+  "Subjects":["Math", "Phy", "Chem"]
 
 
 }
