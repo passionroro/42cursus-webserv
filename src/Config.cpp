@@ -53,13 +53,14 @@ void Config::debug() {
 
 std::string Config::valueIsString(std::string str, int *i) {
 
+    *i += 1;
     int start = *i;
     while (str[*i] != '"')
         *i += 1;
-    if (start == *i)
-        jsonError("value can not be empty");
-    else if (str[*i + 1] != ',' && str[*i + 1] != '}' && str[*i + 1] != ']')
-        jsonError("string value is either incorrect or not closed properly");
+//    if (start == *i)
+//        jsonError("value can not be empty");
+//    else if (str[*i + 1] != ',' && str[*i + 1] != '}' && str[*i + 1] != ']')
+//        jsonError("string value is either incorrect or not closed properly");
 
     return (str.substr(start, *i - start));
 }
@@ -67,17 +68,18 @@ std::string Config::valueIsString(std::string str, int *i) {
 int Config::valueIsInt(std::string str, int *i) {
 
     int start = *i;
-    while (isdigit(str[*i]))
+    while ((str[*i] == '-' && start == *i) || isdigit(str[*i]))
         *i += 1;
-    if (str[*i + 1] != ',' && str[*i + 1] != '}' && str[*i + 1] != ']')
-        jsonError("integer value is either incorrect or not closed properly");
+//    if (str[*i + 1] != ',' && str[*i + 1] != '}' && str[*i + 1] != ']')
+//        jsonError("integer value is either incorrect or not closed properly");
 
     std::string value = str.substr(start, *i - start);
     return (atoi(value.c_str()));
 }
 
 bool Config::valueIsBool(std::string str, int *i) {
-    if (str.compare("true", *i, 4)) {
+
+    if (str.compare(*i, 4, "true") == 0) {
         *i += 4;
         return (true);
     }
@@ -88,20 +90,23 @@ bool Config::valueIsBool(std::string str, int *i) {
 /* An array is an ordered collection of values.
  * An array begins with [ and ends with ].
  * Values are separated by a comma.*/
-Array Config::valueIsArray(std::string str, int *i) {
-    (void)str, i;
-}
+//Array Config::valueIsArray(std::string str, int *i) {
+//    (void)str, i;
+//}
 
 /* An object is an unordered set of name/value pairs.
  * An object begins with { and ends with }.
  * Each name is followed by a colon and the name/value pairs are separated by a comma.*/
-Object Config::valueIsObject(std::string str, int *i) {
-    (void)str, i;
-}
+//Object Config::valueIsObject(std::string str, int *i) {
+//    (void)str, i;
+//}
 
 /* A value can be a string in double quotes, or a number, or true or false or null, or an object or an array.
  * These structures can be nested.*/
 void Config::parseValue(std::string str, int *i, std::string key) {
+
+    std::cout << "key: " << key << std::endl;
+
     *i += 1;
     if (str[*i] != ':')
         jsonError("key/value pair must be separated by colon");
@@ -109,26 +114,28 @@ void Config::parseValue(std::string str, int *i, std::string key) {
 
     if (str[*i] == '"') { /* parse string */
         std::string value = valueIsString(str, i);
+        *i += 1;
         m_string.insert(std::pair<std::string, std::string>(key, value));
     }
 
-    else if (isdigit(str[*i])) { /* parse int */
+    else if (isdigit(str[*i]) || str[*i] == '-') { /* parse int */
         int value = valueIsInt(str, i);
-        m_string.insert(std::pair<std::string, int>(key, value));
+        m_int.insert(std::pair<std::string, int>(key, value));
     }
 
-    else if (str.compare("true", *i, 4) || str.compare("false", *i, 5))
+    else if (str.compare(*i, 4, "true") || str.compare(*i, 5, "false")) {
         m_bool.insert(std::pair<std::string, bool>(key, valueIsBool(str, i)));
-
-    else if (str[*i] == '[') { /* parse array */
-        Array value = valueIsArray(str, i);
-        m_Array.insert(std::pair<std::string, Array>(key, value));
     }
 
-    else if (str[*i] == '{') { /* parse object */
-        Object value = valueIsObject(str, i);
-        m_Object.insert(std::pair<std::string, Object>(key, value));
-    }
+//    else if (str[*i] == '[') { /* parse array */
+//        Array value = valueIsArray(str, i);
+//        m_Array.insert(std::pair<std::string, Array>(key, value));
+//    }
+//
+//    else if (str[*i] == '{') { /* parse object */
+//        Object value = valueIsObject(str, i);
+//        m_Object.insert(std::pair<std::string, Object>(key, value));
+//    }
 
     else
         jsonError("incorrect value");
@@ -152,7 +159,7 @@ void Config::parse() {
 
     vectorize();
     trim();
-//    debug();
+    debug();
 
     if (str[0] != '{')
         jsonError("opening brackets");
@@ -162,13 +169,18 @@ void Config::parse() {
     while (str[++i]) {
         key = parseKey(str, &i);
         parseValue(str, &i, key);
-        if (str[i] != ',' && str[i] != '}')
+        if (str[i] != ',' && str[i] != '}' && str[i] != ']')
             jsonError("key/value not closed");
     }
     if (str[i - 1] != '}')
         jsonError("closing brackets");
 
-
+    for (std::map<std::string,std::string>::iterator it=m_string.begin(); it!=m_string.end(); ++it)
+        std::cout << it->first << " => " << it->second << '\n';
+    for (std::map<std::string,int>::iterator it=m_int.begin(); it!=m_int.end(); ++it)
+        std::cout << it->first << " => " << it->second << '\n';
+    for (std::map<std::string,bool>::iterator it=m_bool.begin(); it!=m_bool.end(); ++it)
+        std::cout << it->first << " => " << it->second << '\n';
 }
 
 void    Config::jsonError(std::string msg) {

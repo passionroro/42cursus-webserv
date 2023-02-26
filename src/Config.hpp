@@ -2,10 +2,12 @@
 # define CONFIG_HPP
 
 # include "../inc/webserv.hpp"
-# include "Server.hpp"
+//# include "Server.hpp"
 
-class Array;
-class Object;
+class Server;
+
+//class Array;
+//class Object;
 
 class	Config {
 
@@ -26,8 +28,8 @@ protected:
     std::string valueIsString(std::string str, int *i);
     int         valueIsInt(std::string str, int *i);
     bool        valueIsBool(std::string str, int *i);
-    Array       valueIsArray(std::string str, int *i);
-    Object      valueIsObject(std::string str, int *i);
+//    Array       valueIsArray(std::string str, int *i);
+//    Object      valueIsObject(std::string str, int *i);
 
     void        debug(void);
     void        jsonError(std::string msg);
@@ -39,8 +41,8 @@ private:
     std::map<std::string, std::string>  m_string;
     std::map<std::string, int>          m_int;
     std::map<std::string, bool>         m_bool;
-    std::map<std::string, Object>       m_Object;
-    std::map<std::string, Array>        m_Array;
+//    std::map<std::string, Object>       m_Object;
+//    std::map<std::string, Array>        m_Array;
 };
 
 
