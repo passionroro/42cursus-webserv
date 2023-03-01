@@ -47,6 +47,7 @@ int	Server::recv(void)
 	char		buf[BUFSIZE];
 	std::string	request;
 
+	std::cout << "Webserv: recv" << std::endl;
 	while ((tmp = ::recv(_socket, buf, BUFSIZE - 1, 0)) > 0)
 	{
 		request += buf;
@@ -62,19 +63,29 @@ int	Server::recv(void)
 	return (0);
 }
 
-int	Server::send(int socket)
+int	Server::send(void)
 {
-	std::string	str = "HTTP/1.0 200 OK\r\n\r\nIt works!";
+	std::string	str = "HTTP/1.0 200 OK\r\n";
+	str += "Content-Length: 9\r\n\r\n";
+	str += "It works!";
 
-	if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
+	std::cout << "Webserv: send" << std::endl;
+	if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
 	{
-		close(socket);
+		close();
 		return (-1);
 	}
 	else
 	{
 		return (0);
 	}
+}
+
+void	Server::close(void)
+{
+	std::cout << "Webserv: close" << std::endl;
+	if (_socket > 0)
+		::close(_socket);
 }
 
 // getters
