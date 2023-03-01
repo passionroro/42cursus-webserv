@@ -3,6 +3,7 @@
 
 # include "webserv.hpp"
 # include "Config.hpp"
+# include "Response.hpp"
 
 typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
@@ -35,6 +36,8 @@ private:
 	int			_socket;
 
 	saddr_in	_addr;
+
+	Response	_response;
 
 private:
 

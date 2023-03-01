@@ -5,6 +5,7 @@ SOURCE			=	main.cpp			\
 					WebServer.cpp		\
 					Server.cpp			\
 					Config.cpp			\
+					Response.cpp		\
 
 
 CXX				= 	c++
