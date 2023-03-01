@@ -1,7 +1,5 @@
 # SERVER_RUN
----
 ## Depuis la dernière fois
----
-+ Fix WebServer.run, mnt ça marche
-+ On peut mnt lire une page HTML statique :P
-+ Pour ça, début de l'architecture de la classe Response
++ J'ai fix la loop WebServer.run, il y avait plein de bugs, mnt ça marche
++ On peut lire une page HTML statique :P Test avec le index.html de Bima
++ début de l'architecture de la classe Response
