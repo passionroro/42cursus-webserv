@@ -23,13 +23,14 @@ int	WebServer::setup(void)
 		if (_servers[i].setup() < 0)
 			return (-1);
 	}
-	FD_ZERO(&_current);
+	FD_ZERO(&_current_read);
+	FD_ZERO(&_current_write);
 	FD_ZERO(&_read);
 	FD_ZERO(&_write);
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
 		int	fd = _servers[i].getListenFd();
-		FD_SET(fd, &_current);
+		FD_SET(fd, &_current_read);
 		if (fd > _max_fd)
 			_max_fd = fd;
 	}
@@ -40,21 +41,20 @@ void	WebServer::handleResponse(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
+		//std::cout << "try response" << std::endl;
 		int	socket = _servers[i].getSocket();
 		if (!FD_ISSET(socket, &_write))
 			continue ;
 		std::cout << "handle response" << std::endl;
 
 		// todo send response
-		if (!_servers[i].send(socket))
+		if (!_servers[i].send())
 		{
-			FD_CLR(socket, &_write);
-			//close(socket);
+			FD_CLR(socket, &_current_write);
+			FD_CLR(socket, &_current_read);
+			_servers[i].close();
 		}
-		//std::string	test = "HTTP/1.0 200 OK\r\n\r\nIt works!\r\n\r\n";
-		//::send(socket, test.c_str(), test.size(), 0);
-		//FD_CLR(socket, &_write);
-
+		break ;
 	}
 }
 
@@ -62,6 +62,7 @@ void	WebServer::handleRequest(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
+		//std::cout << "try request" << std::endl;
 		int	socket = _servers[i].getSocket();
 		if (!FD_ISSET(socket, &_read))
 			continue ;
@@ -70,12 +71,13 @@ void	WebServer::handleRequest(void)
 		// todo recv request
 		if (!_servers[i].recv())
 		{
-			FD_SET(socket, &_write);
+			FD_SET(socket, &_current_write);
 		}
 		else
 		{
-			FD_CLR(socket, &_current);
+			FD_CLR(socket, &_current_read);
 		}
+		break ;
 	}
 }
 
@@ -83,6 +85,7 @@ void	WebServer::handleConnection(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
+		//std::cout << "try connection" << std::endl;
 		if (!FD_ISSET(_servers[i].getListenFd(), &_read))
 			continue ;
 		std::cout << "handle connection" << std::endl;
@@ -91,7 +94,7 @@ void	WebServer::handleConnection(void)
 		int	socket = _servers[i].getSocket();
 		if (socket != -1)
 		{
-			FD_SET(socket, &_current);
+			FD_SET(socket, &_current_read);
 			if (socket > _max_fd)
 				_max_fd = socket;
 		}
@@ -105,17 +108,22 @@ void	WebServer::run(void)
 	while (1)
 	{
 		int	ret = 0;
+		//int	errno;
 		while (ret == 0)
 		{
-			_timeout.tv_sec = 1;
+			_timeout.tv_sec = 3;
 			_timeout.tv_usec = 0;
-			_read = _current;
+			_read = _current_read;
+			_write = _current_write;
 
+			//std::cout << "max_fd: " << _max_fd << std::endl;
 			ret = select(_max_fd + 1, &_read, &_write, NULL, &_timeout);
-			//std::cout << "time" << std::endl;
+			//analyzeSets();
+			std::cout << "time" << std::endl;
 		}
 		if (ret > 0)
 		{
+			std::cout << "New event!" << std::endl;
 			handleRequest();
 			handleConnection();
 			handleResponse();
@@ -123,16 +131,49 @@ void	WebServer::run(void)
 		}
 		else
 		{
-			//todo error
+			std::cerr << "Error: select failed ! " << strerror(errno) << std::endl;
 		}
-		usleep(500000);
+		//usleep(500000);
 	}
 }
 
 
 
 
+void	WebServer::analyzeSets(void)
+{
+	std::cout << "Current_read: ";
+	for (unsigned long i = 0 ; i < 1000 ; i++)
+	{
+		if (FD_ISSET(i, &_current_read))
+			std::cout << i << ", ";
+	}
+	std::cout << std::endl;
 
+	std::cout << "Read: ";
+	for (unsigned long i = 0 ; i < 1000 ; i++)
+	{
+		if (FD_ISSET(i, &_read))
+			std::cout << i << ", ";
+	}
+	std::cout << std::endl;
+	
+	std::cout << "Current_write: ";
+	for (unsigned long i = 0 ; i < 1000 ; i++)
+	{
+		if (FD_ISSET(i, &_current_write))
+			std::cout << i << ", ";
+	}
+	std::cout << std::endl;
+	
+	std::cout << "Write: ";
+	for (unsigned long i = 0 ; i < 1000 ; i++)
+	{
+		if (FD_ISSET(i, &_current_write))
+			std::cout << i << ", ";
+	}
+	std::cout << std::endl;
+}
 
 
 
