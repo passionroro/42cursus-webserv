@@ -65,20 +65,16 @@ int	Server::recv(void)
 
 int	Server::send(void)
 {
-	std::string	str = "HTTP/1.0 200 OK\r\n";
+	std::string	str = _response.createString();
+	/*std::string	str = "HTTP/1.0 200 OK\r\n";
 	str += "Content-Length: 9\r\n\r\n";
-	str += "It works!";
+	str += "It works!";*/
 
 	std::cout << "Webserv: send" << std::endl;
 	if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
-	{
-		close();
 		return (-1);
-	}
 	else
-	{
 		return (0);
-	}
 }
 
 void	Server::close(void)
