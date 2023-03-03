@@ -65,7 +65,7 @@ int	Server::recv(void)
 
 int	Server::send(void)
 {
-	std::string	str = _response.renderString();
+	std::string	str = _response.createString();
 	/*std::string	str = "HTTP/1.0 200 OK\r\n";
 	str += "Content-Length: 9\r\n\r\n";
 	str += "It works!";*/
