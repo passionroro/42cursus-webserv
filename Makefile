@@ -2,6 +2,7 @@ NAME			=	webserv
 SRC_DIR			=	src
 OBJ_DIR			=	obj
 SOURCE			=	main.cpp			\
+					Request.cpp\
 					WebServer.cpp		\
 					Server.cpp			\
 					Config.cpp			\
