@@ -52,14 +52,8 @@ int	Server::recv(void)
 		request += buf;
 		bytes_read += tmp;
 	}
-	buf[BUFSIZE - 1] = '\0';
-	if (bytes_read == 0 || bytes_read == -1)
-	{
-		std::cerr << "Error: recv" << std::endl;
-		return (-1);
-	}
 	std::cout << "Request:" << std::endl << request << std::endl;
-	return (0);
+	return (bytes_read);
 }
 
 int	Server::send(void)
