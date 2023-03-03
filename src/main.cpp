@@ -1,5 +1,5 @@
 #include "webserv.hpp"
-#include "WebServer.hpp"
+#include "Server.hpp"
 
 int	main(int argc, char **argv)
 {
@@ -8,7 +8,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 
-	WebServer	webserv(argv[1]);
+	WebServ	webserv(argv[1]);
 
 	webserv.run();
 	return (0);
