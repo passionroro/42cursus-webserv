@@ -1,4 +1,4 @@
-#include "Config.hpp"
+#include "../../inc/Config.hpp"
 
 /* CONSTRUCTOR */
 Config::Config(void) {}
@@ -71,7 +71,8 @@ void Config::parse() {
     if (str[i] != '{')
         jsonError("opening brackets");
 
-//    Object main;
+    Value main;
+    main.valueIsObject(str, &i);
 }
 
 void    Config::jsonError(std::string msg) {

@@ -2,9 +2,11 @@ NAME			=	webserv
 SRC_DIR			=	src
 OBJ_DIR			=	obj
 SOURCE			=	main.cpp\
-					Config.cpp\
-					ConfigParsing.cpp\
 					utils.cpp\
+					config/Config.cpp\
+					config/Array.cpp\
+					config/Value.cpp\
+					config/Object.cpp\
 
 
 CXX				= 	c++
