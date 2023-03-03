@@ -107,15 +107,18 @@ void	WebServer::run(void)
 		int	ret = 0;
 		while (ret == 0)
 		{
-			_timeout.tv_sec = 1;
-			_timeout.tv_usec = 0;
 			_read = _current;
+			//FD_ZERO(&_write);
+			// deal with _w_set
 
-			ret = select(_max_fd + 1, &_read, &_write, NULL, &_timeout);
-			//std::cout << "time" << std::endl;
+			//ret = select(_max_fd + 1, &_read, &_write, NULL, &timeout);
+			(void)_timeout;
+			//std::cout << "max_fd: " << _max_fd << std::endl;
+			ret = select(_max_fd + 1, &_read, &_write, NULL, NULL);
 		}
 		if (ret > 0)
 		{
+			//std::cout << "select worked! ret: " << ret << std::endl;
 			handleRequest();
 			handleConnection();
 			handleResponse();
