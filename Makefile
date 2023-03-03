@@ -2,14 +2,11 @@ NAME			=	webserv
 SRC_DIR			=	src
 OBJ_DIR			=	obj
 SOURCE			=	main.cpp			\
-					WebServer.cpp		\
-					Server.cpp			\
-					Config.cpp			\
 
 
 CXX				= 	c++
 CXXFLAGS		= 	-Wall -Wextra -Werror -pedantic -std=c++98
-INC				=	-I./inc
+INC				=	-Iinc
 OBJECT			=	$(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SOURCE))
 RM				=	rm -rf
 
