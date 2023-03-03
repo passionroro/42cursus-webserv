@@ -1,8 +1,5 @@
 #include "Server.hpp"
 
-Server::Server(unsigned int host, short port) : _host(host), _port(port)
-{
-}
 
 int	Server::setup(void)
 {
@@ -12,10 +9,8 @@ int	Server::setup(void)
 		std::cerr << "Error: socket" << std::endl;
 		return (-1);
 	}
-	std::cout << "socket: " << _listen_fd << std::endl;
 	_addr.sin_family = AF_INET;
-	//_addr.sin_addr.s_addr = htonl(_host);
-	_addr.sin_addr.s_addr = INADDR_ANY;
+	_addr.sin_addr.s_addr = htonl(_host);
 	_addr.sin_port = htons(_port);
 	if (bind(_listen_fd, (saddr*)&_addr, sizeof(_addr)) == -1)
 	{
@@ -38,27 +33,6 @@ void	Server::accept(void)
 	else
 		std::cerr << "Error: accept" << std::endl;
 	_socket = socket;
-}
-
-int	Server::recv(void)
-{
-	int			tmp = 0;
-	int			bytes_read = 0;
-	char		buf[BUFSIZE];
-	std::string	request;
-
-	while ((tmp = ::recv(_socket, buf, BUFSIZE - 1, 0)) > 0)
-	{
-		request += buf;
-		bytes_read += tmp;
-	}
-	std::cout << "Request:" << std::endl << request << std::endl;
-	return (bytes_read);
-}
-
-int	Server::send(void)
-{
-	return (1);
 }
 
 // getters
