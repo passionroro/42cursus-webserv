@@ -43,7 +43,7 @@ int Request::is_valid(std::string &Request) {
 	if (parse_headers(Request)!= 0 )
 		return 400;
 	Request.erase(0, 1);
-	_body = Request;
+	_request_body = Request;
 	_status = "200";
 	return 200;
 }
@@ -72,7 +72,7 @@ int Request::parse_headers(std::string &Request) {
 		Request.erase(0,pos_2 + 1);
 		if (h_key.find(' ') != std::string::npos)
 			return 400;
-		_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
+		_request_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
 	_status = "200";
 	return 0;

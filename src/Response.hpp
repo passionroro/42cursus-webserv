@@ -4,12 +4,12 @@
 # include "webserv.hpp"
 # include "Request.hpp"
 
-class	Response {
+class	Response : public Request {
 
 public:
 
 	Response(void);
-	Response(Request const & request);
+	Response(std::string request);
 	virtual	~Response(void);
 
 	void	getHeaders(void);
@@ -22,14 +22,13 @@ public:
 
 private:
 
-	std::string	_version;
 	std::string	_status_code;
 	std::string	_status_text;
 	
-	std::map<std::string, std::string>	_headers;
+	std::map<std::string, std::string>	_response_headers;
 
 	std::string	_path;
-	std::string	_body;
+	std::string	_response_body;
 
 };
 
