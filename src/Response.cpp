@@ -12,7 +12,7 @@ Response::Response(void)
 	readStaticPage();
 }*/
 
-Response::Response(Request const & request) : _version("HTTP/1.1 ")
+Response::Response(std::string request) : Request(request)
 {
 	this->_status_code = "200";
 	if (_status_code == "200")
@@ -38,15 +38,15 @@ void	Response::createHeaders(void)
 	struct tm tm = *gmtime(&now);
 	tm.tm_zone = (char *)"GMT";
 	size = ::strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z\n", &tm);
-	_headers.insert(std::pair<std::string, std::string>("Date: ", buf));
+	_response_headers.insert(std::pair<std::string, std::string>("Date: ", buf));
 	// exemple
 	//_headers.insert(std::make_pair("Content-Length", "9"));
 }
 
 void	Response::appendHeaders(std::string & str)
 {
-	for (std::map<std::string, std::string>::iterator it = _headers.begin() ;
-		it != _headers.end() ; it++)
+	for (std::map<std::string, std::string>::iterator it = _response_headers.begin() ;
+		it != _response_headers.end() ; it++)
 	{
 		str.append(it->first + ": " + it->second + "\r\n");
 	}
@@ -62,7 +62,7 @@ int	Response::readStaticPage(void)
 	if (file.is_open() == true)
 	{
 		sstream << file.rdbuf();
-		_body = sstream.str();
+		_response_body = sstream.str();
 		file.close();
 		//std::cout << "PAGE:" << std::endl << _page << std::endl;
 		return (200);
@@ -78,10 +78,10 @@ int	Response::readStaticPage(void)
 std::string	Response::renderString(void)
 {
 	std::string	str;
-	str= _version + _status_code + " " + _status_text  + "\r\n";
+	str= "HTTP/1.1 " + _status_code + " " + _status_text  + "\r\n";
 	//str = "HTTP/1.0 200 OK\r\n";
 	appendHeaders(str);
 	//str += "It works!";
-	str += _body;
+	str += _response_body;
 	return (str);
 }

@@ -59,8 +59,7 @@ int	Server::recv(void)
 		std::cerr << "Error: recv" << std::endl;
 		return (-1);
 	}
-	_request = Request(request);
-	_response = Response(_request);
+	_response = Response(request);
 	std::cout << "Request:" << std::endl << request << std::endl;
 	return (0);
 }
