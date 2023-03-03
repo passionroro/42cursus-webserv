@@ -1,19 +1,22 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
-#include "../inc/webserv.hpp"
 
-class request {
+# include "webserv.hpp"
+
+class Request {
 public:
 	
-	request();
-	~request();
+	Request();
+	Request(std::string request);
+	~Request();
 	
-	int 	is_valid(std::string &request);
+	int 	is_valid(std::string &Request);
 	bool	check_path(std::string s);
-	int 	parse_headers(std::string &request);
-	std::string get_status();
-	std::string get_body();
-	std::string get_path();
+	int 	parse_headers(std::string &Request);
+
+	std::string getStatus() const;
+	std::string getBody() const;
+	std::string getPath() const;
 
 
 private:

@@ -59,6 +59,8 @@ int	Server::recv(void)
 		std::cerr << "Error: recv" << std::endl;
 		return (-1);
 	}
+	_request = Request(request);
+	_response = Response(_request);
 	std::cout << "Request:" << std::endl << request << std::endl;
 	return (0);
 }
@@ -71,6 +73,7 @@ int	Server::send(void)
 	str += "It works!";*/
 
 	std::cout << "Webserv: send" << std::endl;
+	std::cout << "Response:" << std::endl << _response.renderString() << std::endl;
 	if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
 		return (-1);
 	else

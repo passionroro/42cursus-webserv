@@ -1,46 +1,87 @@
-#include "../inc/webserv.hpp"
-#include "response.hpp"
-response::response(request request) : _version("HTTP/1.1 "){
-	this->_status_code = request.get_status();
+#include "Response.hpp"
+
+Response::Response(void)
+{
+}
+
+/*Response::Response(void)
+{
+	createHeaders();
+	_path = "./index.html";
+	_path = "./index.html";
+	readStaticPage();
+}*/
+
+Response::Response(Request const & request) : _version("HTTP/1.1 ")
+{
+	this->_status_code = "200";
 	if (_status_code == "200")
 	_status_text = "OK";
-	_body = request.get_path();
-	
-	get_headers();
+	//_path = request.getPath();
+
+	(void)request;
+	_path = "./home/www/index.html";
+	createHeaders();
+	readStaticPage();
 	return;
 }
 
-response::~response() { return;}
-
-void response::get_status(int code, std::string text) {
-	this->_status_code = code;
-	this->_status_text = text;
+Response::~Response(void)
+{
 }
 
-void response::get_headers() {
+void	Response::createHeaders(void)
+{
 	int size;
 	char buf[100];
 	time_t now = time(0);
 	struct tm tm = *gmtime(&now);
 	tm.tm_zone = (char *)"GMT";
-	size = strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z\n", &tm);
+	size = ::strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z\n", &tm);
 	_headers.insert(std::pair<std::string, std::string>("Date: ", buf));
+	// exemple
+	//_headers.insert(std::make_pair("Content-Length", "9"));
 }
 
-std::string response::send_response() {
-	std::fstream fs;
-	std::string path = "home/www/";
-	path.append(_body);
-	fs.open(path);
-	fs >> path;
-	std::map<std::string,std::string>::iterator it = _headers.begin();
-	_final_response = _version + _status_code + " " + _status_text  + "\r\n";
-	_final_response.append(it->first + it->second + "\r\n");
-	while (++it != _headers.end())
+void	Response::appendHeaders(std::string & str)
+{
+	for (std::map<std::string, std::string>::iterator it = _headers.begin() ;
+		it != _headers.end() ; it++)
 	{
-		_final_response.append(it->first + it->second + "\r\n");
+		str.append(it->first + ": " + it->second + "\r\n");
 	}
-	_final_response.append(path);
-	_final_response.append("\r\n");
-	return (_final_response);
+	//str += "\r\n";
+}
+
+int	Response::readStaticPage(void)
+{
+	std::ifstream	file;
+	std::stringstream	sstream;
+
+	file.open(_path.c_str(), std::fstream::in);
+	if (file.is_open() == true)
+	{
+		sstream << file.rdbuf();
+		_body = sstream.str();
+		file.close();
+		//std::cout << "PAGE:" << std::endl << _page << std::endl;
+		return (200);
+	}
+	else
+	{
+		std::cout << "bro nul" << std::endl;
+		//todo default error page 404
+		return (404);
+	}
+}
+
+std::string	Response::renderString(void)
+{
+	std::string	str;
+	str= _version + _status_code + " " + _status_text  + "\r\n";
+	//str = "HTTP/1.0 200 OK\r\n";
+	appendHeaders(str);
+	//str += "It works!";
+	str += _body;
+	return (str);
 }

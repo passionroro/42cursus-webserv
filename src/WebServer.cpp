@@ -68,6 +68,7 @@ void	WebServer::handleRequest(void)
 		// todo recv request
 		if (!_servers[i].recv())
 		{
+			//_servers[i]._response(_servers[i]._request);
 			FD_SET(socket, &_current_write);
 		}
 		else

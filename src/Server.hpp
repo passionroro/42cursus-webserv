@@ -38,6 +38,7 @@ private:
 	saddr_in	_addr;
 
 	Response	_response;
+	Request		_request;
 
 private:
 
