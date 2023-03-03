@@ -10,7 +10,5 @@
     "Color": "Red"
   },
   "Department": "Computer Sc.",
-  "Subjects":["Math", "Phy", "Chem"]
-
-
+  "Subjects":  ["Math", "Phy", "Chem"]
 }

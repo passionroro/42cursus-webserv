@@ -45,8 +45,13 @@ Object Value::valueIsObject(std::string str, int *i) {
     std::string key;
     while (str[*i]) {
         key = obj.parseKey(str, i);
+		std::cout << key << std::endl;
         obj.parseValue(str, i, key);
-//        i++;
+		if (str[*i] == '}') {
+			std::cout << "end of object\n";
+			return obj;
+		}
+		*i += 1;
     }
     return obj;
 }

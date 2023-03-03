@@ -72,6 +72,7 @@ void Config::parse() {
         jsonError("opening brackets");
 
     Value main;
+	this->debug();
     main.valueIsObject(str, &i);
 }
 
