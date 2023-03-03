@@ -1,0 +1,16 @@
+{
+  "greeting": ["Hi", "Hello", "Howdy"],
+  "servers": [
+    {
+      "address": ["127.0.0.1", "localhost"],
+      "port": 8081,
+      "root": "/home/www"
+    },
+    {
+      "address": ["127.0.0.1", "localhost"],
+      "port": 8082,
+      "root": "/home/www"
+    }
+  ],
+  "max": 2000
+}

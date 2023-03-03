@@ -2,9 +2,10 @@
 # define CONFIG_HPP
 
 # include "../inc/webserv.hpp"
+//# include "ConfigParsing.hpp"
 
-class Server;
-class Value;
+//class Server;
+//class Value;
 class Object;
 
 class	Config {
@@ -16,7 +17,7 @@ public:
 
 protected:
     std::string         str;
-    std::vector<Object> servers;
+//    std::vector<Object> servers;
     void                debug(void);
     void                jsonError(std::string msg);
 

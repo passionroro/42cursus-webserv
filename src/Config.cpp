@@ -67,24 +67,11 @@ void Config::parse() {
     vectorize();
     trim();
 
-    if (str[0] != '{')
+    int i = 0;
+    if (str[i] != '{')
         jsonError("opening brackets");
 
-    std::string key;
-    int i = 0;
-    /* get number of servers and store them inside an object */
-    while (str[++i]) {
-        key = parseKey(str, &i);
-        parseValue(str, &i, key);
-        if (str[i] != ',' && str[i] != '}' && str[i] != ']')
-            jsonError("key/value not closed");
-    }
-    if (str[i - 1] != '}')
-        jsonError("closing brackets");
-
-
-    debug();
-
+//    Object main;
 }
 
 void    Config::jsonError(std::string msg) {

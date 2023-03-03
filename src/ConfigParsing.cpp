@@ -30,21 +30,25 @@ bool Value::valueIsBool(std::string str, int *i) {
 }
 
 Array Value::valueIsArray(std::string str, int *i) {
+    Array arr;
     *i += 1;
-    while (str[i]) {
-        Array::parseValue(str, &i);
+    while (str[*i]) {
+        arr.parseValue(str, i);
         i++;
     }
+    return arr;
 }
 
 Object Value::valueIsObject(std::string str, int *i) {
     *i += 1;
+    Object obj;
     std::string key;
-    while (str[i]) {
-        key = Object::parseKey(str, &i);
-        Object::parseValue(str, &i, key);
+    while (str[*i]) {
+        key = obj.parseKey(str, i);
+        obj.parseValue(str, i, key);
         i++;
     }
+    return obj;
 }
 
 
@@ -82,6 +86,7 @@ void Array::parseValue(std::string str, int *i) {
 
 
 /* OBJECT */
+
 void Object::parseValue(std::string str, int *i, std::string key) {
 
     *i += 1;
@@ -118,7 +123,7 @@ void Object::parseValue(std::string str, int *i, std::string key) {
         jsonError("incorrect value");
 }
 
-std::string Config::parseKey(std::string str, int *i) {
+std::string Object::parseKey(std::string str, int *i) {
     if (str[*i] != '"')
         jsonError("key must be a string");
 

@@ -1,14 +1,16 @@
 #ifndef CONFIG_PARSING_HPP
 # define CONFIG_PARSING_HPP
 
-#include "Config.hpp"
+//# include "../inc/webserv.hpp"
+# include "Config.hpp"
 
+//class Config;
 class Array;
 class Object;
 
 
 /* VALUE METHODS */
-class Value : protected Config {
+class Value : public Config {
 public:
     std::string valueIsString(std::string str, int *i);
     int         valueIsInt(std::string str, int *i);
@@ -34,6 +36,9 @@ private:
 /* OBJECT */
 class Object : public Value {
 public:
+    Object() {};
+    ~Object() {};
+//    void        parseObject(std::string str, int *i);
     std::string parseKey(std::string str, int *i);
     void        parseValue(std::string str, int *i, std::string key);
 private:
@@ -43,3 +48,5 @@ private:
     std::map<std::string, Object>       _Object;
     std::map<std::string, Array>        _Array;
 };
+
+#endif
