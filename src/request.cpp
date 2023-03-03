@@ -33,11 +33,11 @@ int request::is_valid(std::string &request) {
 	_version = r_line.at(2);
 	if (_version != "HTTP/1.1")
 		return 400;
-//	std::cout << _method << std::endl << _path << std::endl << _version;
 	if (parse_headers(request)!= 0 )
 		return 400;
 	request.erase(0, 1);
 	_body = request;
+	_status = "200";
 	return 200;
 }
 
@@ -66,6 +66,11 @@ int request::parse_headers(std::string &request) {
 			return 400;
 		_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
+	_status = "200";
 	return 0;
 }
 
+std::string request::get_status() {
+	return _status;}
+
+std::string request::get_path() {return _path;}
