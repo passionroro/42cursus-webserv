@@ -7,9 +7,6 @@ int	main(int argc, char **argv)
 		std::cerr << "Error: usage: " << argv[0] <<  "<config_file>" << std::endl;
 		return (1);
 	}
-
-	WebServ	webserv(argv[1]);
-
-	webserv.run();
-	return (0);
+	Server	server;
+	
 }
