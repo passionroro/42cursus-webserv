@@ -24,33 +24,18 @@ int	WebServer::setup(void)
 			return (-1);
 	}
 	FD_ZERO(&_current);
-	FD_ZERO(&_read);
-	FD_ZERO(&_write);
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
-		int	fd = _servers[i].getListenFd();
-		FD_SET(fd, &_current);
-		if (fd > _max_fd)
-			_max_fd = fd;
+		FD_SET(_servers[i].getListenFd(), &_current);
+		if (_servers[i].getListenFd() > _max_fd)
+			_max_fd = _servers[i].getListenFd();
 	}
 	return (0);
 }
 
 void	WebServer::handleResponse(void)
 {
-	for (unsigned long i = 0 ; i < _servers.size() ; i++)
-	{
-		int	socket = _servers[i].getSocket();
-		if (!FD_ISSET(socket, &_write))
-			continue ;
-		std::cout << "handle response" << std::endl;
-
-		// todo send response
-		std::string	test = "HTTP/1.0 200 OK\r\n\r\nIt works!\r\n\r\n";
-		::send(socket, test.c_str(), test.size(), 0);
-		FD_CLR(socket, &_write);
-
-	}
+	//std::cout << "handle response" << std::endl;
 }
 
 void	WebServer::handleRequest(void)
@@ -63,8 +48,7 @@ void	WebServer::handleRequest(void)
 		std::cout << "handle request" << std::endl;
 
 		// todo recv request
-		if (!_servers[i].recv())
-			FD_SET(socket, &_write);
+		_servers[i].recv();
 	}
 }
 
@@ -98,7 +82,7 @@ void	WebServer::run(void)
 		while (ret == 0)
 		{
 			_read = _current;
-			//FD_ZERO(&_write);
+			FD_ZERO(&_write);
 			// deal with _w_set
 
 			//ret = select(_max_fd + 1, &_read, &_write, NULL, &timeout);
