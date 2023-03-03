@@ -47,10 +47,13 @@ void	WebServer::handleResponse(void)
 			continue ;
 		std::cout << "handle response" << std::endl;
 
-		_servers[i].send(); // en vrai meme chose 0 ou -1, a verifier
-		FD_CLR(socket, &_current_write);
-		FD_CLR(socket, &_current_read);
-		_servers[i].close();
+		// todo send response
+		if (!_servers[i].send())
+		{
+			FD_CLR(socket, &_current_write);
+			FD_CLR(socket, &_current_read);
+			_servers[i].close();
+		}
 		break ;
 	}
 }
