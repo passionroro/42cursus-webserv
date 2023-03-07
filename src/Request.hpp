@@ -19,6 +19,9 @@ public:
 	std::string getBody() const;
 	std::string getPath() const;
 
+	std::map<std::string, std::string>	getRequestHeaders() const;
+
+
 protected:
 
 
@@ -26,8 +29,8 @@ private:
 	std::string 						_method;
 	std::string 						_path;
 	std::string 						_version;
-	std::map<std::string, std::string>	_request_headers;
-	std::string							_request_body;
+	std::map<std::string, std::string>	_requestHeaders;
+	std::string							_requestBody;
 	std::string 						_status;
 };
 
