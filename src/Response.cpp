@@ -131,6 +131,14 @@ int	Response::readDefaultPage(int code)
 			_path = "home/error/404.html"; break;
 		case 405:
 			_path = "home/error/405.html"; break;
+		case 410:
+			_path = "home/error/410.html"; break;
+		case 413:
+			_path = "home/error/413.html"; break;
+		case 500:
+			_path = "home/error/500.html"; break;
+		default:
+			return (404);
 	}
 	res = readStaticPage();
 	_path = cpy;
