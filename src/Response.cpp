@@ -4,30 +4,71 @@ Response::Response(void)
 {
 }
 
-/*Response::Response(void)
-{
-	createHeaders();
-	_path = "./index.html";
-	_path = "./index.html";
-	readStaticPage();
-}*/
-
 Response::Response(std::string request) : Request(request)
 {
-	this->_status_code = "200";
-	if (_status_code == "200")
-	_status_text = "OK";
+	_status_code = "200";
+	_code = 200; // todo stoi
+	if (_code == 200)
+		_status_text = "OK";
 	//_path = request.getPath();
 
 	(void)request;
-	_path = "./home/www/index.html";
+	_path = "./home/www/indexadsjfkal.html";
 	createHeaders();
-	readStaticPage();
+	//readStaticPage();
+	process();
 	return;
 }
 
 Response::~Response(void)
 {
+}
+
+void	Response::process(void)
+{
+	if (_method == "GET")
+		handleGet();
+	else if (_method == "POST")
+		handlePost();
+	else if (_method == "DELETE")
+		handleDelete();
+	else
+		std::cout << "Unknown method" << std::endl; // todo?
+}
+
+void	Response::handleGet(void)
+{
+	std::cout << "Handle GET" << std::endl;
+
+	if (isCgi())
+	{
+		// todo handle cgi
+		std::cout << "path is CGI" << std::endl;
+	}
+	else if (_code == 200)
+		_code = readStaticPage();
+	else
+		_code = readDefaultPage(_code);
+	if (_code == 404)
+		_code = readDefaultPage(_code);
+
+
+
+}
+
+void	Response::handlePost(void)
+{
+	std::cout << "Handle POST" << std::endl;
+}
+
+void	Response::handleDelete(void)
+{
+	std::cout << "Handle POST" << std::endl;
+}
+
+bool	Response::isCgi(void)
+{
+	return (false);
 }
 
 void	Response::createHeaders(void)
@@ -73,6 +114,27 @@ int	Response::readStaticPage(void)
 		//todo default error page 404
 		return (404);
 	}
+}
+
+int	Response::readDefaultPage(int code)
+{
+	int	res;
+	std::string	cpy = _path;
+
+	switch (code)
+	{
+		case 400:
+			_path = "home/error/400.html"; break;
+		case 403:
+			_path = "home/error/403.html"; break;
+		case 404:
+			_path = "home/error/404.html"; break;
+		case 405:
+			_path = "home/error/405.html"; break;
+	}
+	res = readStaticPage();
+	_path = cpy;
+	return (res);
 }
 
 std::string	Response::renderString(void)
