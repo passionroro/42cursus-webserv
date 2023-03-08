@@ -13,7 +13,7 @@ Response::Response(std::string request) : Request(request)
 	//_path = request.getPath();
 
 	(void)request;
-	_path = "./home/www/indexadsjfkal.html";
+	_path = "./home/www/index.html";
 	createHeaders();
 	//readStaticPage();
 	process();
@@ -63,7 +63,7 @@ void	Response::handlePost(void)
 
 void	Response::handleDelete(void)
 {
-	std::cout << "Handle POST" << std::endl;
+	std::cout << "Handle DELETE" << std::endl;
 }
 
 bool	Response::isCgi(void)
