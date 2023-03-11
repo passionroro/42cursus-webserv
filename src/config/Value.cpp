@@ -32,9 +32,15 @@ bool Value::valueIsBool(std::string str, int *i) {
 Array Value::valueIsArray(std::string str, int *i) {
     Array arr;
     *i += 1;
-    while (str[*i]) {
+    while (str[*i] && str[*i] != ']') {
         arr.parseValue(str, i);
-        i++;
+        if (str[*i] == ',' || str[*i] == ']') {
+            *i += 1;
+            if (str[*i - 1] == ']')
+                break ;
+        }
+        else
+            jsonError("array: missing separator.");
     }
     return arr;
 }
@@ -43,10 +49,16 @@ Object Value::valueIsObject(std::string str, int *i) {
     *i += 1;
     Object obj;
     std::string key;
-    while (str[*i]) {
+    while (str[*i] && str[*i] != '}') {
         key = obj.parseKey(str, i);
         obj.parseValue(str, i, key);
-//        i++;
+        if (str[*i] == ',' || str[*i] == '}') {
+            *i += 1;
+            if (str[*i - 1] == '}')
+                break ;
+        }
+        else
+            jsonError("object: missing separator.");
     }
     return obj;
 }

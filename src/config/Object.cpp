@@ -19,7 +19,7 @@ void Object::parseValue(std::string str, int *i, std::string key) {
         _int.insert(std::pair<std::string, int>(key, value));
     }
 
-    else if (str.compare(*i, 4, "true") || str.compare(*i, 5, "false")) {
+    else if (!str.compare(*i, 4, "true") || !str.compare(*i, 5, "false")) {
         _bool.insert(std::pair<std::string, bool>(key, valueIsBool(str, i)));
     }
 

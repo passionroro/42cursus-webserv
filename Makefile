@@ -10,7 +10,7 @@ SOURCE			=	main.cpp\
 
 
 CXX				= 	c++
-CXXFLAGS		= 	-Wall -Wextra -Werror -pedantic -std=c++98
+CXXFLAGS		= 	-g -Wall -Wextra -Werror -pedantic -std=c++98
 INC				=	-Iinc
 OBJECT			=	$(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SOURCE))
 RM				=	rm -rf

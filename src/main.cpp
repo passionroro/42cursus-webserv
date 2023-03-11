@@ -1,5 +1,5 @@
 #include "../inc/webserv.hpp"
-#include "Config.hpp"
+#include "../inc/Config.hpp"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     }
 
     Config config;
-    config.setup(argv[1]);
+    Object server = config.setup(argv[1]);
 
     return (0);
 }

@@ -6,7 +6,7 @@ Config::Config(void) {}
 /* OVERLOAD */
 
 /* FUNCTIONS */
-void	Config::setup(std::string const & filename)
+Object	Config::setup(std::string const & filename)
 {
     if (filename.compare(filename.size() - 4, 4, "json"))
         jsonError("file extension must be json");
@@ -18,9 +18,11 @@ void	Config::setup(std::string const & filename)
 
     std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
     _file = str;
-    parse();
+
+    Object server = parse();
 
     ifs.close();
+    return server;
 }
 
 /* just like ft_split (note: maybe use namespace utils for this function) */
@@ -45,34 +47,28 @@ void Config::trim() {
     size_t pos;
     while ((pos = str.find(' ')) != std::string::npos)
         str.erase(pos, 1);
+    while ((pos = str.find('\r')) != std::string::npos)
+        str.erase(pos, 1);
 }
 
 void Config::debug() {
     std::cout << "|" << str << "|" << std::endl;
 }
 
-/* An object is an unordered set of name/value pairs.
- * An object begins with { and ends with }.
- * Each name is followed by a colon and the name/value pairs are separated by a comma.*/
-//Object Config::valueIsObject(std::string str, int *i) {
-//    (void)str, i;
-//}
-
-/* A value can be a string in double quotes, or a number, or true or false or null, or an object or an array.
- * These structures can be nested.*/
-
-
-void Config::parse() {
+Object Config::parse() {
 
     vectorize();
     trim();
+//    debug();
 
     int i = 0;
     if (str[i] != '{')
         jsonError("opening brackets");
 
-    Value main;
-    main.valueIsObject(str, &i);
+    Value tmp;
+    Object server;
+    server = tmp.valueIsObject(str, &i);
+    return server;
 }
 
 void    Config::jsonError(std::string msg) {

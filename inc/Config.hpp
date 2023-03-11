@@ -11,24 +11,24 @@ class	Config {
 public:
     Config(void);
     ~Config(void);
-    void	setup(std::string const & file);
+    Object	setup(std::string const & file);
+
 
 protected:
     std::string         str;
-//    std::vector<Object> servers;
     void                debug(void);
     void                jsonError(std::string msg);
 
 private:
     std::string _file;
-    void        parse(void);
+    Object      parse(void);
     void	    vectorize(void);
     void        trim(void);
 };
 
 
 /* VALUE METHODS */
-class Value : public Config {
+class Value : protected Config {
 public:
     Value() {};
     ~Value() {};

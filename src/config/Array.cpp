@@ -14,7 +14,7 @@ void Array::parseValue(std::string str, int *i) {
         _int.push_back(value);
     }
 
-    else if (str.compare(*i, 4, "true") || str.compare(*i, 5, "false")) {
+    else if (!str.compare(*i, 4, "true") || !str.compare(*i, 5, "false")) {
         _bool.push_back(valueIsBool(str, i));
     }
 
