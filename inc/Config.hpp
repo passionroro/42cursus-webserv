@@ -13,7 +13,6 @@ public:
     ~Config(void);
     Object	setup(std::string const & file);
 
-
 protected:
     std::string         str;
     void                debug(void);
@@ -30,9 +29,6 @@ private:
 /* VALUE METHODS */
 class Value : protected Config {
 public:
-    Value() {};
-    ~Value() {};
-
     std::string valueIsString(std::string str, int *i);
     int         valueIsInt(std::string str, int *i);
     bool        valueIsBool(std::string str, int *i);
@@ -57,11 +53,15 @@ private:
 /* OBJECT */
 class Object : public Value {
 public:
-    Object() {};
-    ~Object() {};
-//    void        parseObject(std::string str, int *i);
     std::string parseKey(std::string str, int *i);
     void        parseValue(std::string str, int *i, std::string key);
+
+    std::map<std::string, std::string>  getString() { return _string; };
+    std::map<std::string, int>          getInt() { return _int; };
+    std::map<std::string, bool>         getBool() { return _bool; };
+    std::map<std::string, Object>       getObject() { return _Object; };
+    std::map<std::string, Array>        getArray() { return _Array; };
+
 private:
     std::map<std::string, std::string>  _string;
     std::map<std::string, int>          _int;
