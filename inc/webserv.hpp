@@ -1,31 +1,29 @@
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
-/*--- DEFINES ---*/
-# define PORT 8080
-# define LOCALHOST "127.0.0.1"
-# define BACKLOG 5
-# define BUFFER_SIZE 1024
-
-/*--- INCLUDES AND LIBRARIES ---*/
-# include <iostream>
-# include <unistd.h>
-# include <cstring>
 # include <sys/socket.h>
-# include <sys/select.h>
 # include <sys/types.h>
+# include <sys/select.h>
 # include <arpa/inet.h>
-# include <poll.h>
-# include <netdb.h>
+# include <stdlib.h>
+# include <fcntl.h>
+# include <unistd.h>
+
+# include <string>
+# include <iostream>
 # include <fstream>
+# include <sstream>
+
 # include <vector>
-# include <algorithm>
 # include <map>
-# include <utility>
+# include <list>
 
-/*--- FUNCTIONS ---*/
-// utils.cpp
+# define SERVER_BACKLOG 1000
+# define BUFSIZE 4096
+
+class	Server;
+class	Config;
+class	Request;
+class	Response;
 void    error(std::string msg);
-
-
 #endif

@@ -1,7 +1,9 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "../inc/webserv.hpp"
+# include "webserv.hpp"
+# include "Config.hpp"
+# include "Response.hpp"
 
 typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
@@ -18,6 +20,8 @@ public:
     int	recv(void);
     int	send(void);
 
+    void	close(void);
+
     unsigned int	getHost(void) const;
     short			getPort(void) const;
     int	getListenFd(void) const;
@@ -32,6 +36,8 @@ private:
     int			_socket;
 
     saddr_in	_addr;
+
+    Response	_response;
 
 private:
 
