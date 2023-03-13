@@ -21,7 +21,7 @@ public:
 
 private:
 
-	Config	_config;
+//	Config	_config;
 	int		_max_fd;
 	fd_set	_current_read;
 	fd_set	_current_write;

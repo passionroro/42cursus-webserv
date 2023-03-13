@@ -25,5 +25,5 @@ class	Server;
 class	Config;
 class	Request;
 class	Response;
-
+void    error(std::string msg);
 #endif

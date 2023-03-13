@@ -1,17 +1,23 @@
 NAME			=	webserv
 SRC_DIR			=	src
 OBJ_DIR			=	obj
-SOURCE			=	main.cpp			\
-					Request.cpp\
-					WebServer.cpp		\
-					Server.cpp			\
-					Config.cpp			\
-					Response.cpp		\
-
 
 CXX				= 	c++
-CXXFLAGS		= 	-Wall -Wextra -Werror -pedantic -std=c++98
+CXXFLAGS		= 	-g -Wall -Wextra -Werror -pedantic -std=c++98
 INC				=	-I./inc
+
+SOURCE			=	main.cpp			\
+					Request.cpp			\
+					WebServer.cpp		\
+					Server.cpp			\
+					Response.cpp		\
+					config/Config.cpp	\
+					config/Array.cpp	\
+					config/Value.cpp	\
+					config/Object.cpp	\
+					utils.cpp			\
+
+
 OBJECT			=	$(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SOURCE))
 RM				=	rm -rf
 
@@ -30,7 +36,7 @@ fclean: clean
 	$(RM) $(NAME)
 
 $(OBJ_DIR):
-	mkdir -p $(dir $(OBJECT))
+	@mkdir -p $(dir $(OBJECT))
 
 re: fclean all
 

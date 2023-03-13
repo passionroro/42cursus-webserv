@@ -2,7 +2,8 @@
 
 WebServer::WebServer(std::string const & config_file)
 {
-	_config.parse(config_file);
+    // allocate config attributes inside Server
+    (void) config_file;
 	_servers.push_back(Server(4242, 8080));
 	std::cout << "setup: host: " << _servers[0].getHost() << std::endl;
 	std::cout << "port: " << _servers[0].getPort() << std::endl;

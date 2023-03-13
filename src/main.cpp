@@ -1,4 +1,5 @@
 #include "webserv.hpp"
+#include "../inc/Config.hpp"
 #include "WebServer.hpp"
 
 int	main(int argc, char **argv)
@@ -12,6 +13,10 @@ int	main(int argc, char **argv)
 
 	if (webserv.setup() < 0)
 		return (1);
+
+    Config config;
+    Object server = config.setup(argv[1]);
+
 	webserv.run();
 	return (0);
 }

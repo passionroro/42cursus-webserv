@@ -12,36 +12,36 @@ class	Server {
 
 public:
 
-	Server(unsigned int host, short port); // maybe ?
+    Server(unsigned int host, short port); // maybe ?
 
-	void	accept(void);
-	int		setup(void);
+    void	accept(void);
+    int		setup(void);
 
-	int	recv(void);
-	int	send(void);
+    int	recv(void);
+    int	send(void);
 
-	void	close(void);
+    void	close(void);
 
-	unsigned int	getHost(void) const;
-	short			getPort(void) const;
-	int	getListenFd(void) const;
-	int	getSocket(void) const;
-
-private:
-
-	unsigned int	_host;
-	short			_port;
-
-	int			_listen_fd;
-	int			_socket;
-
-	saddr_in	_addr;
-
-	Response	_response;
+    unsigned int	getHost(void) const;
+    short			getPort(void) const;
+    int	getListenFd(void) const;
+    int	getSocket(void) const;
 
 private:
 
-	Server(void);
+    unsigned int	_host;
+    short			_port;
+
+    int			_listen_fd;
+    int			_socket;
+
+    saddr_in	_addr;
+
+    Response	_response;
+
+private:
+
+    Server(void);
 
 };
 
