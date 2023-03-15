@@ -4,6 +4,12 @@ Server::Server(unsigned int host, short port) : _host(host), _port(port)
 {
 }
 
+Server::Server(Object const & object)
+{
+	// TODO: le fun!
+	(void)object;
+}
+
 int	Server::setup(void)
 {
     _listen_fd = socket(AF_INET, SOCK_STREAM, 0);

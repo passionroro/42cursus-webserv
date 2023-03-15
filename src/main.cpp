@@ -9,13 +9,13 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 
-	WebServer	webserv(argv[1]);
+    Config config;
+    config.setup(argv[1]);
+
+	WebServer	webserv(config);
 
 	if (webserv.setup() < 0)
 		return (1);
-
-    Config config;
-    Object server = config.setup(argv[1]);
 
 	webserv.run();
 	return (0);

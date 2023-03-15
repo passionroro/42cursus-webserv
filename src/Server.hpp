@@ -13,6 +13,7 @@ class	Server {
 public:
 
     Server(unsigned int host, short port); // maybe ?
+	Server(Object const & object);
 
     void	accept(void);
     int		setup(void);

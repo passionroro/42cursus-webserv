@@ -6,7 +6,7 @@ Config::Config(void) {}
 /* OVERLOAD */
 
 /* FUNCTIONS */
-Object	Config::setup(std::string const & filename)
+void	Config::setup(std::string const & filename)
 {
     if (filename.compare(filename.size() - 4, 4, "json"))
         jsonError("file extension must be json");
@@ -19,10 +19,9 @@ Object	Config::setup(std::string const & filename)
     std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
     _file = str;
 
-    Object server = parse();
+    _data = parse();
 
     ifs.close();
-    return server;
 }
 
 /* just like ft_split (note: maybe use namespace utils for this function) */
@@ -51,9 +50,9 @@ void Config::trim() {
         str.erase(pos, 1);
 }
 
-void Config::debug() {
+/*void Config::debug() {
     std::cout << "|" << str << "|" << std::endl;
-}
+}*/
 
 Object Config::parse() {
 
@@ -76,6 +75,11 @@ void    Config::jsonError(std::string msg) {
     ret.append(msg);
     std::cout << ret.c_str() << std::endl;
     exit(EXIT_FAILURE);
+}
+
+Object const&	Config::getData(void) const
+{
+	return (_data);
 }
 
 /* DESTRUCTOR */

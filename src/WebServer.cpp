@@ -12,6 +12,20 @@ WebServer::WebServer(std::string const & config_file)
 	std::cout << "port: " << _servers[1].getPort() << std::endl;
 }
 
+WebServer::WebServer(Config config)
+{
+	Object	data = config.getData();
+
+	std::map<std::string, Array>	map_array = data.getArray();
+	Array	array = map_array["servers"];
+
+	for (std::vector<Object>::iterator it = array.getObject().begin() ;
+		it != array.getObject().end() ; it++)
+	{
+		_servers.push_back(Server(*it));
+	}
+}
+
 WebServer::~WebServer(void)
 {
 }

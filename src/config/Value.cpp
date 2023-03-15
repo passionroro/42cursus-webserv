@@ -62,3 +62,11 @@ Object Value::valueIsObject(std::string str, int *i) {
     }
     return obj;
 }
+
+void	Value::jsonError(std::string msg)
+{
+	std::string ret = "json format error: ";
+	ret.append(msg);
+	std::cout << ret.c_str() << std::endl;
+	exit(EXIT_FAILURE);
+}
