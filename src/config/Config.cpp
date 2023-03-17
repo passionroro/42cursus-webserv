@@ -48,6 +48,8 @@ void Config::trim() {
         str.erase(pos, 1);
     while ((pos = str.find('\r')) != std::string::npos)
         str.erase(pos, 1);
+    while ((pos = str.find('\t')) != std::string::npos)
+        str.erase(pos, 1);
 }
 
 /*void Config::debug() {
