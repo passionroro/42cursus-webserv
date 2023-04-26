@@ -1,4 +1,4 @@
-#include "../../inc/Config.hpp"
+#include "Config.hpp"
 
 /* CONSTRUCTOR */
 Config::Config(void) {}

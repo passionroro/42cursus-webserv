@@ -4,10 +4,12 @@ Server::Server(unsigned int host, short port) : _host(host), _port(port)
 {
 }
 
-Server::Server(Object const & object)
+Server::Server(Object & object)
 {
 	// TODO: le fun!
-	(void)object;
+	
+	_port = object.getInt()["port"];
+	std::cout << "port = " << _port << std::endl;
 }
 
 int	Server::setup(void)

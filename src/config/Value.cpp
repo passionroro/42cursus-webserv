@@ -1,4 +1,4 @@
-#include "../../inc/Config.hpp"
+#include "Config.hpp"
 
 /* VALUE */
 std::string Value::valueIsString(std::string str, int *i) {

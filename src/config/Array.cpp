@@ -1,4 +1,4 @@
-#include "../../inc/Config.hpp"
+#include "Config.hpp"
 
 /* ARRAY */
 void Array::parseValue(std::string str, int *i) {

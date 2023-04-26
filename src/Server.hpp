@@ -2,7 +2,7 @@
 # define SERVER_HPP
 
 # include "webserv.hpp"
-# include "Config.hpp"
+# include "config/Config.hpp"
 # include "Response.hpp"
 
 typedef struct sockaddr_in saddr_in;
@@ -13,7 +13,7 @@ class	Server {
 public:
 
     Server(unsigned int host, short port); // maybe ?
-	Server(Object const & object);
+	Server(Object & object);
 
     void	accept(void);
     int		setup(void);

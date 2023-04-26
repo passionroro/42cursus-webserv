@@ -1,5 +1,5 @@
 #include "webserv.hpp"
-#include "../inc/Config.hpp"
+#include "config/Config.hpp"
 #include "WebServer.hpp"
 
 int	main(int argc, char **argv)
