@@ -11,11 +11,11 @@ Request::Request(std::string request)
 
 Request::~Request() {}
 
-int Request::is_valid(std::string &Request) {
+int Request::is_valid(std::string &request) {
 	std::vector<std::string> r_line;
 	std::string R_line;
 	int spacenb = 0;
-	R_line = Request.substr(0,Request.find('\r'));
+	R_line = request.substr(0, request.find('\r'));
 	for (int i = 0; i < (int)R_line.size(); ++i) {
 		if(isspace(R_line[i]))
 			spacenb++;
@@ -26,11 +26,11 @@ int Request::is_valid(std::string &Request) {
 	while ((pos = R_line.find(' ')) != std::string::npos) {
 		r_line.push_back(R_line.substr(0, pos));
 		R_line.erase(0, pos + 1);
-		Request.erase(0, pos + 1);
+		request.erase(0, pos + 1);
 	}
 	pos = R_line.find('\r');
 	r_line.push_back(R_line.substr(0, pos));
-	Request.erase(0, R_line.size() + 1);
+	request.erase(0, R_line.size() + 1);
 	_method = r_line.front();
 	if (_method != "GET" && _method != "POST" && _method != "DELETE")
 		return 400;
@@ -40,10 +40,10 @@ int Request::is_valid(std::string &Request) {
 	_version = r_line.at(2);
 	if (_version != "HTTP/1.1")
 		return 400;
-	if (parse_headers(Request)!= 0 )
+	if (parse_headers(request)!= 0 )
 		return 400;
-	Request.erase(0, 1);
-	_request_body = Request;
+	request.erase(0, 1);
+	_request_body = request;
 	_status = "200";
 	return 200;
 }
@@ -57,19 +57,19 @@ bool Request::check_path(std::string s) {
 	return fs.is_open();
 }
 
-int Request::parse_headers(std::string &Request) {
+int Request::parse_headers(std::string &request) {
 	std::string h_key;
 	std::string h_value;
 	size_t pos = 0;
 	size_t pos_2 = 0;
-	while ((pos = Request.find(':')) != std::string::npos) {
-		h_key = (Request.substr(0, pos));
-		Request.erase(0, pos + 1);
-		pos_2 = Request.find('\n');
-		h_value = (Request.substr(0, pos_2));
+	while ((pos = request.find(':')) != std::string::npos) {
+		h_key = (request.substr(0, pos));
+		request.erase(0, pos + 1);
+		pos_2 = request.find('\n');
+		h_value = (request.substr(0, pos_2));
 		if (h_value[0] == ' ')
 			h_value.erase(0, 1);
-		Request.erase(0,pos_2 + 1);
+		request.erase(0,pos_2 + 1);
 		if (h_key.find(' ') != std::string::npos)
 			return 400;
 		_request_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
