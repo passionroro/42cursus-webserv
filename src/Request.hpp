@@ -2,13 +2,14 @@
 # define REQUEST_HPP
 
 # include "webserv.hpp"
+# include "config/Config.hpp"
 
 class Request {
 
 public:
 	
 	Request();
-	Request(std::string request);
+	Request(std::string request, std::vector<Object> &location);
 	virtual ~Request();
 	
 	int 	is_valid(std::string &Request);
@@ -21,8 +22,10 @@ public:
 
 protected:
 
+	std::vector<Object>	_locations;
 
 private:
+
 	std::string 						_method;
 	std::string 						_path;
 	std::string 						_version;

@@ -12,7 +12,7 @@ Response::Response(void)
 	readStaticPage();
 }*/
 
-Response::Response(std::string request) : Request(request)
+Response::Response(std::string request, std::vector<Object> &locations) : Request(request, locations)
 {
 	this->_status_code = "200";
 	if (_status_code == "200")
@@ -29,6 +29,10 @@ Response::Response(std::string request) : Request(request)
 Response::~Response(void)
 {
 }
+
+//std::string	Response::buildPath(void)
+//{
+//}
 
 void	Response::createHeaders(void)
 {

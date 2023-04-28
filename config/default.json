@@ -3,7 +3,6 @@
     {
       "address": ["127.0.0.1", "localhost"],
       "port": 8081,
-      "root": "/home/www",
       "client_max_body_size": 0,
       "disabled_methods": [""],
       "error_pages": {
@@ -18,12 +17,15 @@
       },
       "locations": [
         {
-          "path": "/uploads",
-          "client_max_body_size": 2000000
+          "path": "/",
+          "index": "index.html",
+          "client_max_body_size": 2000000,
+      	  "root": "/home/www"
         },
         {
           "path": "/php",
 		  "cgi_bin":"php-cgi",
+      	  "root": "/home/cgi",
           "client_max_body_size": 2000000
         }
       ]

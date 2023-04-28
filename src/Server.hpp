@@ -15,6 +15,8 @@ public:
     Server(unsigned int host, short port); // maybe ?
 	Server(Object & object);
 
+	void	getConfig(Object & object);
+
     void	accept(void);
     int		setup(void);
 
@@ -28,10 +30,15 @@ public:
     int	getListenFd(void) const;
     int	getSocket(void) const;
 
+
+	void	printLocations(void);
+
 private:
 
     unsigned int	_host;
     short			_port;
+
+	std::vector<Object>	_locations;
 
     int			_listen_fd;
     int			_socket;

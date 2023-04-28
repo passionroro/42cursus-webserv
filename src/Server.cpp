@@ -6,10 +6,30 @@ Server::Server(unsigned int host, short port) : _host(host), _port(port)
 
 Server::Server(Object & object)
 {
-	// TODO: le fun!
-	
+	// get default config here ? needed for each server
+
+
+	getConfig(object);
+
+}
+
+void	Server::getConfig(Object & object)
+{
+	// add location(s)
+	Array array = object.getArray()["locations"];
+
+	for (std::vector<Object>::iterator it = array.getObject().begin() ;
+		it != array.getObject().end() ; it++)
+	{
+		_locations.push_back(*it);
+	}
+
+	printLocations();
+
+
 	_port = object.getInt()["port"];
 	std::cout << "port = " << _port << std::endl;
+
 }
 
 int	Server::setup(void)
@@ -67,7 +87,7 @@ int	Server::recv(void)
         std::cerr << "Error: recv" << std::endl;
         return (-1);
     }
-    _response = Response(request);
+    _response = Response(request, _locations);
     std::cout << "Request:" << std::endl << request << std::endl;
     return (0);
 }
@@ -75,12 +95,9 @@ int	Server::recv(void)
 int	Server::send(void)
 {
     std::string	str = _response.renderString();
-    /*std::string	str = "HTTP/1.0 200 OK\r\n";
-    str += "Content-Length: 9\r\n\r\n";
-    str += "It works!";*/
 
     std::cout << "Webserv: send" << std::endl;
-    std::cout << "Response:" << std::endl << _response.renderString() << std::endl;
+    std::cout << "Response:" << std::endl << str << std::endl;
     if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else
@@ -92,6 +109,19 @@ void	Server::close(void)
     std::cout << "Webserv: close" << std::endl;
     if (_socket > 0)
         ::close(_socket);
+}
+
+// debug functions
+
+
+void	Server::printLocations(void)
+{
+	for (unsigned long i = 0 ; i < _locations.size() ; i++)
+	{
+		std::cout << "location " << i + 1 << std::endl;
+		std::cout << "path: " << _locations[i].getString()["path"] << std::endl;
+		std::cout << "index: " << _locations[i].getString()["index"] << std::endl;
+	}
 }
 
 // getters

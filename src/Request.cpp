@@ -4,8 +4,12 @@ Request::Request(void)
 {
 }
 
-Request::Request(std::string request)
+Request::Request(std::string request, std::vector<Object> &locations)
 {
+	_locations = locations;
+
+	//_path = buildPath();
+
 	is_valid(request);
 }
 
