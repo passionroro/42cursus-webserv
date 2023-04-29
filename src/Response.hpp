@@ -29,7 +29,6 @@ private:
 	
 	std::map<std::string, std::string>	_response_headers;
 
-	std::string	_path;
 	std::string	_response_body;
 
 };

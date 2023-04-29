@@ -8,12 +8,32 @@ Request::Request(std::string request, std::vector<Object> &locations)
 {
 	_locations = locations;
 
-	//_path = buildPath();
+	_path = buildPath();
 
 	is_valid(request);
 }
 
 Request::~Request() {}
+
+
+std::string	Request::buildPath(void)
+{
+	std::string	path;
+
+	path = _locations[0].getString()["root"];
+	if (_locations[0].getString()["path"] == "/")
+	{
+		path += "/" + _locations[0].getString()["index"];
+	}
+	else
+	{
+		// todo
+		path += "/";
+	}
+	std::cout << "location path : " << _locations[0].getString()["path"] << std::endl;
+	std::cout << "path is : " << path << std::endl;
+	return path;
+}
 
 int Request::is_valid(std::string &request) {
 	std::vector<std::string> r_line;
@@ -38,8 +58,8 @@ int Request::is_valid(std::string &request) {
 	_method = r_line.front();
 	if (_method != "GET" && _method != "POST" && _method != "DELETE")
 		return 400;
-	_path = r_line.at(1);
-	if(!check_path(_path))
+	_requestPath = r_line.at(1);
+	if(!check_path(_requestPath))
 		return 300;
 	_version = r_line.at(2);
 	if (_version != "HTTP/1.1")

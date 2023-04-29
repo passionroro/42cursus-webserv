@@ -20,12 +20,12 @@
           "path": "/",
           "index": "index.html",
           "client_max_body_size": 2000000,
-      	  "root": "/home/www"
+      	  "root": "home/www"
         },
         {
           "path": "/php",
 		  "cgi_bin":"php-cgi",
-      	  "root": "/home/cgi",
+      	  "root": "home/cgi",
           "client_max_body_size": 2000000
         }
       ]
