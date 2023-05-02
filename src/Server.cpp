@@ -1,43 +1,43 @@
 #include "Server.hpp"
 
-Server::Server(unsigned int host, short port) : _port(port), _host(host)
-{
-}
+/* CONSTRUCTORS */
+// Server constructor when no config file is given
+Server::Server(Object & default_obj) {
 
-Server::Server(Object & object)
-{
-
-    assignDefaultConfig(object);
-
-	overwriteConfig(object);
+    assignConfig(default_obj);
 
 }
 
-void Server::assignDefaultConfig(Object & object) {
+// Server constructor if a config file is given
+Server::Server(Object & default_obj, Object & object) {
 
-    _server_name = object.getString()["server_name"];
-    _port = object.getInt()["port"];
-    _clt_body_size = object.getInt()["client_max_body_size"];
-    _auto_index = object.getBool()["auto_index"];
-
-    _address = object.getArray()["address"].getString();
-    _disabled_methods = object.getArray()["disabled_methods"].getString();
-
-    _error_pages = object.getObject()["error_pages"].getString();
-
-    std::vector<Object> tmp_location = object.getArray()["locations"].getObject();
-    std::vector<Object>::iterator it;
-    for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
-        _locations.push_back(it->getString());
-    }
+    assignConfig(default_obj);
+    assignConfig(object);
 
 }
 
-void	Server::overwriteConfig(Object & object) {
+// Assign every attribute from the Object "server" (config) into the class Server
+void Server::assignConfig(Object & object) {
 
-    (void)object;
+    if (object.getString().find("server_name") != object.getString().end())
+        _server_name = object.getString()["server_name"];
+//    _port = object.getInt()["port"];
+//    _clt_body_size = object.getInt()["client_max_body_size"];
+//    _auto_index = object.getBool()["auto_index"];
+//
+//    _address = object.getArray()["address"].getString();
+//    _disabled_methods = object.getArray()["disabled_methods"].getString();
+//
+//    _error_pages = object.getObject()["error_pages"].getString();
+//
+//    std::vector<Object> tmp_location = object.getArray()["locations"].getObject();
+//    std::vector<Object>::iterator it;
+//    for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
+//        _locations.push_back(it->getString());
+//    }
 
 }
+
 
 /* FUNCTIONS */
 int	Server::setup(void)

@@ -49,7 +49,7 @@ public:
     std::map<std::string, int>          getInt() { return _int; };
     std::map<std::string, bool>         getBool() { return _bool; };
     std::map<std::string, Object>       getObject() { return _Object; };
-    std::map<std::string, Array>        getArray() { return _Array; };
+    std::map<std::string, Array>        getArray() const { return _Array; };
 
 private:
     std::map<std::string, std::string>  _string;
@@ -66,7 +66,9 @@ public:
     ~Config(void);
     void	setup(std::string const & file);
 
-	Object const&	getData(void) const;
+	const Object getData(void) const;
+
+    bool        overwrite;
 
 protected:
     std::string         str;
@@ -74,7 +76,6 @@ protected:
 
 private:
 
-    bool        overwrite;
 	Object		_data;
     std::string _file;
     Object      parse(void);

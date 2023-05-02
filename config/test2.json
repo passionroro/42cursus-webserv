@@ -1,0 +1,7 @@
+{
+  "servers": [
+    {
+      "not_server_name": "coucou.fr"
+	}
+  ]
+}

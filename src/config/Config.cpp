@@ -1,10 +1,7 @@
 #include "Config.hpp"
 
 /* CONSTRUCTOR */
-Config::Config(void) {}
-Config::Config(int argc) {
-    argc > 1 ? overwrite : !overwrite;
-}
+Config::Config(void) : overwrite(false) {}
 
 /* OVERLOAD */
 
@@ -82,10 +79,7 @@ void    Config::jsonError(std::string msg) {
     exit(EXIT_FAILURE);
 }
 
-Object const&	Config::getData(void) const
-{
-	return (_data);
-}
+const Object Config::getData(void) const { return (_data); }
 
 /* DESTRUCTOR */
 Config::~Config(void)

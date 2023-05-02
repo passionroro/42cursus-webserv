@@ -8,20 +8,13 @@
 typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
 
-//struct location_info {
-//
-//};
-//
-//struct serv_info {
-//
-//};
 
 class	Server {
 
 public:
 
-    Server(unsigned int host, short port); // maybe ?
-	Server(Object & object);
+    Server(Object & default_obj);
+    Server(Object & default_obj, Object & object);
 
     /* ACCESSORS */
     unsigned int	getHost(void) const;
@@ -38,8 +31,7 @@ public:
 
 protected:
     /* CFG UTILS */
-    void	overwriteConfig(Object & object);
-    void    assignDefaultConfig(Object & object);
+    void    assignConfig(Object & object);
 
 private:
 

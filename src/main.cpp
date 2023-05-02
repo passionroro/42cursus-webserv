@@ -12,12 +12,13 @@ int	main(int argc, char **argv)
     Config default_cfg;
     default_cfg.setup("config/default.json");
 
+    Config config;
     if (argc > 1) {
-        Config config;
+        config.overwrite = true;
         config.setup(argv[1]);
     }
 
-	WebServer	webserv(default_cfg);
+	WebServer	webserv(default_cfg, config);
 
 	if (webserv.setup() < 0)
 		return (1);

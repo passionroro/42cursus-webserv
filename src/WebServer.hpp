@@ -8,8 +8,7 @@ class	WebServer {
 
 public:
 
-	WebServer(Config config);
-	WebServer(std::string const & config_file);
+    WebServer(Config default_cfg, Config config);
 	~WebServer(void);
 
 	int		setup(void);

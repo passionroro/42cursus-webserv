@@ -1,6 +1,7 @@
 {
   "servers": [
     {
+      "server_name": "coucou.fr",
       "address": ["127.0.0.2", "localhost"],
       "port": 1312,
       "root": "/home/www",
