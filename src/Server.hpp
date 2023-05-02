@@ -8,6 +8,14 @@
 typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
 
+//struct location_info {
+//
+//};
+//
+//struct serv_info {
+//
+//};
+
 class	Server {
 
 public:
@@ -15,37 +23,42 @@ public:
     Server(unsigned int host, short port); // maybe ?
 	Server(Object & object);
 
-	void	getConfig(Object & object);
-
-    void	accept(void);
-    int		setup(void);
-
-    int	recv(void);
-    int	send(void);
-
-    void	close(void);
-
+    /* ACCESSORS */
     unsigned int	getHost(void) const;
     short			getPort(void) const;
-    int	getListenFd(void) const;
-    int	getSocket(void) const;
+    int             getListenFd(void) const;
+    int             getSocket(void) const;
 
+    /* SERVER UTILS */
+    void accept(void);
+    void close(void);
+    int	setup(void);
+    int recv(void);
+    int send(void);
 
-	void	printLocations(void);
+protected:
+    /* CFG UTILS */
+    void	overwriteConfig(Object & object);
+    void    assignDefaultConfig(Object & object);
 
 private:
 
-    unsigned int	_host;
-    short			_port;
+    /* CFG INFOS */
+    std::string _server_name;
+    int         _port;
+    int         _clt_body_size;
+    bool        _auto_index;
+    std::vector<std::string>    _address;
+    std::vector<std::string>    _disabled_methods;
+    std::map<std::string, std::string>  _error_pages;
+    std::vector< std::map<std::string, std::string> > _locations;
 
-	std::vector<Object>	_locations;
-
+    /* SERVER UTILS */
+    unsigned int	_host; //still useful ?
+    Response	_response;
+    saddr_in    _addr;
     int			_listen_fd;
     int			_socket;
-
-    saddr_in	_addr;
-
-    Response	_response;
 
 private:
 

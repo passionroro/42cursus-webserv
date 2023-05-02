@@ -1,37 +1,45 @@
 #include "Server.hpp"
 
-Server::Server(unsigned int host, short port) : _host(host), _port(port)
+Server::Server(unsigned int host, short port) : _port(port), _host(host)
 {
 }
 
 Server::Server(Object & object)
 {
-	// get default config here ? needed for each server
 
+    assignDefaultConfig(object);
 
-	getConfig(object);
-
-}
-
-void	Server::getConfig(Object & object)
-{
-	// add location(s)
-	Array array = object.getArray()["locations"];
-
-	for (std::vector<Object>::iterator it = array.getObject().begin() ;
-		it != array.getObject().end() ; it++)
-	{
-		_locations.push_back(*it);
-	}
-
-	printLocations();
-
-
-	_port = object.getInt()["port"];
-	std::cout << "port = " << _port << std::endl;
+	overwriteConfig(object);
 
 }
 
+void Server::assignDefaultConfig(Object & object) {
+
+    _server_name = object.getString()["server_name"];
+    _port = object.getInt()["port"];
+    _clt_body_size = object.getInt()["client_max_body_size"];
+    _auto_index = object.getBool()["auto_index"];
+
+    _address = object.getArray()["address"].getString();
+    _disabled_methods = object.getArray()["disabled_methods"].getString();
+
+    _error_pages = object.getObject()["error_pages"].getString();
+
+    std::vector<Object> tmp_location = object.getArray()["locations"].getObject();
+    std::vector<Object>::iterator it;
+    for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
+        _locations.push_back(it->getString());
+    }
+
+}
+
+void	Server::overwriteConfig(Object & object) {
+
+    (void)object;
+
+}
+
+/* FUNCTIONS */
 int	Server::setup(void)
 {
     _listen_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -87,7 +95,7 @@ int	Server::recv(void)
         std::cerr << "Error: recv" << std::endl;
         return (-1);
     }
-    _response = Response(request, _locations);
+//    _response = Response(request, _locations);
     std::cout << "Request:" << std::endl << request << std::endl;
     return (0);
 }
@@ -111,21 +119,7 @@ void	Server::close(void)
         ::close(_socket);
 }
 
-// debug functions
-
-
-void	Server::printLocations(void)
-{
-	for (unsigned long i = 0 ; i < _locations.size() ; i++)
-	{
-		std::cout << "location " << i + 1 << std::endl;
-		std::cout << "path: " << _locations[i].getString()["path"] << std::endl;
-		std::cout << "index: " << _locations[i].getString()["index"] << std::endl;
-	}
-}
-
-// getters
-
+/* ACCESSORS */
 unsigned int	Server::getHost(void) const { return _host; }
 short			Server::getPort(void) const { return _port; }
 int				Server::getListenFd(void) const { return _listen_fd; }

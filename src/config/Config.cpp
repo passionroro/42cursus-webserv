@@ -2,6 +2,9 @@
 
 /* CONSTRUCTOR */
 Config::Config(void) {}
+Config::Config(int argc) {
+    argc > 1 ? overwrite : !overwrite;
+}
 
 /* OVERLOAD */
 

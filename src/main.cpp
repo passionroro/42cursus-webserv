@@ -9,10 +9,15 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 
-    Config config;
-    config.setup(argc == 1 ? "config/default.json" : argv[1]);
+    Config default_cfg;
+    default_cfg.setup("config/default.json");
 
-	WebServer	webserv(config);
+    if (argc > 1) {
+        Config config;
+        config.setup(argv[1]);
+    }
+
+	WebServer	webserv(default_cfg);
 
 	if (webserv.setup() < 0)
 		return (1);

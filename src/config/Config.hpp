@@ -58,9 +58,11 @@ private:
     std::map<std::string, Object>       _Object;
     std::map<std::string, Array>        _Array;
 };
+
 class	Config {
 public:
     Config(void);
+    Config(int argc);
     ~Config(void);
     void	setup(std::string const & file);
 
@@ -72,6 +74,7 @@ protected:
 
 private:
 
+    bool        overwrite;
 	Object		_data;
     std::string _file;
     Object      parse(void);

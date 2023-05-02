@@ -1,10 +1,12 @@
 {
   "servers": [
     {
+      "server_name": "www.example.com",
       "address": ["127.0.0.1", "localhost"],
       "port": 8081,
       "client_max_body_size": 0,
       "disabled_methods": [""],
+      "auto_index": true,
       "error_pages": {
         "path": "/error_pages",
         "400": "custom_400.html",
@@ -19,14 +21,14 @@
         {
           "path": "/",
           "index": "index.html",
-          "client_max_body_size": 2000000,
+          "client_max_body_size": "2000000",
       	  "root": "home/www"
         },
         {
-          "path": "/php",
-		  "cgi_bin":"php-cgi",
+          "path": "/cgi-bin",
+		  "bin": "cgi-hello",
       	  "root": "home/cgi",
-          "client_max_body_size": 2000000
+          "client_max_body_size": "2000000"
         }
       ]
     }
