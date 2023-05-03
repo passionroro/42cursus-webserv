@@ -13,8 +13,8 @@ public:
 	virtual ~Request();
 	
 	int 	parseRequest(std::string &Request);
-	bool	check_path(std::string s);
-	int 	parse_headers(std::string &Request);
+//	bool	check_path(std::string s);
+	int 	parseHeaders(std::string &Request);
 
 	std::string getStatus() const;
 	std::string getBody() const;

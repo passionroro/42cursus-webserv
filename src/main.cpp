@@ -6,7 +6,7 @@ int	main(int argc, char **argv)
 {
 	(void) argc;
 	(void)argv;
-	std::string test = "GET /hello.htm HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\nAccept-Encoding: gzip, deflate\r\nConnection: Keep-Alive";//	if (argc != 2) {
+	std::string test = "DELETE /hello.htm HTTP/1.1\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\nAccept-Encoding: gzip, deflate\r\nConnection: Keep-Alive";//	if (argc != 2) {
 //		std::cerr << "Error: usage: " << argv[0] <<  " <config_file>" << std::endl;
 //		return (1);
 //	}

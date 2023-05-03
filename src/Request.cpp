@@ -19,6 +19,10 @@ int Request::parseRequest(std::string &Request) {
 	setStatus("200");
 	
 	firstLine = split(Request.substr(0,Request.find('\r')), ' ');
+	if (firstLine.size() != 3) {
+		setStatus("400");
+		return 0;
+	}
 	
 	R_line = Request.substr(0,Request.find('\r'));
 	
@@ -65,6 +69,10 @@ int Request::parseRequest(std::string &Request) {
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
 		return 400;
+	 
+	 
+	 
+	 
 	if (parse_headers(Request)!= 0 )
 		return 400;
 	Request.erase(0, 1);
@@ -72,17 +80,17 @@ int Request::parseRequest(std::string &Request) {
 	_status = "200";
 	return 200;*/
 }
+//
+//bool Request::check_path(std::string s) {
+//	std::fstream fs;
+//	std::string path = "home/www/index.html";
+//	(void)s;
+//	//path.append(s);
+//	fs.open(path);
+//	return fs.is_open();
+//}
 
-bool Request::check_path(std::string s) {
-	std::fstream fs;
-	std::string path = "home/www/index.html";
-	(void)s;
-	//path.append(s);
-	fs.open(path);
-	return fs.is_open();
-}
-
-int Request::parse_headers(std::string &Request) {
+int Request::parseHeaders(std::string &Request) {
 	std::string h_key;
 	std::string h_value;
 	size_t pos = 0;
@@ -124,11 +132,14 @@ void Request::checkMethod() {
 //		if (_method == *it)
 //			setStatus("405");
 //	}
+	if (_method != "GET" && _method != "POST" && _method != "DELETE")
+		setStatus("400");
 }
 
 void Request::checkPath() {
 	std::fstream fs;
 	std::vector<std::string> paths;
+	paths.push_back("home/www/index.html");
 	/*//TRY CATCH
 	for (std::vector< std::map<std::string, std::string> >::iterator it = _locations.begin();it != _locations.end(); it++) {
 		paths.push_back(*it->at("root").append(_path));
