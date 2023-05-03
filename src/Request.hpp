@@ -22,6 +22,8 @@ public:
 	std::string getBody() const;
 	std::string getPath() const;
 
+	std::map<std::string, std::string> getRequestHeaders(void) { return _request_headers; }
+
 protected:
 
 	std::vector< std::map<std::string, std::string> >	_locations;

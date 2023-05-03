@@ -3,6 +3,7 @@
 
 # include "webserv.hpp"
 # include "Request.hpp"
+# include "Cgi.hpp"
 
 class	Response : public Request {
 
@@ -19,6 +20,7 @@ public:
 	std::string	buildPath(void);
 
 	void		appendHeaders(std::string & str);
+	void		cgi(void);
 	int			readStaticPage(void);
 	std::string	renderString(void);
 

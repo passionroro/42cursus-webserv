@@ -19,7 +19,11 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		_status_text = "OK";
 
 	createHeaders();
-	readStaticPage();
+	std::cout << "yoooooo:" << _locations[1]["cgi"] << std::endl;
+	if (_locations[1]["cgi"] != "")
+		cgi();
+	else
+		readStaticPage();
 	return;
 }
 
@@ -75,6 +79,14 @@ int	Response::readStaticPage(void)
 		//todo default error page 404
 		return (404);
 	}
+}
+
+void	Response::cgi(void)
+{
+	std::cout << "cgi yaaaaaasss" << std::endl;
+
+	Cgi	cgi(*this);
+	_response_body = cgi.getRes();
 }
 
 std::string	Response::renderString(void)
