@@ -12,11 +12,11 @@ Response::Response(void)
 	readStaticPage();
 }*/
 
-Response::Response(std::string request, std::vector<Object> &locations) : Request(request, locations)
+Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
 	this->_status_code = "200";
 	if (_status_code == "200")
-	_status_text = "OK";
+		_status_text = "OK";
 
 	createHeaders();
 	readStaticPage();

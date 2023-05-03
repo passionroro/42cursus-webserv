@@ -9,7 +9,7 @@ class	Response : public Request {
 public:
 
 	Response(void);
-	Response(std::string request, std::vector<Object> &locations);
+	Response(std::string request, Server& server_conf);
 	virtual	~Response(void);
 
 	void	getHeaders(void);

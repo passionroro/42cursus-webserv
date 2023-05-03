@@ -3,6 +3,7 @@
 
 # include "webserv.hpp"
 # include "config/Config.hpp"
+# include "Request.hpp"
 # include "Response.hpp"
 
 typedef struct sockaddr_in saddr_in;
@@ -28,6 +29,15 @@ public:
     int	setup(void);
     int recv(void);
     int send(void);
+
+	/* GETTERS */
+
+	int	getPort(void)	{ return _port; }
+	std::string	getServerName(void)	{ return _server_name; }
+	std::vector<std::string>	getAddress(void) { return _address; }
+	std::vector<std::string>	getDisabledMethods(void) { return _disabled_methods; }
+	std::vector< std::map<std::string, std::string> > getLocations(void) { return _locations; }
+
 
 protected:
     /* CFG UTILS */

@@ -1,13 +1,13 @@
 #include "Request.hpp"
+#include "Server.hpp"
 
 Request::Request(void)
 {
 }
 
-Request::Request(std::string request, std::vector<Object> &locations)
+Request::Request(std::string request, Server& server_conf)
 {
-	_locations = locations;
-
+	_locations = server_conf.getLocations();
 	_path = buildPath();
 
 	is_valid(request);
@@ -20,17 +20,17 @@ std::string	Request::buildPath(void)
 {
 	std::string	path;
 
-	path = _locations[0].getString()["root"];
-	if (_locations[0].getString()["path"] == "/")
+	path = _locations[0]["root"];
+	if (_locations[0]["path"] == "/")
 	{
-		path += "/" + _locations[0].getString()["index"];
+		path += "/" + _locations[0]["index"];
 	}
 	else
 	{
 		// todo
 		path += "/";
 	}
-	std::cout << "location path : " << _locations[0].getString()["path"] << std::endl;
+	std::cout << "location path : " << _locations[0]["path"] << std::endl;
 	std::cout << "path is : " << path << std::endl;
 	return path;
 }
