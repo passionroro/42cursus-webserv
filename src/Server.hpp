@@ -33,6 +33,7 @@ protected:
     /* CFG UTILS */
     void    assignConfig(Object & object);
 
+
 private:
 
     /* CFG INFOS */

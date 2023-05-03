@@ -77,7 +77,7 @@ bool Request::check_path(std::string s) {
 	std::string path = "home/www/index.html";
 	(void)s;
 	//path.append(s);
-	fs.open(path);
+	fs.open(path.c_str());
 	return fs.is_open();
 }
 

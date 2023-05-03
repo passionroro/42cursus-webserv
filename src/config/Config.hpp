@@ -46,9 +46,9 @@ public:
     void        parseValue(std::string str, int *i, std::string key);
 
     std::map<std::string, std::string>  &getString() { return _string; };
-    std::map<std::string, int>          getInt() { return _int; };
-    std::map<std::string, bool>         getBool() { return _bool; };
-    std::map<std::string, Object>       getObject() { return _Object; };
+    std::map<std::string, int>          &getInt() { return _int; };
+    std::map<std::string, bool>         &getBool() { return _bool; };
+    std::map<std::string, Object>       &getObject() { return _Object; };
     std::map<std::string, Array>        getArray() const { return _Array; };
 
 private:

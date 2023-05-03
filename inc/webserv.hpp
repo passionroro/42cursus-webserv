@@ -10,6 +10,7 @@
 # include <unistd.h>
 
 # include <string>
+# include <cstring>
 # include <iostream>
 # include <fstream>
 # include <sstream>
