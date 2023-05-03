@@ -21,37 +21,38 @@ Server::Server(Object & default_obj, Object & object) {
 // As we use the `operator[]` to access the elements, we need to check if they exist using `find`
 void Server::assignConfig(Object & object) {
 
-    if (object.getString().find("server_name") != object.getString().end())
-        _server_name = object.getString()["server_name"];
+    std::map<std::string, std::string>::iterator search;
+    std::map<std::string, std::string> value = object.getString();
+    search = value.find(std::string("server_name"));
+    if (search != value.end())
+        std::cout << "Found\n";
 
-    if (object.getBool().find("auto_index") != object.getBool().end())
-        _auto_index = object.getBool()["auto_index"];
-
-    if (object.getInt().find("port") != object.getInt().end())
-        _port = object.getInt()["port"];
-    if (object.getInt().find("client_max_body_size") != object.getInt().end())
-        _clt_body_size = object.getInt()["client_max_body_size"];
-
-
-    if (object.getArray().find("address") != object.getArray().end())
-        _address = object.getArray()["address"].getString();
-    if (object.getArray().find("disabled_methods") != object.getArray().end())
-        _disabled_methods = object.getArray()["disabled_methods"].getString();
-
-    if (object.getObject().find("error_pages") != object.getObject().end())
-        _error_pages = object.getObject()["error_pages"].getString();
-
-    if (object.getArray().find("locations") != object.getArray().end()) {
-
-        std::vector<Object>             tmp_location;
-        std::vector<Object>::iterator   it;
-
-        tmp_location = object.getArray()["locations"].getObject();
-        for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
-            _locations.push_back(it->getString());
-        }
-
-    }
+//
+//    if (object.getInt().find("port") != object.getInt().end())
+//        _port = object.getInt()["port"];
+//    if (object.getInt().find("client_max_body_size") != object.getInt().end())
+//        _clt_body_size = object.getInt()["client_max_body_size"];
+//
+//
+//    if (object.getArray().find("address") != object.getArray().end())
+//        _address = object.getArray()["address"].getString();
+//    if (object.getArray().find("disabled_methods") != object.getArray().end())
+//        _disabled_methods = object.getArray()["disabled_methods"].getString();
+//
+//    if (object.getObject().find("error_pages") != object.getObject().end())
+//        _error_pages = object.getObject()["error_pages"].getString();
+//
+//    if (object.getArray().find("locations") != object.getArray().end()) {
+//
+//        std::vector<Object>             tmp_location;
+//        std::vector<Object>::iterator   it;
+//
+//        tmp_location = object.getArray()["locations"].getObject();
+//        for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
+//            _locations.push_back(it->getString());
+//        }
+//
+//    }
 
 }
 
