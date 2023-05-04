@@ -31,7 +31,8 @@ public:
 
 protected:
     /* CFG UTILS */
-    void    assignConfig(Object & object);
+    void    assignDefaultConfig(Object & object);
+    void    assignNewConfig(Object & object);
 
 
 private:

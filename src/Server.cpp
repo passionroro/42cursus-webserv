@@ -5,7 +5,7 @@
 Server::Server(Object & default_obj) {
 
     std::cout << "Server default constructor." << std::endl;
-    assignConfig(default_obj);
+    assignDefaultConfig(default_obj);
 
 }
 
@@ -14,47 +14,103 @@ Server::Server(Object & default_obj, Object & object) {
 
     std::cout << "Server overwrite constructor." << std::endl;
 
-    assignConfig(default_obj);
-    assignConfig(object);
+    assignDefaultConfig(default_obj);
+    assignNewConfig(object);
 
 }
 
 
-// Assign every attribute from the Object "server" (config) into the class Server
-// As we use the `operator[]` to access the elements, we need to check if they exist using `find`
-void Server::assignConfig(Object & object) {
+void Server::assignDefaultConfig(Object &object) {
+
+    std::cout << "Assigning default to code." << std::endl;
+
+    _server_name = object.getString()["server_name"];
+    _port = object.getInt()["port"];
+    _clt_body_size = object.getInt()["client_max_body_size"];
+    _auto_index = object.getBool()["auto_index"];
+
+    _address = object.getArray()["address"].getString();
+    _disabled_methods = object.getArray()["disabled_methods"].getString();
+
+    _error_pages = object.getObject()["error_pages"].getString();
+
+    std::vector<Object>             tmp_location;
+    std::vector<Object>::iterator   it;
+
+    tmp_location = object.getArray()["locations"].getObject();
+    for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
+        _locations.push_back(it->getString());
+    }
+
+}
+
+void Server::assignNewConfig(Object & object) {
 
     std::cout << "Assigning object to code." << std::endl;
 
     if (object.getString().find(std::string("server_name")) != object.getString().end())
         _server_name = object.getString()["server_name"];
-
     if (object.getInt().find(std::string("port")) != object.getInt().end())
         _port = object.getInt()["port"];
     if (object.getInt().find(std::string("client_max_body_size")) != object.getInt().end())
         _clt_body_size = object.getInt()["client_max_body_size"];
-
-
+    if (object.getBool().find(std::string("auto_index")) != object.getBool().end())
+        _auto_index = object.getBool()["auto_index"];
     if (object.getArray().find(std::string("address")) != object.getArray().end())
         _address = object.getArray()["address"].getString();
     if (object.getArray().find(std::string("disabled_methods")) != object.getArray().end())
         _disabled_methods = object.getArray()["disabled_methods"].getString();
 
-    if (object.getObject().find(std::string("error_pages")) != object.getObject().end())
-        _error_pages = object.getObject()["error_pages"].getString();
+    //error_pages
+    if (object.getObject().find(std::string("error_pages")) != object.getObject().end()) {
 
-    if (object.getArray().find(std::string("locations")) != object.getArray().end()) {
+        std::map<std::string, std::string>  tmp = object.getObject()["error_pages"].getString();
+        std::map<std::string, std::string>::iterator it;
 
-        std::vector<Object>             tmp_location;
-        std::vector<Object>::iterator   it;
-
-        tmp_location = object.getArray()["locations"].getObject();
-        for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
-            _locations.push_back(it->getString());
+        for (it = _error_pages.begin(); it != _error_pages.end(); it++) {
+            std::map<std::string, std::string>::iterator search;
+            search = tmp.find(std::string(it->first));
+            if (search != tmp.end())
+                it->second = search->second;
         }
 
     }
 
+    //location block
+    if (object.getArray().find(std::string("locations")) != object.getArray().end()) {
+
+        std::vector<Object>             new_loc;
+        std::vector<Object>::iterator   it;
+
+        new_loc = object.getArray()["locations"].getObject();
+        for (it = new_loc.begin() ; it != new_loc.end() ; it++) {
+
+            std::map<std::string, std::string>   new_content = it->getString();
+            std::map<std::string, std::string>::iterator search;
+
+            search = new_content.find(std::string("path"));
+            if (search == new_content.end()) {
+                std::cerr << "cfg: location block needs a path: no creation." << std::endl;
+                break ;
+            }
+
+            if (search->second != "/" && search->second != "/cgi-bin")
+                _locations.push_back(new_content);
+            else {
+
+                std::vector< std::map<std::string, std::string> >::iterator def_it;
+                for (def_it = _locations.begin(); def_it != _locations.end(); def_it++) {
+
+                    std::map<std::string, std::string>::iterator str_it;
+                    for (str_it = def_it->begin(); str_it != def_it->end(); def_it++) {
+                        search = new_content.find(std::string(str_it->first));
+                        if (search != new_content.end())
+                            str_it->second = search->second;
+                    }
+                }
+            }
+        }
+    }
 }
 
 

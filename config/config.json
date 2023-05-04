@@ -25,7 +25,13 @@
       "address": ["127.0.0.1", "localhost"],
       "port": 8082,
       "root": "/home/www",
-      "disabled_methods": ["GET", "POST"]
+      "disabled_methods": ["GET", "POST"],
+      "locations": [
+        {
+          "path": "/",
+          "client_max_body_size": "zebi"
+        }
+      ]
     },
     {
       "address": ["127.0.0.1", "localhost"],
