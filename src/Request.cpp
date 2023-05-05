@@ -7,6 +7,7 @@ Request::Request(void)
 Request::Request(std::string request, std::vector<Object> &locations)
 {
 	parseRequest(request);
+    (void)locations;
 }
 
 Request::~Request() {}
@@ -54,14 +55,14 @@ int Request::parseHeaders(std::string &Request) {
 	std::string h_value;
 	size_t pos = 0;
 	size_t pos_2 = 0;
-	while ((pos = request.find(':')) != std::string::npos) {
-		h_key = (request.substr(0, pos));
-		request.erase(0, pos + 1);
-		pos_2 = request.find('\n');
-		h_value = (request.substr(0, pos_2));
+	while ((pos = Request.find(':')) != std::string::npos) {
+		h_key = (Request.substr(0, pos));
+		Request.erase(0, pos + 1);
+		pos_2 = Request.find('\n');
+		h_value = (Request.substr(0, pos_2));
 		if (h_value[0] == ' ')
 			h_value.erase(0, 1);
-		request.erase(0,pos_2 + 1);
+		Request.erase(0,pos_2 + 1);
 		if (h_key.find(' ') != std::string::npos)
       setStatus("400");
     _request_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
