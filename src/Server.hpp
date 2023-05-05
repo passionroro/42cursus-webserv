@@ -8,6 +8,7 @@
 typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
 
+typedef std::vector<std::map<std::string, std::string> > Locations;
 
 class	Server {
 
@@ -45,7 +46,7 @@ private:
     std::vector<std::string>    _address;
     std::vector<std::string>    _disabled_methods;
     std::map<std::string, std::string>  _error_pages;
-    std::vector< std::map<std::string, std::string> > _locations;
+    Locations _locations;
 
     /* SERVER UTILS */
     unsigned int	_host; //still useful ?
