@@ -18,6 +18,8 @@
 # include <vector>
 # include <map>
 # include <list>
+# include <set>
+
 
 # define SERVER_BACKLOG 1000
 # define BUFSIZE 4096
@@ -27,4 +29,6 @@ class	Config;
 class	Request;
 class	Response;
 void    error(std::string msg);
+std::string trim(std::string string, char to_erase);
+std::vector<std::string>	split(std::string string, char delimiter);
 #endif

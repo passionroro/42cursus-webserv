@@ -4,6 +4,7 @@
 # include "webserv.hpp"
 # include "config/Config.hpp"
 
+
 class Request {
 
 public:
@@ -12,15 +13,18 @@ public:
 	Request(std::string request, std::vector<Object> &location);
 	virtual ~Request();
 	
-	int 	is_valid(std::string &Request);
-	bool	check_path(std::string s);
-	int 	parse_headers(std::string &Request);
+	int 	parseRequest(std::string &Request);
+//	bool	check_path(std::string s);
+	int 	parseHeaders(std::string &Request);
 
 	std::string	buildPath(void);
 
 	std::string getStatus() const;
 	std::string getBody() const;
 	std::string getPath() const;
+	void 		checkMethod();
+	void 		checkPath();
+	void		setStatus(std::string statusCode);
 
 protected:
 
@@ -36,5 +40,4 @@ private:
 	std::string							_request_body;
 	std::string 						_status;
 };
-
 #endif
