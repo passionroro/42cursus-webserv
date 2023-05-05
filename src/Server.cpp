@@ -1,9 +1,132 @@
 #include "Server.hpp"
 
-Server::Server(unsigned int host, short port) : _host(host), _port(port)
-{
+/* CONSTRUCTORS */
+// Server constructor when no config file is given
+Server::Server(Object & default_obj) {
+
+    std::cout << "Server default constructor." << std::endl;
+    assignDefaultConfig(default_obj);
+
 }
 
+// Server constructor if a config file is given
+Server::Server(Object & default_obj, Object & object) {
+
+    std::cout << "Server overwrite constructor." << std::endl;
+
+    assignDefaultConfig(default_obj);
+    assignNewConfig(object);
+
+}
+
+
+void Server::assignDefaultConfig(Object &object) {
+
+    std::cout << "Assigning default to code." << std::endl;
+
+    _server_name = object.getString()["server_name"];
+    _port = object.getInt()["port"];
+    _clt_body_size = object.getInt()["client_max_body_size"];
+    _auto_index = object.getBool()["auto_index"];
+
+    _address = object.getArray()["address"].getString();
+    _disabled_methods = object.getArray()["disabled_methods"].getString();
+
+    _error_pages = object.getObject()["error_pages"].getString();
+
+    std::vector<Object>             tmp_location;
+    std::vector<Object>::iterator   it;
+
+    tmp_location = object.getArray()["locations"].getObject();
+    for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
+        _locations.push_back(it->getString());
+    }
+
+}
+
+void Server::assignNewConfig(Object & object) {
+
+    std::cout << "Assigning object to code." << std::endl;
+
+    if (object.getString().find(std::string("server_name")) != object.getString().end())
+        _server_name = object.getString()["server_name"];
+    if (object.getInt().find(std::string("port")) != object.getInt().end())
+        _port = object.getInt()["port"];
+    if (object.getInt().find(std::string("client_max_body_size")) != object.getInt().end())
+        _clt_body_size = object.getInt()["client_max_body_size"];
+    if (object.getBool().find(std::string("auto_index")) != object.getBool().end())
+        _auto_index = object.getBool()["auto_index"];
+    if (object.getArray().find(std::string("address")) != object.getArray().end())
+        _address = object.getArray()["address"].getString();
+    if (object.getArray().find(std::string("disabled_methods")) != object.getArray().end())
+        _disabled_methods = object.getArray()["disabled_methods"].getString();
+
+    //error_pages
+    if (object.getObject().find(std::string("error_pages")) != object.getObject().end()) {
+
+        std::map<std::string, std::string>  tmp = object.getObject()["error_pages"].getString();
+        std::map<std::string, std::string>::iterator it;
+
+        for (it = _error_pages.begin(); it != _error_pages.end(); it++) {
+            std::map<std::string, std::string>::iterator search;
+            search = tmp.find(std::string(it->first));
+            if (search != tmp.end())
+                it->second = search->second;
+        }
+
+    }
+
+    //location block
+    if (object.getArray().find(std::string("locations")) != object.getArray().end()) {
+
+        std::vector<Object>             new_loc;
+        std::vector<Object>::iterator   it;
+
+        new_loc = object.getArray()["locations"].getObject();
+        for (it = new_loc.begin() ; it != new_loc.end() ; it++) {
+
+            std::map<std::string, std::string>   new_content = it->getString();
+            std::map<std::string, std::string>::iterator search;
+
+            search = new_content.find(std::string("path"));
+            if (search == new_content.end()) {
+                std::cerr << "cfg: location block needs a path: no creation." << std::endl;
+                break ;
+            }
+
+            else if (search->second != "/" && search->second != "/cgi-bin")
+                _locations.push_back(new_content);
+
+            else {
+
+                std::vector< std::map<std::string, std::string> >::iterator def_it;
+                for (def_it = _locations.begin(); def_it != _locations.end(); def_it++) {
+
+                    std::map<std::string, std::string>::iterator  search_loc;
+                    search_loc = def_it->find(std::string(search->first)); //look for the oath with the same value (either first or second)
+                    if (search_loc != def_it->end() && search_loc->second == search->second) {
+                        //iterate through every new_content, see if they exist in def_it and replace them
+                        for (search = new_content.begin(); search != new_content.end(); search++) {
+                            search_loc = def_it->find(std::string(search->first));
+                            if (search_loc != def_it->end())
+                                search_loc->second = search->second;
+                        }
+                    }
+                }
+//                    std::map<std::string, std::string>::iterator str_it;
+//                    for (str_it = def_it->begin(); str_it != def_it->end(); def_it++) {
+//                        search = new_content.find(std::string(str_it->first));
+//                        if (search != new_content.end())
+//                            str_it->second = search->second;
+//                    }
+//                }
+            }
+        }
+    }
+}
+
+
+/* FUNCTIONS */
 int	Server::setup(void)
 {
     _listen_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -59,7 +182,7 @@ int	Server::recv(void)
         std::cerr << "Error: recv" << std::endl;
         return (-1);
     }
-    _response = Response(request);
+//    _response = Response(request, _locations);
     std::cout << "Request:" << std::endl << request << std::endl;
     return (0);
 }
@@ -67,12 +190,9 @@ int	Server::recv(void)
 int	Server::send(void)
 {
     std::string	str = _response.renderString();
-    /*std::string	str = "HTTP/1.0 200 OK\r\n";
-    str += "Content-Length: 9\r\n\r\n";
-    str += "It works!";*/
 
     std::cout << "Webserv: send" << std::endl;
-    std::cout << "Response:" << std::endl << _response.renderString() << std::endl;
+    //std::cout << "Response:" << std::endl << str << std::endl;
     if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else
@@ -86,8 +206,7 @@ void	Server::close(void)
         ::close(_socket);
 }
 
-// getters
-
+/* ACCESSORS */
 unsigned int	Server::getHost(void) const { return _host; }
 short			Server::getPort(void) const { return _port; }
 int				Server::getListenFd(void) const { return _listen_fd; }

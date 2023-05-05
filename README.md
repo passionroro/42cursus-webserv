@@ -1,25 +1,22 @@
-# Config file
-The config file will define values for multiple servers.
+# Config into code
 
-![config_example.png](assets/config_example.png)
+Assigning server options from a config file to the `Server` class.
 
-## JSON structure
+If a config file is passed as argument, the `Server` will first be assigned with `default.json`, then be overwritten
+with the config file.
 
-Reading the [JSON Standard](https://www.json.org/json-en.html), we see that a JSON file can contain :
+If not, create one `Server` and assign it with `default.json`.
 
-### Objects
+## Overwriting behavior :
+- check if the key exists (server_name for example)
+- yes ? replace : skip
 
-An object is an **unordered** set of **name/value pairs**. 
-An object begins with `{` and ends with `}`. 
-Each name is followed by `:` and the name/value pairs are separated by `,`.
+![cfg_flowchart](assets/cfg_flowchart.png)
 
-### Arrays
+## Locations overwriting
 
-An array is an **ordered collection** of values. 
-An array begins with `[` and ends with `]`. 
-Values are separated by `,`.
+- check if the path inside the new location exists
+- if no path is given : skip
+- if the path doesn't exist : create a new location block
+- if the path exist : overwrite the location block
 
-### Values
-
-A value can be a string in double quotes, or a number, or true or false, or an object or an array. 
-These structures can be nested.

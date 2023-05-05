@@ -12,15 +12,12 @@ Response::Response(void)
 	readStaticPage();
 }*/
 
-Response::Response(std::string request) : Request(request)
+Response::Response(std::string request, std::vector<Object> &locations) : Request(request, locations)
 {
 	this->_status_code = "200";
 	if (_status_code == "200")
 	_status_text = "OK";
-	//_path = request.getPath();
 
-	(void)request;
-	_path = "./home/www/index.html";
 	createHeaders();
 	readStaticPage();
 	return;
@@ -29,6 +26,10 @@ Response::Response(std::string request) : Request(request)
 Response::~Response(void)
 {
 }
+
+//std::string	Response::buildPath(void)
+//{
+//}
 
 void	Response::createHeaders(void)
 {
@@ -39,6 +40,7 @@ void	Response::createHeaders(void)
 	tm.tm_zone = (char *)"GMT";
 	size = ::strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z\n", &tm);
 	_response_headers.insert(std::pair<std::string, std::string>("Date: ", buf));
+	(void)size;
 	// exemple
 	//_headers.insert(std::make_pair("Content-Length", "9"));
 }
@@ -79,9 +81,7 @@ std::string	Response::renderString(void)
 {
 	std::string	str;
 	str= "HTTP/1.1 " + _status_code + " " + _status_text  + "\r\n";
-	//str = "HTTP/1.0 200 OK\r\n";
 	appendHeaders(str);
-	//str += "It works!";
 	str += _response_body;
 	return (str);
 }

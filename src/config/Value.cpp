@@ -1,4 +1,4 @@
-#include "../../inc/Config.hpp"
+#include "Config.hpp"
 
 /* VALUE */
 std::string Value::valueIsString(std::string str, int *i) {
@@ -61,4 +61,12 @@ Object Value::valueIsObject(std::string str, int *i) {
             jsonError("object: missing separator.");
     }
     return obj;
+}
+
+void	Value::jsonError(std::string msg)
+{
+	std::string ret = "json format error: ";
+	ret.append(msg);
+	std::cout << ret.c_str() << std::endl;
+	exit(EXIT_FAILURE);
 }

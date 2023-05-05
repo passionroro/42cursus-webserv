@@ -1,4 +1,4 @@
-#include "../../inc/Config.hpp"
+#include "Config.hpp"
 
 /* OBJECT */
 void Object::parseValue(std::string str, int *i, std::string key) {
