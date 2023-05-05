@@ -2,7 +2,7 @@
   "servers": [
     {
       "address": ["127.0.0.1", "localhost"],
-      "port": 8081,
+      "port": 80,
       "root": "/home/www",
       "client_max_body_size": 0,
       "disabled_methods": [""],
@@ -23,7 +23,7 @@
     },
     {
       "address": ["127.0.0.1", "localhost"],
-      "port": 8082,
+      "port": 82,
       "root": "/home/www",
       "disabled_methods": ["GET", "POST"],
       "locations": [
@@ -35,7 +35,7 @@
     },
     {
       "address": ["127.0.0.1", "localhost"],
-      "port": 8083,
+      "port": 81,
       "root": "/home/www",
       "disabled_methods": ["GET", "DELETE"]
     }
