@@ -94,20 +94,32 @@ void Server::assignNewConfig(Object & object) {
                 break ;
             }
 
-            if (search->second != "/" && search->second != "/cgi-bin")
+            else if (search->second != "/" && search->second != "/cgi-bin")
                 _locations.push_back(new_content);
+
             else {
 
                 std::vector< std::map<std::string, std::string> >::iterator def_it;
                 for (def_it = _locations.begin(); def_it != _locations.end(); def_it++) {
 
-                    std::map<std::string, std::string>::iterator str_it;
-                    for (str_it = def_it->begin(); str_it != def_it->end(); def_it++) {
-                        search = new_content.find(std::string(str_it->first));
-                        if (search != new_content.end())
-                            str_it->second = search->second;
+                    std::map<std::string, std::string>::iterator  search_loc;
+                    search_loc = def_it->find(std::string(search->first)); //look for the oath with the same value (either first or second)
+                    if (search_loc != def_it->end() && search_loc->second == search->second) {
+                        //iterate through every new_content, see if they exist in def_it and replace them
+                        for (search = new_content.begin(); search != new_content.end(); search++) {
+                            search_loc = def_it->find(std::string(search->first));
+                            if (search_loc != def_it->end())
+                                search_loc->second = search->second;
+                        }
                     }
                 }
+//                    std::map<std::string, std::string>::iterator str_it;
+//                    for (str_it = def_it->begin(); str_it != def_it->end(); def_it++) {
+//                        search = new_content.find(std::string(str_it->first));
+//                        if (search != new_content.end())
+//                            str_it->second = search->second;
+//                    }
+//                }
             }
         }
     }
