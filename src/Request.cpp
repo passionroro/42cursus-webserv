@@ -4,7 +4,7 @@ Request::Request(void)
 {
 }
 
-Request::Request(std::string request, std::vector<Object> &locations)
+Request::Request(std::string request, std::vector<std::map<std::string, std::string> > &locations)
 {
 	parseRequest(request);
     (void)locations;
@@ -38,13 +38,16 @@ int Request::parseRequest(std::string &Request) {
 	checkMethod();
 	
 	_path = firstLine.at(1);
-	checkPath();
+//	checkPath();
 	
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
 		setStatus("400");
-	
-	std::cout << _status;
+//	std::cout << "method: " << _method <<std::endl;
+//    std::cout << "pt: " << _path <<std::endl;
+//    std::cout << "version: " << _version <<std::endl;
+//
+//    std::cout << _status<<std::endl;
 	
 	return 0;
 }

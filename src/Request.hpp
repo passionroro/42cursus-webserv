@@ -10,7 +10,7 @@ class Request {
 public:
 	
 	Request();
-	Request(std::string request, std::vector<Object> &location);
+	Request(std::string request, std::vector<std::map<std::string, std::string> > &location);
 	virtual ~Request();
 	
 	int 	parseRequest(std::string &Request);

@@ -182,6 +182,7 @@ int	Server::recv(void)
         std::cerr << "Error: recv" << std::endl;
         return (-1);
     }
+    Request test(request, _locations);
 //    _response = Response(request, _locations);
     std::cout << "Request:" << std::endl << request << std::endl;
     return (0);

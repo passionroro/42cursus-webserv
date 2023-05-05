@@ -12,7 +12,7 @@ Response::Response(void)
 	readStaticPage();
 }*/
 
-Response::Response(std::string request, std::vector<Object> &locations) : Request(request, locations)
+Response::Response(std::string request, std::vector<std::map<std::string, std::string> > &locations) : Request(request, locations)
 {
 	this->_status_code = "200";
 	if (_status_code == "200")
