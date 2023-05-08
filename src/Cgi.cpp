@@ -1,9 +1,9 @@
 #include "Cgi.hpp"
 #include <unistd.h>
 
-Cgi::Cgi(Request & request) : _r(request), _headers(request.getRequestHeaders())
+Cgi::Cgi(Request & request, Server& conf) : _r(request), _headers(request.getRequestHeaders())
 {
-	initEnv();
+	initEnv(conf);
 	execute();
 }
 
@@ -11,14 +11,37 @@ Cgi::~Cgi(void)
 {
 }
 
-void	Cgi::initEnv(void)
+void	Cgi::initEnv(Server& conf)
 {
+	(void)conf;
+
+	if (_headers.find("Auth-Scheme") != _headers.end())
+		_env["AUTH_TYPE"] = _headers["Authorization"];
+	
+	if (_headers.find("Content-Length") != _headers.end())
+		_env["CONTENT_LENGTH"] = _headers["Content-Length"];
+	
+	if (_headers.find("Content-Type") != _headers.end())
+		_env["CONTENT_TYPE"] = _headers["Content-Type"];
+
 	_env["GATEWAY_INTERFACE"] = "CGI/1.1";
+
+	// PATH_INFO
+	// PATH_TRANSLATED
+	// QUERY_STRING
+	
+	// REMOTE_ADDR
+	//
+	// REQUEST_METHOD
+	//
+	// SCRIPT_NAME = path before path info
+	//
+	// SERVER_NAME
+	//
+	// todo continue read from 4.1.15
 
 	_env["SERVER_PROTOCOL"] = "HTTP/1.1";
 
-	if (_headers.find("Content-Length") != _headers.end())
-		_env["CONTENT_LENGTH"] = _headers["Content-Length"];
 	_env["CONTENT_TYPE"] = _headers["Content-Type"];
 
 	_env["SERVER_SOFTWARE"] = "nou";

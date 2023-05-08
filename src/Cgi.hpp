@@ -8,10 +8,10 @@ class Cgi {
 
 public:
 	
-	Cgi(Request& request);
+	Cgi(Request& request, Server& server_conf);
 	virtual ~Cgi(void);
 
-	void	initEnv(void);
+	void	initEnv(Server& conf);
 	void	execute(void);
 
 	char	**getEnvv(void) const;

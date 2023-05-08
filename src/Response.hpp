@@ -20,8 +20,10 @@ public:
 	std::string	buildPath(void);
 
 	void		appendHeaders(std::string & str);
-	void		cgi(void);
+	void		cgi(Server& server_conf);
+	void		directoryListing(void);
 	int			readStaticPage(void);
+
 	std::string	renderString(void);
 
 private:
@@ -34,5 +36,7 @@ private:
 	std::string	_response_body;
 
 };
+
+bool	comp(struct dirent x, struct dirent y);
 
 #endif

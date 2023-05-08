@@ -1,16 +1,9 @@
 #include "Response.hpp"
+#include <dirent.h>
 
 Response::Response(void)
 {
 }
-
-/*Response::Response(void)
-{
-	createHeaders();
-	_path = "./index.html";
-	_path = "./index.html";
-	readStaticPage();
-}*/
 
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
@@ -19,9 +12,10 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		_status_text = "OK";
 
 	createHeaders();
-	std::cout << "yoooooo:" << _locations[1]["cgi"] << std::endl;
-	if (_locations[1]["cgi"] != "")
-		cgi();
+	if (_locations[0]["bin"] != "")
+		cgi(server_conf);
+	else if (1)
+		directoryListing();
 	else
 		readStaticPage();
 	return;
@@ -81,13 +75,60 @@ int	Response::readStaticPage(void)
 	}
 }
 
-void	Response::cgi(void)
+void	Response::cgi(Server& server_conf)
 {
-	std::cout << "cgi yaaaaaasss" << std::endl;
+	std::cout << "cgi called" << std::endl;
 
-	Cgi	cgi(*this);
+	Cgi	cgi(*this, server_conf);
 	_response_body = cgi.getRes();
 }
+
+void	Response::directoryListing(void)
+{
+	std::cout << "directory listing called" << std::endl;
+
+	std::string	path = ".";
+	DIR*	dir;
+	struct dirent*				ent;
+	std::vector<struct dirent>	entries;
+
+	dir = opendir(path.c_str());
+	if (!dir)
+		return ;
+	while ((ent = readdir(dir)) != NULL)
+		entries.push_back(*ent);
+	closedir(dir);
+
+	std::sort(entries.begin(), entries.end(), comp);
+
+	std::string	html("<!DOCTYPE html>\r\n"
+					"<html lang=\"en\">\r\n"
+					"<head>\r\n"
+					"</head>\r\n"
+					"<body>\r\n"
+					"<h1>Index of " + path + "</h1>\r\n");
+
+
+	for (unsigned long i = 0 ; i < entries.size() ; i++)
+	{
+		std::string line;
+
+		line += "<a href=\"";
+		line += path;
+		if (path[path.size() - 1] != '/')
+			line += '/';
+		line += entries[i].d_name;
+		line += "\">";
+		line += entries[i].d_name;
+		line += "</a></br>\r\n";
+		html += line;
+	}
+
+
+	html += "</body>\r\n";
+	_response_body += html;
+}
+
 
 std::string	Response::renderString(void)
 {
@@ -96,4 +137,9 @@ std::string	Response::renderString(void)
 	appendHeaders(str);
 	str += _response_body;
 	return (str);
+}
+
+bool	comp(struct dirent x, struct dirent y)
+{
+	return (std::strcmp(x.d_name, y.d_name) > 0);
 }
