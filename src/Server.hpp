@@ -9,6 +9,7 @@ typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
 
 typedef std::vector<std::map<std::string, std::string> > Locations;
+typedef std::map<std::string, std::string> MapStr;
 
 class	Server {
 
