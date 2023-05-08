@@ -3,7 +3,6 @@
 
 Cgi::Cgi(Request & request) : _r(request), _headers(request.getRequestHeaders())
 {
-	std::cout << "saluuuuuuuuuuuuuuuuut" << std::endl;
 	initEnv();
 	execute();
 }
@@ -45,6 +44,16 @@ void	Cgi::execute(void)
 	else if (pid == 0) // child
 	{
 		std::cout << "child alive" << std::endl;
+		
+		std::string	path = "cgi-bin/cgi-hello";
+		char**	arg;
+		arg = new char*[2];
+		arg[0] = new char[path.size() + 1];
+		arg[0] = ::strcpy(arg[0], path.c_str());
+		arg[1] = NULL;
+
+		std::cout << "path: " << path << std::endl;
+		std::cout << "arg: " << arg[0] << std::endl;
 
 		dup2(pipe1[0], STDIN_FILENO);
 		dup2(pipe2[1], STDOUT_FILENO);
@@ -54,14 +63,10 @@ void	Cgi::execute(void)
 		close(pipe2[0]);
 		close(pipe2[1]);
 
-		std::string	path = "cgi-bin/cgi-hello";
-		char**	arg;
-		arg = new char*[2];
-		arg[0] = new char[path.size() + 1];
-		arg[0] = ::strcpy(arg[0], path.c_str());
-		
 		execve(path.c_str(), arg, getEnvv());
 		std::cout << "child bug" << std::endl;
+		perror("yo: ");
+		exit(1);
 	}
 	else
 	{
@@ -71,14 +76,15 @@ void	Cgi::execute(void)
 		close(pipe1[1]);
 		close(pipe2[1]);
 
+		std::cout << "parent wait for " << pid << std::endl;
 		int	status;
-		wait(&status);
-		//waitpid(pid, &status, 0);
+		waitpid(pid, &status, 0);
 		if (WIFEXITED(status) && WEXITSTATUS(status))
 		{
 			// todo handle error
 			std::cout << "child exit error" << std::endl;
 		}
+		std::cout << "parent waited for " << pid << std::endl;
 
 		_res = readRes(pipe2[0]);
 		close(pipe2[0]);
@@ -93,18 +99,20 @@ void	Cgi::execute(void)
 std::string	Cgi::readRes(int fd)
 {
 	std::string	res;
-	int		bytes_read = 0;
 	int		tmp = 0;
 	char	buf[BUFSIZE];
 
+	lseek(fd, 0, SEEK_SET);
 	while ((tmp = read(fd, buf, BUFSIZE - 1)) > 0)
 	{
-		res += buf;
-		bytes_read += tmp;
+		if (tmp == -1)
+		{
+			std::cout << "Error: cgi readRes read" << std::endl;
+			return "";
+		}
+		buf[tmp] = '\0';
+		res.insert(res.length(), buf, tmp);
 	}
-	if (bytes_read == 0 || bytes_read == -1)
-		std::cout << "Error: cgi readRes read" << std::endl;
-	std::cout << res;
 	return (res);
 }
 

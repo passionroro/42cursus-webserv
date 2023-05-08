@@ -124,7 +124,7 @@ int	Server::send(void)
     std::string	str = _response.renderString();
 
     std::cout << "Webserv: send" << std::endl;
-    //std::cout << "Response:" << std::endl << str << std::endl;
+    std::cout << "Response:" << std::endl << str << std::endl;
     if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else

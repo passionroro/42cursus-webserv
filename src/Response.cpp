@@ -43,7 +43,7 @@ void	Response::createHeaders(void)
 	struct tm tm = *gmtime(&now);
 	tm.tm_zone = (char *)"GMT";
 	size = ::strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z\n", &tm);
-	_response_headers.insert(std::pair<std::string, std::string>("Date: ", buf));
+	_response_headers.insert(std::pair<std::string, std::string>("Date", buf));
 	(void)size;
 	// exemple
 	//_headers.insert(std::make_pair("Content-Length", "9"));
