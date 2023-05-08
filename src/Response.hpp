@@ -9,12 +9,14 @@ class	Response : public Request {
 public:
 
 	Response(void);
-	Response(std::string request);
+	Response(std::string request, std::vector<std::map<std::string, std::string> > &locations);
 	virtual	~Response(void);
 
 	void	getHeaders(void);
 
 	void	createHeaders(void);
+
+	std::string	buildPath(void);
 
 	void		appendHeaders(std::string & str);
 	int			readStaticPage(void);
@@ -27,7 +29,6 @@ private:
 	
 	std::map<std::string, std::string>	_response_headers;
 
-	std::string	_path;
 	std::string	_response_body;
 
 };
