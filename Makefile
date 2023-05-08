@@ -3,7 +3,7 @@ SRC_DIR			=	src
 OBJ_DIR			=	obj
 
 CXX				= 	c++
-CXXFLAGS		= 	-g -Wall -Wextra -Werror -pedantic -std=c++98
+CXXFLAGS		= 	-g3 -Wall -Wextra -Werror -pedantic -std=c++98
 INC				=	-I./inc
 
 SOURCE			=	main.cpp			\

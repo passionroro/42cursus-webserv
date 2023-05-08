@@ -1,15 +1,24 @@
 #include "WebServer.hpp"
 
-WebServer::WebServer(std::string const & config_file)
-{
-    // allocate config attributes inside Server
-    (void) config_file;
-	_servers.push_back(Server(4242, 8080));
-	std::cout << "setup: host: " << _servers[0].getHost() << std::endl;
-	std::cout << "port: " << _servers[0].getPort() << std::endl;
-	_servers.push_back(Server(8484, 12000));
-	std::cout << "setup: host: " << _servers[1].getHost() << std::endl;
-	std::cout << "port: " << _servers[1].getPort() << std::endl;
+WebServer::WebServer(Config default_cfg, Config config) {
+
+    Object default_object = default_cfg.getData().getArray()["servers"].getObject().front();
+
+    if (config.overwrite) {
+
+        std::map<std::string, Array>	map_array = config.getData().getArray();
+        Array                           array = map_array["servers"];
+
+        std::vector<Object>::iterator it;
+        for (it = array.getObject().begin() ; it != array.getObject().end() ; it++) {
+            _servers.push_back(Server(default_object, *it));
+        }
+    }
+
+    else {
+        _servers.push_back(Server(default_object));
+    }
+
 }
 
 WebServer::~WebServer(void)
