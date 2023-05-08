@@ -89,10 +89,8 @@ void Server::assignNewConfig(Object & object) {
             std::map<std::string, std::string>::iterator search;
 
             search = new_content.find(std::string("path"));
-            if (search == new_content.end()) {
+            if (search == new_content.end())
                 std::cerr << "cfg: location block needs a path: no creation." << std::endl;
-                break ;
-            }
 
             else if (search->second != "/" && search->second != "/cgi-bin")
                 _locations.push_back(new_content);
