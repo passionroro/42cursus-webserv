@@ -34,6 +34,9 @@ int Request::parseRequest(std::string &Request) {
 	checkMethod();
 	
 	_path = firstLine.at(1);
+    if (_path.find('?') != std::string::npos){
+        _path = _path.substr(0, _path.find('?'));
+    }
 	checkPath();
 	
 	_version = firstLine.at(2);
@@ -102,6 +105,8 @@ void Request::checkPath() {
         else
             setStatus("404");
     }
+    else{
+        it = _locations.begin();     _path.insert(0,it->at("root"));}
 // paths.push_back("home/www/index.html");
 	//TRY CATCH
 //	for (Locations::iterator it = _locations.begin();it != _locations.end(); it++) {
