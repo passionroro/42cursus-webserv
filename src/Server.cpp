@@ -206,7 +206,16 @@ void Server::assignNewConfig(Object & object) {
 }
 
 /* ACCESSORS */
-unsigned int	Server::getHost(void) const { return _host; }
-short			Server::getPort(void) const { return _port; }
-int				Server::getListenFd(void) const { return _listen_fd; }
-int				Server::getSocket(void) const { return _socket; }
+unsigned int	Server::getHost() const { return _host; }
+int				Server::getListenFd() const { return _listen_fd; }
+int				Server::getSocket() const { return _socket; }
+
+std::vector<std::string> Server::getAddress() const { return _address; }
+std::vector<std::string> Server::getDisabledMethods() const { return _disabled_methods; }
+
+MapStr      Server::getErrorPages() const { return _error_pages; }
+Locations   Server::getLocations() const { return _locations; }
+std::string Server::getServerName() const { return _server_name; }
+bool        Server::getAutoIndex() const { return _auto_index; }
+int         Server::getClientBodySize() const { return _clt_body_size; }
+int         Server::getPort() const { return _port; }

@@ -16,10 +16,18 @@ public:
     Server(Object & default_obj, Object & object);
 
     /* ACCESSORS */
-    unsigned int	getHost(void) const;
-    short			getPort(void) const;
-    int             getListenFd(void) const;
-    int             getSocket(void) const;
+    unsigned int	getHost() const;
+    int             getListenFd() const;
+    int             getSocket() const;
+
+    std::string getServerName() const;
+    int         getPort() const;
+    int         getClientBodySize() const;
+    bool        getAutoIndex() const;
+    MapStr      getErrorPages() const;
+    Locations   getLocations() const;
+    std::vector<std::string>    getAddress() const;
+    std::vector<std::string>    getDisabledMethods() const;
 
     /* SERVER UTILS */
     void accept(void);
