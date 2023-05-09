@@ -9,7 +9,7 @@ class	Response : public Request {
 public:
 
 	Response(void);
-	Response(std::string request, std::vector<std::map<std::string, std::string> > &locations);
+	Response(std::string request, Locations &locations);
 	virtual	~Response(void);
 
 	void	getHeaders(void);
@@ -27,7 +27,7 @@ private:
 	std::string	_status_code;
 	std::string	_status_text;
 	
-	std::map<std::string, std::string>	_response_headers;
+	MapStr	_response_headers;
 
 	std::string	_response_body;
 

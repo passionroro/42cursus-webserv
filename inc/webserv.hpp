@@ -24,6 +24,9 @@
 # define SERVER_BACKLOG 1000
 # define BUFSIZE 4096
 
+typedef std::vector<std::map<std::string, std::string> > Locations;
+typedef std::map<std::string, std::string> MapStr;
+
 class	Server;
 class	Config;
 class	Request;

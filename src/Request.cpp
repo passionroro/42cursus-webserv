@@ -4,7 +4,7 @@ Request::Request(void)
 {
 }
 
-Request::Request(std::string request, std::vector<std::map<std::string, std::string> > &locations)
+Request::Request(std::string request, Locations &locations)
 {
 	parseRequest(request);
     (void)locations;

@@ -12,7 +12,7 @@ Response::Response(void)
 	readStaticPage();
 }*/
 
-Response::Response(std::string request, std::vector<std::map<std::string, std::string> > &locations) : Request(request, locations)
+Response::Response(std::string request, Locations &locations) : Request(request, locations)
 {
 	this->_status_code = "200";
 	if (_status_code == "200")
@@ -47,7 +47,7 @@ void	Response::createHeaders(void)
 
 void	Response::appendHeaders(std::string & str)
 {
-	for (std::map<std::string, std::string>::iterator it = _response_headers.begin() ;
+	for (MapStr::iterator it = _response_headers.begin() ;
 		it != _response_headers.end() ; it++)
 	{
 		str.append(it->first + ": " + it->second + "\r\n");
