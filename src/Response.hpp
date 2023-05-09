@@ -27,7 +27,7 @@ private:
 	std::string	_status_code;
 	std::string	_status_text;
 	
-	MapStr	_response_headers;
+	MapStr      _response_headers;
 
 	std::string	_response_body;
 

@@ -8,8 +8,8 @@
 class Request {
 
 public:
-	
-	Request();
+
+    Request();
 	Request(std::string request, Locations &location);
 	virtual ~Request();
 	
@@ -28,7 +28,7 @@ public:
 
 protected:
 
-	std::vector<Object>	_locations;
+	Locations	_locations;
 	std::string		_path;
 
 private:
@@ -39,5 +39,7 @@ private:
 	std::map<std::string, std::string>	_request_headers;
 	std::string							_request_body;
 	std::string 						_status;
+
+
 };
 #endif

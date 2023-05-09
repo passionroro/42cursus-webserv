@@ -1,17 +1,13 @@
 #include "Request.hpp"
 
-Request::Request(void)
-{
-}
-
-Request::Request(std::string request, Locations &locations)
-{
+/* CONSTRUCTORS */
+Request::Request(std::string request, Locations &locations) : _locations(locations) {
 	parseRequest(request);
-    (void)locations;
 }
 
 Request::~Request() {}
 
+/* MEMBER FUNCTIONS */
 int Request::parseRequest(std::string &Request) {
 	
 	std::vector<std::string> firstLine;
@@ -38,7 +34,7 @@ int Request::parseRequest(std::string &Request) {
 	checkMethod();
 	
 	_path = firstLine.at(1);
-//	checkPath();
+	checkPath();
 	
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
@@ -74,16 +70,6 @@ int Request::parseHeaders(std::string &Request) {
 	return 0;
 }
 
-std::string Request::getStatus() const {
-	return _status;}
-
-std::string Request::getPath() const {return _path;}
-
-void		Request::setStatus(std::string statusCode)
-{
-	this->_status = statusCode;
-}
-
 void Request::checkMethod() {
 	std::vector<std::string> NotImplemented = split("CONNECT HEAD OPTIONS PUT TRACE PATCH",' ');
 	
@@ -102,18 +88,44 @@ void Request::checkMethod() {
 void Request::checkPath() {
 	std::fstream fs;
 	std::vector<std::string> paths;
+    Locations::iterator it;
+    for ( it = _locations.begin();it != _locations.end(); it++) {
+        if (_path == it->at("path"))
+            break;
+    }
+    if (it != _locations.end()) {
+        _path.append(it->at("index"));
+        _path.insert(0,it->at("root"));
+        fs.open(_path);
+        if (fs.is_open())
+            return;
+        else
+            setStatus("404");
+    }
 // paths.push_back("home/www/index.html");
-	/*//TRY CATCH
-	for (std::vector< std::map<std::string, std::string> >::iterator it = _locations.begin();it != _locations.end(); it++) {
-		paths.push_back(*it->at("root").append(_path));
-	}*/
-	for (std::vector<std::string>::iterator it = paths.begin();it != paths.end(); it++) {
-		fs.open(*it);
-		if (fs.is_open())
-			break;
-	}
-	if(!fs.is_open())
-		setStatus("404");
+	//TRY CATCH
+//	for (Locations::iterator it = _locations.begin();it != _locations.end(); it++) {
+//		paths.push_back(*it->at("root").append(_path));
+//	}
+//	for (std::vector<std::string>::iterator it = paths.begin();it != paths.end(); it++) {
+//		fs.open(*it);
+//		if (fs.is_open())
+//			break;
+//	}
+//	if(!fs.is_open())
+//		setStatus("404");
 	//ADD REDIRECTIONS
   //CLOSE PATH WHEN ??
 }
+
+/* SETTERS */
+void Request::setStatus(std::string statusCode) {
+    this->_status = statusCode;
+}
+
+/* ACCESSORS */
+std::string Request::getStatus() const { return _status; }
+std::string Request::getPath() const { return _path; }
+
+/* PRIVATE CONSTRUCTOR */
+Request::Request(void) { }
