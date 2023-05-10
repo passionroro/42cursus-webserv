@@ -75,7 +75,9 @@ int	Server::recv(void)
         std::cerr << "Error: recv" << std::endl;
         return (-1);
     }
+
     _response = Response(request, *this);
+  
     std::cout << "Request:" << std::endl << request << std::endl;
     return (0);
 }
