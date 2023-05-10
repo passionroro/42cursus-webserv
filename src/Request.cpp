@@ -64,6 +64,7 @@ int Request::parseRequest(std::string &Request) {
 	checkMethod();
 	
 	_path = firstLine.at(1);
+	_requestPath = _path;
     if (_path.find('?') != std::string::npos){
         _path = _path.substr(0, _path.find('?'));
     }
@@ -120,13 +121,15 @@ void Request::checkMethod() {
 
 void Request::checkPath() {
 	std::fstream fs;
-	std::vector<std::string> paths;
+	std::vector<std::string> location;
     Locations::iterator it;
+	
     for ( it = _locations.begin();it != _locations.end(); it++) {
         if (_path == it->at("path"))
             break;
     }
-    if (it != _locations.end()) {
+	
+	 if (it != _locations.end()) {
         _path.append(it->at("index"));
         _path.insert(0,it->at("root"));
         fs.open(_path);
@@ -135,22 +138,27 @@ void Request::checkPath() {
         else
             setStatus("404");
     }
-    else{
-        it = _locations.begin();     _path.insert(0,it->at("root"));}
-// paths.push_back("home/www/index.html");
-	//TRY CATCH
-//	for (Locations::iterator it = _locations.begin();it != _locations.end(); it++) {
-//		paths.push_back(*it->at("root").append(_path));
-//	}
-//	for (std::vector<std::string>::iterator it = paths.begin();it != paths.end(); it++) {
-//		fs.open(*it);
-//		if (fs.is_open())
-//			break;
-//	}
-//	if(!fs.is_open())
-//		setStatus("404");
-	//ADD REDIRECTIONS
-  //CLOSE PATH WHEN ??
+	
+  else
+  {
+		for (Locations::iterator ite = _locations.begin(); ite != _locations.end(); ite++) {
+			location.push_back((*ite)["root"].append(_path));
+		}
+		
+		for (std::vector<std::string>::iterator ite = location.begin(); ite != location.end(); ite++) {
+			fs.open(*ite);
+			if (fs.is_open()) {
+				_path = *ite;
+				std::cout << "Valid path is : " << _path << std::endl;
+				break;
+			}
+		}
+		if (!fs.is_open())
+			setStatus("404");
+
+	}
+//	ADD REDIRECTIONS
+//  CLOSE PATH WHEN ??
 }
 
 /* SETTERS */
@@ -163,4 +171,3 @@ std::string Request::getStatus() const { return _status; }
 std::string Request::getPath() const { return _path; }
 
 /* PRIVATE CONSTRUCTOR */
-Request::Request(void) { }
