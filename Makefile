@@ -15,6 +15,7 @@ SOURCE			=	main.cpp			\
 					config/Array.cpp	\
 					config/Value.cpp	\
 					config/Object.cpp	\
+					Cgi.cpp				\
 					utils.cpp			\
 
 

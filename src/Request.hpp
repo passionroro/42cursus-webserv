@@ -9,8 +9,8 @@ class Request {
 
 public:
 
-    Request();
-	Request(std::string request, Locations &location);
+	Request();
+	Request(std::string request, Server& server_conf);
 	virtual ~Request();
 	
 	int 	parseRequest(std::string &Request);
@@ -25,6 +25,8 @@ public:
 	void 		checkMethod();
 	void 		checkPath();
 	void		setStatus(std::string statusCode);
+
+	std::map<std::string, std::string> getRequestHeaders(void) { return _request_headers; }
 
 protected:
 

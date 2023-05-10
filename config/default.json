@@ -25,6 +25,7 @@
       	  "root": "home/www"
         },
         {
+		  "cgi": "on",
           "path": "/cgi-bin",
 		  "bin": "cgi-hello",
       	  "root": "home/cgi",
