@@ -1,16 +1,39 @@
 #include "Request.hpp"
+#include "Server.hpp"
 
 Request::Request(void)
 {
 }
 
-Request::Request(std::string request, Locations &locations)
+Request::Request(std::string request, Server& server_conf)
 {
-	parseRequest(request);
-    (void)locations;
+	_locations = server_conf.getLocations();
+	_path = buildPath();
+
+	is_valid(request);.
 }
 
 Request::~Request() {}
+
+
+std::string	Request::buildPath(void)
+{
+	std::string	path;
+
+	path = _locations[0]["root"];
+	if (_locations[0]["path"] == "/")
+	{
+		path += "/" + _locations[0]["index"];
+	}
+	else
+	{
+		// todo
+		path += "/";
+	}
+	std::cout << "location path : " << _locations[0]["path"] << std::endl;
+	std::cout << "path is : " << path << std::endl;
+	return path;
+}
 
 int Request::parseRequest(std::string &Request) {
 	
