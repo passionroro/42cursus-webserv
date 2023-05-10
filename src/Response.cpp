@@ -12,9 +12,9 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		_status_text = "OK";
 
 	createHeaders();
-	if (_locations[0]["bin"] != "")
+	if ((*_locIndex)["bin"] != "")
 		cgi(server_conf);
-	else if (1)
+	else if (_isDir)
 		directoryListing();
 	else
 		readStaticPage();
@@ -87,12 +87,12 @@ void	Response::directoryListing(void)
 {
 	std::cout << "directory listing called" << std::endl;
 
-	std::string	path = ".";
+	//std::string	path = ".";
 	DIR*	dir;
 	struct dirent*				ent;
 	std::vector<struct dirent>	entries;
 
-	dir = opendir(path.c_str());
+	dir = opendir(_path.c_str());
 	if (!dir)
 		return ;
 	while ((ent = readdir(dir)) != NULL)
@@ -106,7 +106,7 @@ void	Response::directoryListing(void)
 					"<head>\r\n"
 					"</head>\r\n"
 					"<body>\r\n"
-					"<h1>Index of " + path + "</h1>\r\n");
+					"<h1>Index of " + getRequestPath() + "</h1>\r\n");
 
 
 	for (unsigned long i = 0 ; i < entries.size() ; i++)
@@ -114,8 +114,8 @@ void	Response::directoryListing(void)
 		std::string line;
 
 		line += "<a href=\"";
-		line += path;
-		if (path[path.size() - 1] != '/')
+		line += getRequestPath();
+		if (getRequestPath()[getRequestPath().size() - 1] != '/')
 			line += '/';
 		line += entries[i].d_name;
 		line += "\">";

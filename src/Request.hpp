@@ -21,7 +21,7 @@ public:
 
 	std::string getStatus() const;
 	std::string getBody() const;
-	std::string getPath() const;
+	std::string getRequestPath() const;
 	void 		checkMethod();
 	void 		checkPath();
 	void		setStatus(std::string statusCode);
@@ -30,8 +30,11 @@ public:
 
 protected:
 
-	Locations	_locations;
-	std::string		_path;
+	Locations			_locations;
+	std::string			_path;
+	Locations::iterator	_locIndex;
+
+	bool	_isDir;
 
 private:
 
