@@ -7,12 +7,21 @@ Response::Response(void)
 
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
+
+	if (getStatus() != "200")
+	{
+		//_isDir = false;
+		_path = "home/www/error_404.html";
+		std::cout << "new path is error_404" << std::endl;
+		_locIndex = _locations.end();
+	}
+
 	this->_status_code = "200";
 	if (_status_code == "200")
 		_status_text = "OK";
 
 	createHeaders();
-	if ((*_locIndex)["bin"] != "")
+	if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();

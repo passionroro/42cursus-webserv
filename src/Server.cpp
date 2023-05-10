@@ -76,7 +76,9 @@ int	Server::recv(void)
         return (-1);
     }
 
+	std::cout << "bro?" << std::endl;
     _response = Response(request, *this);
+	std::cout << "bro?" << std::endl;
   
     std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
 		<< " ----------------------------------" << std::endl;

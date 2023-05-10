@@ -28,15 +28,11 @@ int Request::parseRequest(std::string &Request) {
 	int spaceCount = 0;
 	setStatus("200");
 	
-	std::cout << "yo" << std::endl;
-
 	firstLine = split(Request.substr(0,Request.find('\r')), ' ');
 	if (firstLine.size() != 3) {
 		setStatus("400");
 		return 0;
 	}
-	
-	std::cout << "yo" << std::endl;
 	
 	R_line = Request.substr(0,Request.find('\r'));
   
@@ -47,8 +43,6 @@ int Request::parseRequest(std::string &Request) {
 	if(spaceCount != 2)
 		setStatus("400");
 	
-	std::cout << "yo" << std::endl;
-	
 	_method = firstLine.front();
 	checkMethod();
 	
@@ -58,8 +52,6 @@ int Request::parseRequest(std::string &Request) {
         _path = _path.substr(0, _path.find('?'));
     }
 	checkPath();
-	
-	std::cout << "yo" << std::endl;
 	
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
@@ -155,7 +147,7 @@ void Request::checkPath()
 				break;
 			}
 		}
-		if (!fs.is_open())
+		if (!fs.is_open() && _isDir == false)
 			setStatus("404");
 	}
 	std::cout << "404 not found: " << _path << std::endl;
