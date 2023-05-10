@@ -3,7 +3,7 @@
     {
       "server_name": "www.example.com",
       "address": ["127.0.0.1", "localhost"],
-      "port": 8081,
+      "port": 8082,
       "client_max_body_size": 0,
       "disabled_methods": [""],
       "auto_index": true,
