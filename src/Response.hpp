@@ -31,7 +31,7 @@ private:
 	std::string	_status_code;
 	std::string	_status_text;
 	
-	std::map<std::string, std::string>	_response_headers;
+	MapStr	_response_headers;
 
 	std::string	_response_body;
 

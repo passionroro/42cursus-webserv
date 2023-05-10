@@ -1,7 +1,7 @@
 #ifndef MIME_TYPES_HPP
 # define MIME_TYPES_HPP
 
-# include "webserv.hpp"
+# include "../inc/webserv.hpp"
 
 class	MimeTypes {
 

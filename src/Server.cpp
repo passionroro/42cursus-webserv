@@ -5,7 +5,7 @@
 Server::Server(Object & default_obj) {
 
     std::cout << "Server default constructor." << std::endl;
-    assignConfig(default_obj);
+    assignDefaultConfig(default_obj);
 
 }
 
@@ -14,49 +14,10 @@ Server::Server(Object & default_obj, Object & object) {
 
     std::cout << "Server overwrite constructor." << std::endl;
 
-    assignConfig(default_obj);
-    assignConfig(object);
+    assignDefaultConfig(default_obj);
+    assignNewConfig(object);
 
 }
-
-
-// Assign every attribute from the Object "server" (config) into the class Server
-// As we use the `operator[]` to access the elements, we need to check if they exist using `find`
-void Server::assignConfig(Object & object) {
-
-    std::cout << "Assigning object to code." << std::endl;
-
-    if (object.getString().find(std::string("server_name")) != object.getString().end())
-        _server_name = object.getString()["server_name"];
-
-    if (object.getInt().find(std::string("port")) != object.getInt().end())
-        _port = object.getInt()["port"];
-    if (object.getInt().find(std::string("client_max_body_size")) != object.getInt().end())
-        _clt_body_size = object.getInt()["client_max_body_size"];
-
-
-    if (object.getArray().find(std::string("address")) != object.getArray().end())
-        _address = object.getArray()["address"].getString();
-    if (object.getArray().find(std::string("disabled_methods")) != object.getArray().end())
-        _disabled_methods = object.getArray()["disabled_methods"].getString();
-
-    if (object.getObject().find(std::string("error_pages")) != object.getObject().end())
-        _error_pages = object.getObject()["error_pages"].getString();
-
-    if (object.getArray().find(std::string("locations")) != object.getArray().end()) {
-
-        std::vector<Object>             tmp_location;
-        std::vector<Object>::iterator   it;
-
-        tmp_location = object.getArray()["locations"].getObject();
-        for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
-            _locations.push_back(it->getString());
-        }
-
-    }
-
-}
-
 
 /* FUNCTIONS */
 int	Server::setup(void)
@@ -138,8 +99,122 @@ void	Server::close(void)
         ::close(_socket);
 }
 
+/* CFG UTILS */
+void Server::assignDefaultConfig(Object &object) {
+
+    std::cout << "Assigning default to code." << std::endl;
+
+    _server_name = object.getString()["server_name"];
+    _port = object.getInt()["port"];
+    _clt_body_size = object.getInt()["client_max_body_size"];
+    _auto_index = object.getBool()["auto_index"];
+
+    _address = object.getArray()["address"].getString();
+    _disabled_methods = object.getArray()["disabled_methods"].getString();
+
+    _error_pages = object.getObject()["error_pages"].getString();
+
+    std::vector<Object>             tmp_location;
+    std::vector<Object>::iterator   it;
+
+    tmp_location = object.getArray()["locations"].getObject();
+    for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
+        _locations.push_back(it->getString());
+    }
+
+}
+
+void Server::assignNewConfig(Object & object) {
+
+    std::cout << "Assigning object to code." << std::endl;
+
+    if (object.getString().find(std::string("server_name")) != object.getString().end())
+        _server_name = object.getString()["server_name"];
+    if (object.getInt().find(std::string("port")) != object.getInt().end())
+        _port = object.getInt()["port"];
+    if (object.getInt().find(std::string("client_max_body_size")) != object.getInt().end())
+        _clt_body_size = object.getInt()["client_max_body_size"];
+    if (object.getBool().find(std::string("auto_index")) != object.getBool().end())
+        _auto_index = object.getBool()["auto_index"];
+    if (object.getArray().find(std::string("address")) != object.getArray().end())
+        _address = object.getArray()["address"].getString();
+    if (object.getArray().find(std::string("disabled_methods")) != object.getArray().end())
+        _disabled_methods = object.getArray()["disabled_methods"].getString();
+
+    //error_pages
+    if (object.getObject().find(std::string("error_pages")) != object.getObject().end()) {
+
+        MapStr  new_error_page = object.getObject()["error_pages"].getString();
+        MapStr::iterator it;
+
+        for (it = _error_pages.begin(); it != _error_pages.end(); it++) {
+            MapStr::iterator search;
+            search = new_error_page.find(std::string(it->first));
+            if (search != new_error_page.end())
+                it->second = search->second;
+        }
+
+    }
+
+    //location block
+    if (object.getArray().find(std::string("locations")) != object.getArray().end()) {
+
+        std::vector<Object>             new_loc;
+        std::vector<Object>::iterator   it;
+
+        new_loc = object.getArray()["locations"].getObject();
+
+        // Iterate through every location block from the config file.
+        for (it = new_loc.begin() ; it != new_loc.end() ; it++) {
+
+            MapStr              new_content;
+            MapStr::iterator    path;
+            Locations::iterator def_it;
+
+            new_content = it->getString();
+            path = new_content.find(std::string("path"));
+
+            if (path != new_content.end()) {
+
+                // Iterate through every DEFAULT location block.
+                for (def_it = _locations.begin(); def_it != _locations.end(); def_it++) {
+
+                    MapStr::iterator    search_loc;
+
+                    search_loc = def_it->find(std::string("path"));
+
+                    if (search_loc == def_it->end())
+                        break ;
+
+                    // If both location block share the same path, overwrite them.
+                    else if (search_loc->second == path->second) {
+                        MapStr::iterator    search;
+                        for (search = new_content.begin(); search != new_content.end(); search++) {
+                            search_loc = def_it->find(std::string(search->first));
+                            if (search_loc != def_it->end())
+                                search_loc->second = search->second;
+                        }
+                    }
+                }
+            }
+            else
+                std::cerr << "cfg: location block needs a path: no creation." << std::endl;
+
+        }
+    }
+}
+
 /* ACCESSORS */
-unsigned int	Server::getHost(void) const { return _host; }
-short			Server::getPort(void) const { return _port; }
-int				Server::getListenFd(void) const { return _listen_fd; }
-int				Server::getSocket(void) const { return _socket; }
+unsigned int	Server::getHost() const { return _host; }
+int				Server::getListenFd() const { return _listen_fd; }
+int				Server::getSocket() const { return _socket; }
+
+std::vector<std::string> Server::getAddress() const { return _address; }
+std::vector<std::string> Server::getDisabledMethods() const { return _disabled_methods; }
+
+MapStr      Server::getErrorPages() const { return _error_pages; }
+Locations   Server::getLocations() const { return _locations; }
+std::string Server::getServerName() const { return _server_name; }
+bool        Server::getAutoIndex() const { return _auto_index; }
+int         Server::getClientBodySize() const { return _clt_body_size; }
+int         Server::getPort() const { return _port; }

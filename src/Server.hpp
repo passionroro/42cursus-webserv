@@ -9,7 +9,6 @@
 typedef struct sockaddr_in saddr_in;
 typedef struct sockaddr saddr;
 
-
 class	Server {
 
 public:
@@ -18,10 +17,18 @@ public:
     Server(Object & default_obj, Object & object);
 
     /* ACCESSORS */
-    unsigned int	getHost(void) const;
-    short			getPort(void) const;
-    int             getListenFd(void) const;
-    int             getSocket(void) const;
+    unsigned int	getHost() const;
+    int             getListenFd() const;
+    int             getSocket() const;
+
+    std::string getServerName() const;
+    int         getPort() const;
+    int         getClientBodySize() const;
+    bool        getAutoIndex() const;
+    MapStr      getErrorPages() const;
+    Locations   getLocations() const;
+    std::vector<std::string>    getAddress() const;
+    std::vector<std::string>    getDisabledMethods() const;
 
     /* SERVER UTILS */
     void accept(void);
@@ -41,7 +48,8 @@ public:
 
 protected:
     /* CFG UTILS */
-    void    assignConfig(Object & object);
+    void    assignDefaultConfig(Object & object);
+    void    assignNewConfig(Object & object);
 
 
 private:
@@ -53,8 +61,8 @@ private:
     bool        _auto_index;
     std::vector<std::string>    _address;
     std::vector<std::string>    _disabled_methods;
-    std::map<std::string, std::string>  _error_pages;
-    std::vector< std::map<std::string, std::string> > _locations;
+    MapStr      _error_pages;
+    Locations   _locations;
 
     /* SERVER UTILS */
     unsigned int	_host; //still useful ?

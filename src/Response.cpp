@@ -45,7 +45,7 @@ void	Response::createHeaders(void)
 
 void	Response::appendHeaders(std::string & str)
 {
-	for (std::map<std::string, std::string>::iterator it = _response_headers.begin() ;
+	for (MapStr::iterator it = _response_headers.begin() ;
 		it != _response_headers.end() ; it++)
 	{
 		str.append(it->first + ": " + it->second + "\r\n");
