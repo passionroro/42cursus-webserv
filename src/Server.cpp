@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include <iomanip>
 
 /* CONSTRUCTORS */
 // Server constructor when no config file is given
@@ -76,9 +77,7 @@ int	Server::recv(void)
         return (-1);
     }
 
-	std::cout << "bro?" << std::endl;
     _response = Response(request, *this);
-	std::cout << "bro?" << std::endl;
   
     std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
 		<< " ----------------------------------" << std::endl;
@@ -90,7 +89,7 @@ int	Server::send(void)
     std::string	str = _response.renderString();
 
     //std::cout << "Webserv: send" << std::endl;
-    std::cout << "----------- Response: -----------" << std::endl //<< str << std::endl
+    std::cout << "----------- Response: -----------" << std::endl << _response.getResponseHead() << std::endl
 		<< "-------------------------------" << std::endl;
     if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);

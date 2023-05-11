@@ -10,9 +10,11 @@ public:
 	MimeTypes(void);
 	virtual ~MimeTypes(void);
 
+	MapStr&	getMap(void);
+
 private:
 
-	std::map<std::string, std::string>	_map;
+	MapStr	_map;
 
 
 };

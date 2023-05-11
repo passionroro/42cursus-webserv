@@ -119,19 +119,19 @@ void	WebServer::run(void)
 		//int	errno;
 		while (ret == 0)
 		{
-			_timeout.tv_sec = 3;
-			_timeout.tv_usec = 0;
+			//_timeout.tv_sec = 3;
+			//_timeout.tv_usec = 0;
 			_read = _current_read;
 			_write = _current_write;
 
 			//std::cout << "max_fd: " << _max_fd << std::endl;
-			ret = select(_max_fd + 1, &_read, &_write, NULL, &_timeout);
+			ret = select(_max_fd + 1, &_read, &_write, NULL, NULL);
 			//analyzeSets();
-			std::cout << "time" << std::endl;
+			//std::cout << "time" << std::endl;
 		}
 		if (ret > 0)
 		{
-			std::cout << "New event!" << std::endl;
+			//std::cout << "New event!" << std::endl;
 			handleRequest();
 			handleConnection();
 			handleResponse();
