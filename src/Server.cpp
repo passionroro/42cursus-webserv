@@ -182,26 +182,34 @@ void Server::assignNewConfig(Object & object) {
 
             if (path != new_content.end()) {
 
+                bool new_location = true;
+
                 // Iterate through every DEFAULT location block.
                 for (def_it = _locations.begin(); def_it != _locations.end(); def_it++) {
 
-                    MapStr::iterator    search_loc;
+                    MapStr::iterator    new_path;
 
-                    search_loc = def_it->find(std::string("path"));
+                    new_path = def_it->find(std::string("path"));
 
-                    if (search_loc == def_it->end())
+                    if (new_path == def_it->end())
                         break ;
 
                     // If both location block share the same path, overwrite them.
-                    else if (search_loc->second == path->second) {
+                    else if (new_path->second == path->second) {
                         MapStr::iterator    search;
                         for (search = new_content.begin(); search != new_content.end(); search++) {
-                            search_loc = def_it->find(std::string(search->first));
-                            if (search_loc != def_it->end())
-                                search_loc->second = search->second;
+                            new_path = def_it->find(std::string(search->first));
+                            if (new_path != def_it->end())
+                                new_path->second = search->second;
                         }
+                        new_location = false;
+                        break ;
                     }
                 }
+
+                if (new_location)
+                    _locations.push_back(new_content);
+
             }
             else
                 std::cerr << "cfg: location block needs a path: no creation." << std::endl;
