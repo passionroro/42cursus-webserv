@@ -28,7 +28,7 @@ int	Server::setup(void)
         std::cerr << "Error: socket" << std::endl;
         return (-1);
     }
-    std::cout << "socket: " << _listen_fd << std::endl;
+    //std::cout << "socket: " << _listen_fd << std::endl;
     _addr.sin_family = AF_INET;
     //_addr.sin_addr.s_addr = htonl(_host);
     _addr.sin_addr.s_addr = INADDR_ANY;
@@ -63,7 +63,7 @@ int	Server::recv(void)
     char		buf[BUFSIZE];
     std::string	request;
 
-    std::cout << "Webserv: recv" << std::endl;
+    //std::cout << "Webserv: recv" << std::endl;
     while ((tmp = ::recv(_socket, buf, BUFSIZE - 1, 0)) > 0)
     {
         request += buf;
@@ -76,9 +76,12 @@ int	Server::recv(void)
         return (-1);
     }
 
+	std::cout << "bro?" << std::endl;
     _response = Response(request, *this);
+	std::cout << "bro?" << std::endl;
   
-    std::cout << "Request:" << std::endl << request << std::endl;
+    std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
+		<< " ----------------------------------" << std::endl;
     return (0);
 }
 
@@ -86,8 +89,9 @@ int	Server::send(void)
 {
     std::string	str = _response.renderString();
 
-    std::cout << "Webserv: send" << std::endl;
-    std::cout << "Response:" << std::endl << str << std::endl;
+    //std::cout << "Webserv: send" << std::endl;
+    std::cout << "----------- Response: -----------" << std::endl //<< str << std::endl
+		<< "-------------------------------" << std::endl;
     if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else

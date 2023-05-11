@@ -1,5 +1,6 @@
 #include "Request.hpp"
 #include "Server.hpp"
+#include <dirent.h>
 
 /* CONSTRUCTORS */
 Request::Request(void)
@@ -8,8 +9,8 @@ Request::Request(void)
 
 Request::Request(std::string request, Server& server_conf)
 {
+	_isDir = false;
 	_locations = server_conf.getLocations();
-	_path = buildPath();
   
   parseRequest(request);
 
@@ -19,24 +20,6 @@ Request::Request(std::string request, Server& server_conf)
 Request::~Request() {}
 
 /* MEMBER FUNCTIONS */
-std::string	Request::buildPath(void)
-{
-	std::string	path;
-
-	path = _locations[0]["root"];
-	if (_locations[0]["path"] == "/")
-	{
-		path += "/" + _locations[0]["index"];
-	}
-	else
-	{
-		// todo
-		path += "/";
-	}
-	std::cout << "location path : " << _locations[0]["path"] << std::endl;
-	std::cout << "path is : " << path << std::endl;
-	return path;
-}
 
 int Request::parseRequest(std::string &Request) {
 	
@@ -119,44 +102,55 @@ void Request::checkMethod() {
 		setStatus("400");
 }
 
-void Request::checkPath() {
+void Request::checkPath()
+{
 	std::fstream fs;
 	std::vector<std::string> location;
     Locations::iterator it;
 	
-    for ( it = _locations.begin();it != _locations.end(); it++) {
+    for (it = _locations.begin();it != _locations.end(); it++) {
         if (_path == it->at("path"))
             break;
     }
 	
-	 if (it != _locations.end()) {
+	if (it != _locations.end()) {
         _path.append(it->at("index"));
         _path.insert(0,it->at("root"));
         fs.open(_path);
         if (fs.is_open())
+		{
+			_locIndex = it;
+			std::cout << "Valid path is : " << _path << std::endl;
             return;
+		}
         else
             setStatus("404");
     }
 	
-  else
-  {
-		for (Locations::iterator ite = _locations.begin(); ite != _locations.end(); ite++) {
-			location.push_back((*ite)["root"].append(_path));
-		}
-		
-		for (std::vector<std::string>::iterator ite = location.begin(); ite != location.end(); ite++) {
-			fs.open(*ite);
-			if (fs.is_open()) {
-				_path = *ite;
+	else
+	{
+		DIR*	dir = NULL;
+    	for (it = _locations.begin() ;it != _locations.end(); it++)
+		{
+			location.push_back((*it)["root"].append(_path));
+			
+			fs.open(location.back());
+			if (fs.is_open() || (dir = opendir(location.back().c_str())) != NULL) {
+				if (dir)
+				{
+					_isDir = true;
+					closedir(dir);
+				}
+				_path = location.back();
 				std::cout << "Valid path is : " << _path << std::endl;
+				_locIndex = it;
 				break;
 			}
 		}
-		if (!fs.is_open())
+		if (!fs.is_open() && _isDir == false)
 			setStatus("404");
-
 	}
+	std::cout << "404 not found: " << _path << std::endl;
 //	ADD REDIRECTIONS
 //  CLOSE PATH WHEN ??
 }
@@ -168,6 +162,6 @@ void Request::setStatus(std::string statusCode) {
 
 /* ACCESSORS */
 std::string Request::getStatus() const { return _status; }
-std::string Request::getPath() const { return _path; }
+std::string Request::getRequestPath() const { return _requestPath; }
 
 /* PRIVATE CONSTRUCTOR */
