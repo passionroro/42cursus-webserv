@@ -4,18 +4,19 @@
 // Server constructor when no config file is given
 Server::Server(Object & default_obj) {
 
-    std::cout << "Server default constructor." << std::endl;
     assignDefaultConfig(default_obj);
+
+    std::cout << "Server listening on " << _address[0] << ":" << _port << std::endl;
 
 }
 
 // Server constructor if a config file is given
 Server::Server(Object & default_obj, Object & object) {
 
-    std::cout << "Server overwrite constructor." << std::endl;
-
     assignDefaultConfig(default_obj);
     assignNewConfig(object);
+
+    std::cout << "Server listening on " << _address[0] << ":" << _port << std::endl;
 
 }
 
@@ -108,8 +109,6 @@ void	Server::close(void)
 /* CFG UTILS */
 void Server::assignDefaultConfig(Object &object) {
 
-    std::cout << "Assigning default to code." << std::endl;
-
     _server_name = object.getString()["server_name"];
     _port = object.getInt()["port"];
     _clt_body_size = object.getInt()["client_max_body_size"];
@@ -131,8 +130,6 @@ void Server::assignDefaultConfig(Object &object) {
 }
 
 void Server::assignNewConfig(Object & object) {
-
-    std::cout << "Assigning object to code." << std::endl;
 
     if (object.getString().find(std::string("server_name")) != object.getString().end())
         _server_name = object.getString()["server_name"];
