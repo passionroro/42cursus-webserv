@@ -19,7 +19,7 @@ public:
     /* ACCESSORS */
     unsigned int	getHost() const;
     int             getListenFd() const;
-    int             getSocket() const;
+	std::queue<int>             getSocket() const;
 
     std::string getServerName() const;
     int         getPort() const;
@@ -69,7 +69,7 @@ private:
     Response	_response;
     saddr_in    _addr;
     int			_listen_fd;
-    int			_socket;
+	std::queue<int>			_socket;
 
 private:
 

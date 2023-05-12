@@ -51,8 +51,9 @@ void	WebServer::handleResponse(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
-		//std::cout << "try response" << std::endl;
-		int	socket = _servers[i].getSocket();
+		int	socket = _servers[i].getSocket().front();
+		//std::cout << "socket handle response: " << socket << std::endl;
+		//analyzeSets();
 		if (!FD_ISSET(socket, &_write))
 			continue ;
 		std::cout << "handle response" << std::endl;
@@ -69,17 +70,19 @@ void	WebServer::handleRequest(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
-		//std::cout << "try request" << std::endl;
-		int	socket = _servers[i].getSocket();
+		int	socket = _servers[i].getSocket().front();
+		//std::cout << "socket handle request: " << socket << std::endl;
+		//analyzeSets();
 		if (!FD_ISSET(socket, &_read))
 			continue ;
 		std::cout << "handle request" << std::endl;
 
-		// todo recv request
 		if (!_servers[i].recv())
 		{
 			//_servers[i]._response(_servers[i]._request);
+			//std::cout << "socket into write: " << socket << std::endl;
 			FD_SET(socket, &_current_write);
+			//FD_CLR(socket, &_current_read);
 		}
 		else
 		{
@@ -93,15 +96,16 @@ void	WebServer::handleConnection(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
-		//std::cout << "try connection" << std::endl;
+		//analyzeSets();
 		if (!FD_ISSET(_servers[i].getListenFd(), &_read))
 			continue ;
 		std::cout << "handle connection" << std::endl;
 
 		_servers[i].accept();
-		int	socket = _servers[i].getSocket();
+		int	socket = _servers[i].getSocket().front();
 		if (socket != -1)
 		{
+			//std::cout << "socket into read: " << socket << std::endl;
 			FD_SET(socket, &_current_read);
 			if (socket > _max_fd)
 				_max_fd = socket;
@@ -116,32 +120,26 @@ void	WebServer::run(void)
 	while (1)
 	{
 		int	ret = 0;
-		//int	errno;
+
 		while (ret == 0)
 		{
-			//_timeout.tv_sec = 3;
-			//_timeout.tv_usec = 0;
 			_read = _current_read;
 			_write = _current_write;
 
-			//std::cout << "max_fd: " << _max_fd << std::endl;
 			ret = select(_max_fd + 1, &_read, &_write, NULL, NULL);
-			//analyzeSets();
-			//std::cout << "time" << std::endl;
 		}
 		if (ret > 0)
 		{
-			//std::cout << "New event!" << std::endl;
-			handleRequest();
 			handleConnection();
+			handleRequest();
 			handleResponse();
+			//analyzeSets();
 			ret = 0;
 		}
 		else
 		{
 			std::cerr << "Error: select failed ! " << strerror(errno) << std::endl;
 		}
-		//usleep(500000);
 	}
 }
 
@@ -150,6 +148,7 @@ void	WebServer::run(void)
 
 void	WebServer::analyzeSets(void)
 {
+	std::cout << "------------------------" << std::endl;
 	std::cout << "Current_read: ";
 	for (unsigned long i = 0 ; i < 1000 ; i++)
 	{
@@ -181,6 +180,7 @@ void	WebServer::analyzeSets(void)
 			std::cout << i << ", ";
 	}
 	std::cout << std::endl;
+	std::cout << "------------------------" << std::endl;
 }
 
 
