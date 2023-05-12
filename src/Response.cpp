@@ -17,10 +17,6 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		_locIndex = _locations.end();
 	}
 
-	this->_status_code = "200";
-	if (_status_code == "200")
-		_status_text = "OK";
-
 	createHeaders();
 	if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
 		cgi(server_conf);
@@ -28,6 +24,9 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		directoryListing();
 	else
 		readStaticPage();
+	
+	_status_code = getStatus();
+	_status_text = getStatusText();
 	return;
 }
 
@@ -46,6 +45,24 @@ void	Response::getContentType(void)
 
 	std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
 	//_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
+}
+
+std::string	Response::getStatusText(void)
+{
+	MapStr	texts;
+
+	texts.insert(std::make_pair("200", "OK"));
+	texts.insert(std::make_pair("201", "Created"));
+	texts.insert(std::make_pair("301", "Moved Permanently"));
+	texts.insert(std::make_pair("400", "Bad Request"));
+	texts.insert(std::make_pair("404", "Not found"));
+	texts.insert(std::make_pair("405", "Method Not Allowed"));
+	texts.insert(std::make_pair("409", "Conflict"));
+	texts.insert(std::make_pair("500", "Internal Server Error"));
+	texts.insert(std::make_pair("501", "Not Implemented"));
+
+	return (texts[getStatus()]);
+
 }
 
 void	Response::createHeaders(void)

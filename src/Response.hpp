@@ -24,6 +24,8 @@ public:
 	void		directoryListing(void);
 	int			readStaticPage(void);
 
+	std::string	getStatusText(void);
+
 	std::string	renderString(void);
 
 	void	getContentType(void);
