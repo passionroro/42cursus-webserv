@@ -28,7 +28,7 @@ private:
 	fd_set	_read;
 	fd_set	_write;
 
-	struct timeval	_timeout;
+	//struct timeval	_timeout;
 
 	std::vector<Server>	_servers;
 

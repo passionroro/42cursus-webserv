@@ -6,7 +6,7 @@ MimeTypes::~MimeTypes(void)
 
 MimeTypes::MimeTypes(void)
 {
-	std::ifstream	in("mime.types");
+	std::ifstream	in("config/mime.types");
 	std::string		line;
 
 	if (!in.is_open())
@@ -26,9 +26,18 @@ MimeTypes::MimeTypes(void)
 	in.close();
 }
 
-/*int	main(void)
+MapStr&	MimeTypes::getMap(void)
+{
+	return _map;
+}
+
+/*
+int	main(void)
 {
 	MimeTypes	test;
+
+	for (MapStr::iterator it = test.getMap().begin() ; it != test.getMap().end() ; it++)
+		std::cout << it->first << ": " << it->second << std::endl;
 
 	return (0);
 }*/

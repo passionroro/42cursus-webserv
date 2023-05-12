@@ -26,6 +26,10 @@ public:
 
 	std::string	renderString(void);
 
+	void	getContentType(void);
+
+	std::string&	getResponseHead(void)		{ return _response_head; }
+
 private:
 
 	std::string	_status_code;
@@ -33,6 +37,7 @@ private:
 	
 	MapStr      _response_headers;
 
+	std::string	_response_head;
 	std::string	_response_body;
 
 };

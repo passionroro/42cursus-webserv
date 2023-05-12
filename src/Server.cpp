@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include <iomanip>
 
 /* CONSTRUCTORS */
 // Server constructor when no config file is given
@@ -54,7 +55,7 @@ void	Server::accept(void)
         fcntl(socket, F_SETFL, O_NONBLOCK);
     else
         std::cerr << "Error: accept" << std::endl;
-    _socket = socket;
+    _socket.push(socket);
 }
 
 int	Server::recv(void)
@@ -65,7 +66,7 @@ int	Server::recv(void)
     std::string	request;
 
     //std::cout << "Webserv: recv" << std::endl;
-    while ((tmp = ::recv(_socket, buf, BUFSIZE - 1, 0)) > 0)
+    while ((tmp = ::recv(_socket.front(), buf, BUFSIZE - 1, 0)) > 0)
     {
         request += buf;
         bytes_read += tmp;
@@ -77,9 +78,7 @@ int	Server::recv(void)
         return (-1);
     }
 
-	std::cout << "bro?" << std::endl;
     _response = Response(request, *this);
-	std::cout << "bro?" << std::endl;
   
     std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
 		<< " ----------------------------------" << std::endl;
@@ -91,9 +90,9 @@ int	Server::send(void)
     std::string	str = _response.renderString();
 
     //std::cout << "Webserv: send" << std::endl;
-    std::cout << "----------- Response: -----------" << std::endl //<< str << std::endl
+    std::cout << "----------- Response: -----------" << std::endl << _response.getResponseHead() << std::endl
 		<< "-------------------------------" << std::endl;
-    if ((::send(_socket, str.c_str(), str.size(), 0)) < 0)
+    if ((::send(_socket.front(), str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else
         return (0);
@@ -102,8 +101,11 @@ int	Server::send(void)
 void	Server::close(void)
 {
     std::cout << "Webserv: close" << std::endl;
-    if (_socket > 0)
-        ::close(_socket);
+    if (_socket.front() > 0)
+	{
+        ::close(_socket.front());
+		_socket.pop();
+	}
 }
 
 /* CFG UTILS */
@@ -218,7 +220,7 @@ void Server::assignNewConfig(Object & object) {
 /* ACCESSORS */
 unsigned int	Server::getHost() const { return _host; }
 int				Server::getListenFd() const { return _listen_fd; }
-int				Server::getSocket() const { return _socket; }
+std::queue<int>				Server::getSocket() const { return _socket; }
 
 std::vector<std::string> Server::getAddress() const { return _address; }
 std::vector<std::string> Server::getDisabledMethods() const { return _disabled_methods; }

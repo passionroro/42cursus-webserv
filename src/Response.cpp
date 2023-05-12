@@ -1,4 +1,5 @@
 #include "Response.hpp"
+#include "MimeTypes.hpp"
 #include <dirent.h>
 
 Response::Response(void)
@@ -38,6 +39,15 @@ Response::~Response(void)
 //{
 //}
 
+void	Response::getContentType(void)
+{
+	// TODO real function, with mimetype
+	MimeTypes	mt;
+
+	std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
+	//_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
+}
+
 void	Response::createHeaders(void)
 {
 	int size;
@@ -45,11 +55,12 @@ void	Response::createHeaders(void)
 	time_t now = time(0);
 	struct tm tm = *gmtime(&now);
 	tm.tm_zone = (char *)"GMT";
-	size = ::strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z\n", &tm);
+	size = ::strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+	_response_headers.insert(std::make_pair("Server", "42-WebServ"));
 	_response_headers.insert(std::pair<std::string, std::string>("Date", buf));
+
+	getContentType();
 	(void)size;
-	// exemple
-	//_headers.insert(std::make_pair("Content-Length", "9"));
 }
 
 void	Response::appendHeaders(std::string & str)
@@ -59,7 +70,7 @@ void	Response::appendHeaders(std::string & str)
 	{
 		str.append(it->first + ": " + it->second + "\r\n");
 	}
-	//str += "\r\n";
+	str += "\r\n";
 }
 
 int	Response::readStaticPage(void)
@@ -142,9 +153,9 @@ void	Response::directoryListing(void)
 std::string	Response::renderString(void)
 {
 	std::string	str;
-	str= "HTTP/1.1 " + _status_code + " " + _status_text  + "\r\n";
-	appendHeaders(str);
-	str += _response_body;
+	_response_head = "HTTP/1.1 " + _status_code + " " + _status_text  + "\r\n";
+	appendHeaders(_response_head);
+	str = _response_head + _response_body;
 	return (str);
 }
 

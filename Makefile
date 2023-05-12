@@ -16,6 +16,7 @@ SOURCE			=	main.cpp			\
 					config/Value.cpp	\
 					config/Object.cpp	\
 					Cgi.cpp				\
+					MimeTypes.cpp		\
 					utils.cpp			\
 
 

@@ -125,7 +125,7 @@ std::string	Cgi::readRes(int fd)
 	int		tmp = 0;
 	char	buf[BUFSIZE];
 
-	lseek(fd, 0, SEEK_SET);
+	//lseek(fd, 0, SEEK_SET);
 	while ((tmp = read(fd, buf, BUFSIZE - 1)) > 0)
 	{
 		if (tmp == -1)

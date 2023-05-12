@@ -25,8 +25,8 @@
       	  "root": "home/www"
         },
         {
-		  "cgi": "on",
           "path": "/cgi-bin",
+		  "index": "index.php",
 		  "bin": "cgi-hello",
       	  "root": "home/cgi",
           "client_max_body_size": "2000000"
