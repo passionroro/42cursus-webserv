@@ -5,6 +5,8 @@ body {
     background: ghostwhite;
 }
 
+
+
 .center {
     position: relative;
     display: flex;
@@ -175,6 +177,33 @@ nav a:hover {
 .fullwrap:hover .fullcap {
     visibility: visible; opacity: 1;
 }
+
+/* codes grid */
+.parent {
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 15px;
+    grid-row-gap: 0px;
+}
+
+.div1 { grid-area: 1 / 1 / 2 / 2; }
+.div2 { grid-area: 1 / 2 / 2 / 3; }
+.div3 { grid-area: 1 / 3 / 2 / 4; }
+.div4 { grid-area: 1 / 4 / 2 / 5; }
+
+input[type=submit] {
+    background-color: #000000;
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 25px;
+}
+
 
 @media (min-width: 500px) {
     .grid { grid-template-columns: repeat(2, 1fr); }
