@@ -11,9 +11,8 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 
 	if (getStatus() != "200")
 	{
-		//_isDir = false;
 		_path = "home/www/error_404.html";
-		std::cout << "new path is error_404" << std::endl;
+		//std::cout << "new path is error_404" << std::endl;
 		_locIndex = _locations.end();
 	}
 
@@ -36,8 +35,22 @@ Response::~Response(void)
 
 void	Response::getContentType(void)
 {
-	// TODO real function, with mimetype
 	MimeTypes	mt;
+
+	if (mt.getMap().find("html") == mt.getMap().end())
+		return ;
+	
+	std::string	extension;
+
+	size_t	start = _path.find_last_of('.');
+	if (start == _path.npos || start == _path.size() - 1)
+		return ;
+	extension = _path.substr(start + 1);
+	_response_headers.insert(std::make_pair("Content-Type", mt.getMap()[extension]));
+
+
+
+
 
 	//std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
 	//_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
@@ -45,6 +58,13 @@ void	Response::getContentType(void)
 
 void	Response::getContentLength(void)
 {
+	std::stringstream	sstream;
+	std::string	len;
+
+	sstream << _response_body.size();
+	sstream >> len;
+
+	_response_headers.insert(std::make_pair("Content-Length", len));
 }
 
 std::string	Response::getStatusText(void)

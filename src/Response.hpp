@@ -29,6 +29,7 @@ public:
 	std::string	renderString(void);
 
 	void	getContentType(void);
+	void	getContentLength(void);
 
 	std::string&	getResponseHead(void)		{ return _response_head; }
 
