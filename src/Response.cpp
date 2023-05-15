@@ -145,7 +145,6 @@ void	Response::directoryListing(void)
 					"<body>\r\n"
 					"<h1>Index of " + getRequestPath() + "</h1>\r\n");
 
-
 	for (unsigned long i = 0 ; i < entries.size() ; i++)
 	{
 		std::string line;

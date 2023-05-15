@@ -30,7 +30,6 @@ int	Server::setup(void)
         std::cerr << "Error: socket" << std::endl;
         return (-1);
     }
-    //std::cout << "socket: " << _listen_fd << std::endl;
     _addr.sin_family = AF_INET;
     //_addr.sin_addr.s_addr = htonl(_host);
     _addr.sin_addr.s_addr = INADDR_ANY;
@@ -65,16 +64,22 @@ int	Server::recv(void)
     char		buf[BUFSIZE];
     std::string	request;
 
-    //std::cout << "Webserv: recv" << std::endl;
+	if (!_socket.size())
+		return (1);
     while ((tmp = ::recv(_socket.front(), buf, BUFSIZE - 1, 0)) > 0)
     {
         request += buf;
         bytes_read += tmp;
     }
     buf[BUFSIZE - 1] = '\0';
-    if (bytes_read == 0 || bytes_read == -1)
+    if (bytes_read == 0)
     {
-        std::cerr << "Error: recv" << std::endl;
+        std::cerr << "t-as rien lu bro" << std::endl;
+        return (1);
+    }
+    if (bytes_read == -1)
+    {
+        std::cerr << "Error: recv: " << strerror(errno) << std::endl;
         return (-1);
     }
 
@@ -101,7 +106,7 @@ int	Server::send(void)
 void	Server::close(void)
 {
     std::cout << "Webserv: close" << std::endl;
-    if (_socket.front() > 0)
+    if (_socket.size() && _socket.front() > 0)
 	{
         ::close(_socket.front());
 		_socket.pop();
