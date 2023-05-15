@@ -17,7 +17,6 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		_locIndex = _locations.end();
 	}
 
-	createHeaders();
 	if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
 		cgi(server_conf);
 	else if (_isDir)
@@ -25,6 +24,7 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 	else
 		readStaticPage();
 	
+	createHeaders();
 	_status_code = getStatus();
 	_status_text = getStatusText();
 	return;
@@ -34,17 +34,17 @@ Response::~Response(void)
 {
 }
 
-//std::string	Response::buildPath(void)
-//{
-//}
-
 void	Response::getContentType(void)
 {
 	// TODO real function, with mimetype
 	MimeTypes	mt;
 
-	std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
+	//std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
 	//_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
+}
+
+void	Response::getContentLength(void)
+{
 }
 
 std::string	Response::getStatusText(void)
@@ -77,6 +77,7 @@ void	Response::createHeaders(void)
 	_response_headers.insert(std::pair<std::string, std::string>("Date", buf));
 
 	getContentType();
+	getContentLength();
 	(void)size;
 }
 
