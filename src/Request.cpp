@@ -150,7 +150,7 @@ void Request::checkPath()
 		if (!fs.is_open() && _isDir == false)
 			setStatus("404");
 	}
-	std::cout << "404 not found: " << _path << std::endl;
+	//std::cout << "404 not found: " << _path << std::endl;
 //	ADD REDIRECTIONS
 //  CLOSE PATH WHEN ??
 }

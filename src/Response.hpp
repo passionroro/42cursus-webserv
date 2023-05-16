@@ -24,9 +24,12 @@ public:
 	void		directoryListing(void);
 	int			readStaticPage(void);
 
+	std::string	getStatusText(void);
+
 	std::string	renderString(void);
 
 	void	getContentType(void);
+	void	getContentLength(void);
 
 	std::string&	getResponseHead(void)		{ return _response_head; }
 

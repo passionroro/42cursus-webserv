@@ -11,23 +11,21 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 
 	if (getStatus() != "200")
 	{
-		//_isDir = false;
 		_path = "home/www/error_404.html";
-		std::cout << "new path is error_404" << std::endl;
+		//std::cout << "new path is error_404" << std::endl;
 		_locIndex = _locations.end();
 	}
 
-	this->_status_code = "200";
-	if (_status_code == "200")
-		_status_text = "OK";
-
-	createHeaders();
 	if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();
 	else
 		readStaticPage();
+	
+	createHeaders();
+	_status_code = getStatus();
+	_status_text = getStatusText();
 	return;
 }
 
@@ -35,17 +33,56 @@ Response::~Response(void)
 {
 }
 
-//std::string	Response::buildPath(void)
-//{
-//}
-
 void	Response::getContentType(void)
 {
-	// TODO real function, with mimetype
 	MimeTypes	mt;
 
-	std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
+	if (mt.getMap().find("html") == mt.getMap().end())
+		return ;
+	
+	std::string	extension;
+
+	size_t	start = _path.find_last_of('.');
+	if (start == _path.npos || start == _path.size() - 1)
+		return ;
+	extension = _path.substr(start + 1);
+	_response_headers.insert(std::make_pair("Content-Type", mt.getMap()[extension]));
+
+
+
+
+
+	//std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
 	//_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
+}
+
+void	Response::getContentLength(void)
+{
+	std::stringstream	sstream;
+	std::string	len;
+
+	sstream << _response_body.size();
+	sstream >> len;
+
+	_response_headers.insert(std::make_pair("Content-Length", len));
+}
+
+std::string	Response::getStatusText(void)
+{
+	MapStr	texts;
+
+	texts.insert(std::make_pair("200", "OK"));
+	texts.insert(std::make_pair("201", "Created"));
+	texts.insert(std::make_pair("301", "Moved Permanently"));
+	texts.insert(std::make_pair("400", "Bad Request"));
+	texts.insert(std::make_pair("404", "Not found"));
+	texts.insert(std::make_pair("405", "Method Not Allowed"));
+	texts.insert(std::make_pair("409", "Conflict"));
+	texts.insert(std::make_pair("500", "Internal Server Error"));
+	texts.insert(std::make_pair("501", "Not Implemented"));
+
+	return (texts[getStatus()]);
+
 }
 
 void	Response::createHeaders(void)
@@ -60,6 +97,7 @@ void	Response::createHeaders(void)
 	_response_headers.insert(std::pair<std::string, std::string>("Date", buf));
 
 	getContentType();
+	getContentLength();
 	(void)size;
 }
 
@@ -127,7 +165,6 @@ void	Response::directoryListing(void)
 					"</head>\r\n"
 					"<body>\r\n"
 					"<h1>Index of " + getRequestPath() + "</h1>\r\n");
-
 
 	for (unsigned long i = 0 ; i < entries.size() ; i++)
 	{
