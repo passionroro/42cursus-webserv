@@ -51,8 +51,8 @@ void	WebServer::handleResponse(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
-		if (_servers[i].getSocket().size() == 0)
-			continue ;
+    if (_servers[i].getSocket().empty())
+        continue;
 		int	socket = _servers[i].getSocket().front();
 		//std::cout << "socket handle response: " << socket << std::endl;
 		//analyzeSets();
@@ -72,8 +72,9 @@ void	WebServer::handleRequest(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
-		if (_servers[i].getSocket().size() == 0)
-			continue ;
+
+    if (_servers[i].getSocket().empty())
+      continue;
 		int	socket = _servers[i].getSocket().front();
 		//std::cout << "socket handle request: " << socket << std::endl;
 		//analyzeSets();
