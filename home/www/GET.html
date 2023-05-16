@@ -42,13 +42,26 @@
             <input type="submit" value="300">
         </form>
 
-        <form class="div3" target="./error_pages/custom_404.html">
+        <form class="div3" action="./error_pages/custom_404.html">
             <input type="submit" value="404">
         </form>
 
         <form class="div4" target="./error_pages/custom_500.html">
             <input type="submit" value="500">
         </form>
+    </div>
+    <br><br>
+
+    <div class="center">
+        <h2>Form (using get)</h2>
+        <form action="./results.txt" method="GET">
+            <label for="fname">First name:</label>
+            <input type="text" id="fname" name="fname">
+            <label for="lname">Last name:</label>
+            <input type="text" id="lname" name="lname">
+            <input type="submit" value="Submit">
+        </form>
+        <br>
     </div>
 
 
