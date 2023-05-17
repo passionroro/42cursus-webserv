@@ -13,7 +13,7 @@ public:
 	Request(std::string request, Server& server_conf);
 	virtual ~Request();
 	
-	int 	parseRequest(std::string &Request);
+	int 	parseRequest(std::string &Request, Server& conf);
 //	bool	check_path(std::string s);
 	int 	parseHeaders(std::string &Request);
 
@@ -25,6 +25,10 @@ public:
 	void 		checkMethod();
 	void 		checkPath();
 	void		setStatus(std::string statusCode);
+
+	void		checkHost(Server& conf);
+
+	void		printHeaders(void);
 
 	std::map<std::string, std::string> getRequestHeaders(void) { return _request_headers; }
 
