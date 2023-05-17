@@ -34,10 +34,8 @@ public:
     void accept(void);
     void close(void);
     int	setup(void);
-    int recv(int socket);
-    int send(int socket);
-
-	void	printSocket(void);
+    int recv(void);
+    int send(void);
 
 	/* GETTERS */
 

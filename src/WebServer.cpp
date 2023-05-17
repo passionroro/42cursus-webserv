@@ -51,14 +51,16 @@ void	WebServer::handleResponse(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
-    	if (_servers[i].getSocket().empty())
-        	continue;
+    if (_servers[i].getSocket().empty())
+        continue;
 		int	socket = _servers[i].getSocket().front();
+		//std::cout << "socket handle response: " << socket << std::endl;
+		//analyzeSets();
 		if (!FD_ISSET(socket, &_write))
 			continue ;
 		std::cout << "handle response" << std::endl;
 
-		_servers[i].send(socket); // en vrai meme chose 0 ou -1, a verifier
+		_servers[i].send(); // en vrai meme chose 0 ou -1, a verifier
 		FD_CLR(socket, &_current_write);
 		FD_CLR(socket, &_current_read);
 		_servers[i].close();
@@ -71,34 +73,33 @@ void	WebServer::handleRequest(void)
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
 
-    	if (_servers[i].getSocket().empty())
-      		continue;
+    if (_servers[i].getSocket().empty())
+      continue;
 		int	socket = _servers[i].getSocket().front();
+		//std::cout << "socket handle request: " << socket << std::endl;
+		//analyzeSets();
 		if (!FD_ISSET(socket, &_read))
 			continue ;
 		std::cout << "handle request" << std::endl;
 
-		int	tmp = _servers[i].recv(socket);
+		int	tmp = _servers[i].recv();
 
 		if (tmp == 0)
 		{
 			std::cout << "socket into write: " << socket << std::endl;
 			FD_SET(socket, &_current_write);
-			FD_CLR(socket, &_current_read);
+			//FD_CLR(socket, &_current_read);
 		}
-		else if (tmp == 1)
+		/*else if (tmp == 1)
 		{
-			FD_CLR(socket, &_current_read);
-			if (!FD_ISSET(socket, &_current_write))
-				_servers[i].close();
+			tmp = 0;
 			continue ;
-		}
+		}*/
 		else
 		{
 			FD_CLR(socket, &_current_read);
 			//FD_CLR(_servers[i].getListenFd(), &_current_read);
 			_servers[i].close();
-			continue ;
 		}
 		break ;
 	}
@@ -108,15 +109,17 @@ void	WebServer::handleConnection(void)
 {
 	for (unsigned long i = 0 ; i < _servers.size() ; i++)
 	{
+		//analyzeSets();
 		if (!FD_ISSET(_servers[i].getListenFd(), &_read))
 			continue ;
 		std::cout << "handle connection" << std::endl;
 
 		_servers[i].accept();
-		int	socket = _servers[i].getSocket().back();
+		int	socket = _servers[i].getSocket().front();
 		if (socket != -1)
 		{
 			std::cout << "socket into read: " << socket << std::endl;
+			//analyzeSets();
 			FD_SET(socket, &_current_read);
 			if (socket > _max_fd)
 				_max_fd = socket;
@@ -141,7 +144,6 @@ void	WebServer::run(void)
 		}
 		if (ret > 0)
 		{
-			std::cout << "ret: " << ret << std::endl;
 			handleConnection();
 			handleRequest();
 			handleResponse();
@@ -151,7 +153,6 @@ void	WebServer::run(void)
 		else
 		{
 			std::cerr << "Error: select failed ! " << strerror(errno) << std::endl;
-			sleep(1);
 		}
 	}
 }
@@ -193,11 +194,6 @@ void	WebServer::analyzeSets(void)
 			std::cout << i << ", ";
 	}
 	std::cout << std::endl;
-
-	for (unsigned long i = 0 ; i < _servers.size() ; i++)
-	{
-		_servers[i].printSocket();
-	}
 	std::cout << "------------------------" << std::endl;
 }
 

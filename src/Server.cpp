@@ -57,16 +57,17 @@ void	Server::accept(void)
     _socket.push(socket);
 }
 
-int	Server::recv(int socket)
+int	Server::recv(void)
 {
     int			tmp = 0;
     int			bytes_read = 0;
     char		buf[BUFSIZE];
     std::string	request;
 
-    while ((tmp = ::recv(socket, buf, BUFSIZE - 1, 0)) > 0)
+	if (!_socket.size())
+		return (1);
+    while ((tmp = ::recv(_socket.front(), buf, BUFSIZE - 1, 0)) > 0)
     {
-		buf[tmp] = '\0';
         request += buf;
         bytes_read += tmp;
     }
@@ -89,14 +90,14 @@ int	Server::recv(int socket)
     return (0);
 }
 
-int	Server::send(int socket)
+int	Server::send(void)
 {
     std::string	str = _response.renderString();
 
     //std::cout << "Webserv: send" << std::endl;
     std::cout << "----------- Response: -----------" << std::endl << _response.getResponseHead() << std::endl
 		<< "-------------------------------" << std::endl;
-    if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
+    if ((::send(_socket.front(), str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else
         return (0);
@@ -110,14 +111,6 @@ void	Server::close(void)
         ::close(_socket.front());
 		_socket.pop();
 	}
-}
-
-void	Server::printSocket(void)
-{
-	if (_socket.empty())
-		std::cout << "No socket" << std::endl;
-	else
-		std::cout << "front: " << _socket.front() << std::endl;
 }
 
 /* CFG UTILS */
