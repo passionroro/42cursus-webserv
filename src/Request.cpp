@@ -48,12 +48,14 @@ void Request::parseRequest(std::string &Request) {
     if (_path.find('?') != std::string::npos){
         _path = _path.substr(0, _path.find('?'));
     }
+
     checkPath();
 
     _version = firstLine.at(2);
     if (_version != "HTTP/1.1")
-        setStatus("400");
-
+      setStatus("400");
+    parseHeaders(Request);
+  
 }
 
 int Request::parseHeaders(std::string &Request) {
