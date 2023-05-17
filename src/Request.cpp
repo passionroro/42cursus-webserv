@@ -57,9 +57,8 @@ int Request::parseRequest(std::string &request, Server& conf) {
 
 	parseHeaders(request);
 	checkHost(conf);
-	request.erase(0, 2);
-	_request_body = request;
-	std::cout << "Body is "<< _request_body<< std::endl;
+	parseBody(Request);
+	std::cout << "Body is "<<_requestBody<< std::endl;
 //	std::cout << "method: " << _method <<std::endl;
 //    std::cout << "pt: " << _path <<std::endl;
 //    std::cout << "version: " << _version <<std::endl;
@@ -85,7 +84,7 @@ int Request::parseHeaders(std::string &request) {
 		request.erase(0, pos_2 + 1);
 		if (h_key.find(' ') != std::string::npos)
       		setStatus("400");
-    	_request_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
+    	_requestHeaders.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
 	//printHeaders();
 	_status = "200";
@@ -95,7 +94,7 @@ int Request::parseHeaders(std::string &request) {
 void	Request::printHeaders(void)
 {
 	std::cout << "request headers:" << std::endl;
-	for (MapStr::iterator it = _request_headers.begin() ; it != _request_headers.end() ; it++)
+	for (MapStr::iterator it = _requestHeaders.begin() ; it != _requestHeaders.end() ; it++)
 		std::cout << '[' << it->first << ']' << ", " << it->second << std::endl;
 }
 
@@ -105,12 +104,12 @@ void	Request::checkHost(Server& conf)
 	//printHeaders();
 	//MapStr::iterator it = _request_headers.find("Host");
 	//std::cout << "checkHost: " << it->first << ", " << it->second << std::endl;
-	if (_request_headers.find("Host") == _request_headers.end())
+	if (_requestHeaders.find("Host") == _requestHeaders.end())
 	{
 		_status = "400";
 		return ;
 	}
-	std::string	host = _request_headers.at("Host");
+	std::string	host = _requestHeaders.at("Host");
 
 	size_t sep;
 	if ((sep = host.find_first_of(':')) != host.npos)
@@ -126,7 +125,29 @@ void	Request::checkHost(Server& conf)
 			return ;
 	}
 	_status = "400";
+}
 
+void Request::parseBody(std::string &Request) {
+	Request.erase(0,2);
+	int i;
+	if (_requestHeaders["Transfer-Encoding"] == "chunked")
+	{
+		while (!Request.empty())
+		{
+			std::istringstream iss(Request.substr(0,'\r'));
+			iss >> std::hex >> i;
+			if (i == 0)
+				break;
+			_requestBody += Request.substr(Request.find('\n') + 1,i);
+			std::cout << "is :"<< _requestBody << std::endl;
+			Request.erase(0,Request.find('\n') + 1);
+			Request.erase(0,i + 2);
+		}
+	}
+	else
+	{
+		_requestBody = Request;
+	}
 }
 
 void Request::checkMethod() {
