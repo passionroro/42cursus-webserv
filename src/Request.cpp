@@ -56,6 +56,7 @@ int Request::parseRequest(std::string &Request) {
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
 		setStatus("400");
+	parseHeaders(Request);
 //	std::cout << "method: " << _method <<std::endl;
 //    std::cout << "pt: " << _path <<std::endl;
 //    std::cout << "version: " << _version <<std::endl;
