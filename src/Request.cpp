@@ -57,9 +57,8 @@ int Request::parseRequest(std::string &Request) {
 	if (_version != "HTTP/1.1")
 		setStatus("400");
 	parseHeaders(Request);
-	Request.erase(0,2);
-	_request_body = Request;
-	std::cout << "Body is "<<_request_body<< std::endl;
+	parseBody(Request);
+	std::cout << "Body is "<<_requestBody<< std::endl;
 //	std::cout << "method: " << _method <<std::endl;
 //    std::cout << "pt: " << _path <<std::endl;
 //    std::cout << "version: " << _version <<std::endl;
@@ -75,7 +74,8 @@ int Request::parseHeaders(std::string &Request) {
 	std::string h_value;
 	size_t pos = 0;
 	size_t pos_2 = 0;
-	while ((pos = Request.find(':')) != std::string::npos) {
+	while ((pos = Request.find(':')) != std::string::npos)
+	{
 		h_key = (Request.substr(0, pos));
 		Request.erase(0, pos + 1);
 		pos_2 = Request.find('\n');
@@ -84,11 +84,34 @@ int Request::parseHeaders(std::string &Request) {
 			h_value.erase(0, 1);
 		Request.erase(0,pos_2 + 1);
 		if (h_key.find(' ') != std::string::npos)
-      setStatus("400");
-    _request_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
+      		setStatus("400");
+    	_requestHeaders.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
 	_status = "200";
 	return 0;
+}
+
+void Request::parseBody(std::string &Request) {
+	Request.erase(0,2);
+	int i;
+	if (_requestHeaders["Transfer-Encoding"] == "chunked")
+	{
+		while (!Request.empty())
+		{
+			std::istringstream iss(Request.substr(0,'\r'));
+			iss >> std::hex >> i;
+			if (i == 0)
+				break;
+			_requestBody += Request.substr(Request.find('\n') + 1,i);
+			std::cout << "is :"<< _requestBody << std::endl;
+			Request.erase(0,Request.find('\n') + 1);
+			Request.erase(0,i + 2);
+		}
+	}
+	else
+	{
+		_requestBody = Request;
+	}
 }
 
 void Request::checkMethod() {

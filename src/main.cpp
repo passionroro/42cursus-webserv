@@ -10,7 +10,7 @@ int	main(int argc, char **argv)
 
 		return (1);
 	}
-
+	
     Config default_cfg;
     default_cfg.setup("config/default.json");
 
