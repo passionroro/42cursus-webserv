@@ -57,7 +57,7 @@ int Request::parseRequest(std::string &request, Server& conf) {
 
 	parseHeaders(request);
 	checkHost(conf);
-	parseBody(Request);
+	parseBody(request);
 	std::cout << "Body is "<<_requestBody<< std::endl;
 //	std::cout << "method: " << _method <<std::endl;
 //    std::cout << "pt: " << _path <<std::endl;
@@ -127,26 +127,26 @@ void	Request::checkHost(Server& conf)
 	_status = "400";
 }
 
-void Request::parseBody(std::string &Request) {
-	Request.erase(0,2);
+void Request::parseBody(std::string &request) {
+	request.erase(0,2);
 	int i;
 	if (_requestHeaders["Transfer-Encoding"] == "chunked")
 	{
-		while (!Request.empty())
+		while (!request.empty())
 		{
-			std::istringstream iss(Request.substr(0,'\r'));
+			std::istringstream iss(request.substr(0,'\r'));
 			iss >> std::hex >> i;
 			if (i == 0)
 				break;
-			_requestBody += Request.substr(Request.find('\n') + 1,i);
+			_requestBody += request.substr(request.find('\n') + 1,i);
 			std::cout << "is :"<< _requestBody << std::endl;
-			Request.erase(0,Request.find('\n') + 1);
-			Request.erase(0,i + 2);
+			request.erase(0,request.find('\n') + 1);
+			request.erase(0,i + 2);
 		}
 	}
 	else
 	{
-		_requestBody = Request;
+		_requestBody = request;
 	}
 }
 
