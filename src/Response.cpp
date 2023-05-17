@@ -11,7 +11,7 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 
 	if (getStatus() != "200")
 	{
-		_path = "home/www/error_404.html";
+		_path = "home/www/error_pages/custom_404.html";
 		//std::cout << "new path is error_404" << std::endl;
 		_locIndex = _locations.end();
 	}
