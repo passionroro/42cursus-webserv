@@ -2,17 +2,14 @@
 #include "MimeTypes.hpp"
 #include <dirent.h>
 
-Response::Response(void)
-{
-}
+Response::Response(void) {}
+Response::~Response(void) {}
 
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
 
-	if (getStatus() != "200")
-	{
+	if (getStatus() != "200") {
 		_path = "home/www/error_pages/custom_404.html";
-		//std::cout << "new path is error_404" << std::endl;
 		_locIndex = _locations.end();
 	}
 
@@ -24,13 +21,12 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		readStaticPage();
 	
 	createHeaders();
+
 	_status_code = getStatus();
 	_status_text = getStatusText();
-	return;
-}
 
-Response::~Response(void)
-{
+    return;
+
 }
 
 void	Response::getContentType(void)
@@ -48,12 +44,6 @@ void	Response::getContentType(void)
 	extension = _path.substr(start + 1);
 	_response_headers.insert(std::make_pair("Content-Type", mt.getMap()[extension]));
 
-
-
-
-
-	//std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
-	//_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
 }
 
 void	Response::getContentLength(void)
@@ -98,7 +88,7 @@ void	Response::createHeaders(void)
 
 	getContentType();
 	getContentLength();
-	(void)size;
+
 }
 
 void	Response::appendHeaders(std::string & str)

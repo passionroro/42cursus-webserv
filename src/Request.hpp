@@ -12,21 +12,20 @@ public:
 	Request();
 	Request(std::string request, Server& server_conf);
 	virtual ~Request();
-	
-	int 	parseRequest(std::string &Request);
-//	bool	check_path(std::string s);
+
+    void    parseRequest(std::string &Request);
 	int 	parseHeaders(std::string &Request);
 
 	std::string	buildPath(void);
+    void 		checkMethod();
+    void 		checkPath();
 
-	std::string getStatus() const;
-	std::string getBody() const;
+    void		setStatus(std::string statusCode);
+
+    std::string getStatus() const;
+    std::string getBody() const;
 	std::string getRequestPath() const;
-	void 		checkMethod();
-	void 		checkPath();
-	void		setStatus(std::string statusCode);
-
-	std::map<std::string, std::string> getRequestHeaders(void) { return _request_headers; }
+	MapStr      &getRequestHeaders(void) { return _request_headers; }
 
 protected:
 
@@ -38,12 +37,12 @@ protected:
 
 private:
 
-	std::string 						_method;
-	std::string 						_requestPath;
-	std::string 						_version;
-	std::map<std::string, std::string>	_request_headers;
-	std::string							_request_body;
-	std::string 						_status;
+	std::string _method;
+	std::string _requestPath;
+	std::string _version;
+	MapStr      _request_headers;
+	std::string	_request_body;
+	std::string _status;
 
 
 };
