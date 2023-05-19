@@ -25,6 +25,7 @@ public:
 	std::string getBody() const;
 	std::string getRequestPath() const;
 	void 		checkMethod();
+	void 		checkRedirection(Server& conf);
 	void 		checkPath();
 	void		setStatus(std::string statusCode);
 

@@ -19,7 +19,19 @@
         {
           "path": "/php"
         }
-      ]
+      ],
+	  "redirection": [
+		{
+			"old_url": "/old_page",
+			"new_url": "www.google.com",
+			"type": "tmp"
+		},
+		{
+			"old_url": "old_page2",
+			"new_url": "cplusplus.com",
+			"type": "permanent"
+		}
+	  ]
     },
     {
       "address": ["127.0.0.1", "localhost"],

@@ -48,7 +48,9 @@ int Request::parseRequest(std::string &request, Server& conf) {
     if (_path.find('?') != std::string::npos){
         _path = _path.substr(0, _path.find('?'));
     }
-	checkPath();
+	checkRedirection(conf);
+	if (_status[0] != '3')
+		checkPath();
 	
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
@@ -66,6 +68,46 @@ int Request::parseRequest(std::string &request, Server& conf) {
 //    std::cout << _status<<std::endl;
 	
 	return 0;
+}
+
+void	Request::checkRedirection(Server& conf)
+{
+	std::cout << "*---------- CHECK REDIRECTION --------*" << std::endl;
+
+	Redirection const& redirection = conf.getRedirection();
+	std::cout << "path: " << _path << std::endl;
+
+	std::fstream fs;
+	std::vector<std::string> location;
+    Redirection::const_iterator it;
+	
+    
+	for (it = redirection.begin() ; it != redirection.end(); it++)
+	{
+		try
+		{
+			it->at("old_url");
+			it->at("new_url");
+			it->at("type");
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Redirection badly defined" << std::endl;
+		}
+        if (_path == it->at("old_page") && it->at("type") == "permanent")
+			_status = "301";
+        if (_path == it->at("old_page") && it->at("type") == "tmp")
+			_status = "302";
+    }
+
+	/*for (it = _locations.begin();it != _locations.end(); it++) {
+        if (_path == it->at("path"))
+            break;
+    }*/
+
+
+
+	std::cout << "***------------------***" << std::endl;
 }
 
 int Request::parseHeaders(std::string &request) {
@@ -87,7 +129,6 @@ int Request::parseHeaders(std::string &request) {
     	_requestHeaders.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
 	//printHeaders();
-	_status = "200";
 	return 0;
 }
 

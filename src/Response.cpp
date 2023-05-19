@@ -8,6 +8,7 @@ Response::Response(void)
 
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
+	std::cout << "heyyy" << std::endl;
 
 	if (getStatus() != "200")
 	{
@@ -15,17 +16,20 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		//std::cout << "new path is error_404" << std::endl;
 		_locIndex = _locations.end();
 	}
-
-	if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
+	if (getStatus()[0] == '3')
+		redirectRequest();
+	else if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();
 	else
 		readStaticPage();
 	
+	std::cout << "heyyy" << std::endl;
 	createHeaders();
 	_status_code = getStatus();
 	_status_text = getStatusText();
+	std::cout << "heyyy" << std::endl;
 	return;
 }
 
@@ -131,6 +135,11 @@ int	Response::readStaticPage(void)
 		//todo default error page 404
 		return (404);
 	}
+}
+
+void	Response::redirectRequest(void)
+{
+	std::cout << "Redirect Request!" << std::endl;
 }
 
 void	Response::cgi(Server& server_conf)
