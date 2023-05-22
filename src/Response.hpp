@@ -30,7 +30,12 @@ public:
 
 	void	getContentType(void);
 	void	getContentLength(void);
-
+	
+	void 	postMethod();
+	void 	deleteMethod();
+	
+	
+	
 	std::string&	getResponseHead(void)		{ return _response_head; }
 
 private:

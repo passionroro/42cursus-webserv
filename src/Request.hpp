@@ -33,16 +33,15 @@ protected:
 	Locations			_locations;
 	std::string			_path;
 	Locations::iterator	_locIndex;
-
-	bool	_isDir;
+	std::string 		_method;
+	bool				_isDir;
+	std::string			_request_body;
 
 private:
 
-	std::string 						_method;
 	std::string 						_requestPath;
 	std::string 						_version;
 	std::map<std::string, std::string>	_request_headers;
-	std::string							_request_body;
 	std::string 						_status;
 
 

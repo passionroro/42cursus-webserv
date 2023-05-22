@@ -20,6 +20,10 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();
+	else if(_method == "POST")
+		postMethod();
+	else if(_method == "DELETE")
+		deleteMethod();
 	else
 		readStaticPage();
 	
@@ -31,6 +35,25 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 
 Response::~Response(void)
 {
+}
+
+void Response::postMethod()
+{
+	std::fstream inputstream;
+	
+	inputstream.open(_path,std::fstream::app);
+	inputstream << _request_body;
+}
+
+void Response::deleteMethod()
+{
+	if ((remove(_path.c_str()) == 0))
+		_status_code = ("204");
+	else
+	{
+		_status_text = "Delete failed";
+		_status_code = ("200");
+	}
 }
 
 void	Response::getContentType(void)
