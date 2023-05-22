@@ -38,7 +38,8 @@ protected:
 
 	Locations			_locations;
 	std::string			_path;
-	Locations::iterator	_locIndex;
+	Locations::iterator		_locIndex;
+	std::string			_newURL;
 
 	bool	_isDir;
 

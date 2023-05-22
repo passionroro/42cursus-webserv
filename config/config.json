@@ -1,6 +1,7 @@
 {
   "servers": [
     {
+	  "server_name": "webserv42.ch",
       "address": ["127.0.0.1", "localhost"],
       "port": 80,
       "root": "/home/www",
@@ -27,13 +28,14 @@
 			"type": "tmp"
 		},
 		{
-			"old_url": "old_page2",
+			"old_url": "/old_page2",
 			"new_url": "cplusplus.com",
 			"type": "permanent"
 		}
 	  ]
     },
     {
+	  "server_name": "webserv42.ch",
       "address": ["127.0.0.1", "localhost"],
       "port": 82,
       "root": "/home/www",
@@ -41,11 +43,14 @@
       "locations": [
         {
           "path": "/",
+		  "index": "index.html",
+		  "root": "home/www",
           "client_max_body_size": "zebi"
         }
       ]
     },
     {
+	  "server_name": "webserv42.ch",
       "address": ["127.0.0.1", "localhost"],
       "port": 81,
       "root": "/home/www",

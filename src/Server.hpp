@@ -42,7 +42,7 @@ public:
 
 	int	getPort(void)	{ return _port; }
 	std::string	getServerName(void)	{ return _server_name; }
-	std::vector<std::string>	getAddress(void) { return _address; }
+	std::vector<std::string>&	getAddress(void) { return _address; }
 	std::vector<std::string>	getDisabledMethods(void) { return _disabled_methods; }
 	Locations		getLocations(void) { return _locations; }
 	Redirection		getRedirection(void) { return _redirection; }
