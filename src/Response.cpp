@@ -130,12 +130,10 @@ int	Response::readStaticPage(void)
 
 void	Response::redirectRequest(void)
 {
-	std::cout << "Redirect Request!" << std::endl;
-	
-
+	std::cout << "Redirect Request called" << std::endl;
 	std::cout << "new_url: " << _newURL << std::endl;
-	_newURL.insert(0, "http://");
 	_response_headers.insert(std::make_pair("Location", _newURL));
+	_response_headers.insert(std::make_pair("Connection", "keep-alive"));
 }
 
 void	Response::cgi(Server& server_conf)
