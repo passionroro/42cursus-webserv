@@ -11,6 +11,7 @@ Request::Request(std::string request, Server& server_conf)
 {
 	_isDir = false;
 	_locations = server_conf.getLocations();
+	_disabledMethod = server_conf.getDisabledMethods();
   
   parseRequest(request);
 
@@ -98,10 +99,10 @@ void Request::checkMethod() {
 		if (_method == *it)
 			setStatus("501");
 	}
-//	for (std::vector<std::string>::iterator it = _disabled_methods.begin();it != _disabled_methods.end(); it++) {
-//		if (_method == *it)
-//			setStatus("405");
-//	}
+	for (std::vector<std::string>::iterator it = _disabledMethod.begin();it != _disabledMethod.end(); it++) {
+		if (_method == *it)
+			setStatus("405");
+	}
 	if (_method != "GET" && _method != "POST" && _method != "DELETE" && _status != "405")
 		setStatus("400");
 }

@@ -43,6 +43,7 @@ private:
 	std::string 						_version;
 	std::map<std::string, std::string>	_request_headers;
 	std::string 						_status;
+	std::vector<std::string>			_disabledMethod;
 
 
 };
