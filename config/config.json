@@ -13,7 +13,7 @@
       },
       "locations": [
         {
-          "path": "/uploads",
+          "path": "/images",
           "client_max_body_size": "2000000"
         },
         {

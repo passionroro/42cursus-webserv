@@ -20,8 +20,8 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();
-//	else if(_method == "POST")
-//		postMethod();
+	else if(_method == "POST")
+		postMethod();
 	else if(_method == "DELETE")
 		deleteMethod();
 	else
@@ -62,17 +62,19 @@ bool Response::uploadFile() {
     std::string    path = (*upload)["path"];
 //    size_t              content_length;
     std::string         filename;
-    std::string::size_type pos;
+    size_t pos = 0;
 
-    pos = _response_body.find("filename");
+    pos = _request_body.find(std::string("filename"));
     if (pos == std::string::npos)
         return false;
-
-    std::string::size_type endpos = _response_body.find('\"', pos + 10);
+	
+	pos += 10;
+	
+	size_t endpos = _request_body.find('\"', pos);
     if (endpos == std::string::npos)
         return false;
 
-    filename = _response_body.substr(pos + 9, endpos);
+    filename = _request_body.substr(pos, endpos - pos);
 
     return true;
 
@@ -83,12 +85,11 @@ void Response::postMethod()
     MapStr::iterator    it;
     bool                upload = false;
 
-    for (it = _request_headers.begin(); it != _response_headers.end(); it++) {
-        if (it->second.compare(0, 19, "multipart/form-data") == 0) {
-            upload = uploadFile();
-        }
-    }
+	if (_request_headers["Content-Type"].compare(0, 19, "multipart/form-data") == 0)
+		upload = uploadFile();
 
+	//check return values instead of boolean
+	
     if (upload == false) {
 		std::fstream inputstream;
 
