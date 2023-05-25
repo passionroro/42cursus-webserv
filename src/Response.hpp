@@ -33,7 +33,7 @@ public:
 	
 	void 	postMethod();
 	void 	deleteMethod();
-	void 	uploadImage();
+	bool 	uploadFile();
 	
 	
 	

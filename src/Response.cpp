@@ -20,8 +20,8 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();
-	else if(_method == "POST")
-		postMethod();
+//	else if(_method == "POST")
+//		postMethod();
 	else if(_method == "DELETE")
 		deleteMethod();
 	else
@@ -37,63 +37,120 @@ Response::~Response(void)
 {
 }
 
+// get the file name: Content-Disposition: form-data; name="uploaded_file"; filename="Screen Shot 2023-05-16 at 2.56.32 PM.png"
+// get the folder in locations
+// create a file in /images
+// get the file Content-Length: 1112710
+// get the clt_max_body_size in locations
+// read into a buffer
+// append into the new file
+
+bool Response::uploadFile() {
+
+    Locations::iterator upload;
+
+    for (upload = _locations.begin(); upload != _locations.end(); upload++) {
+        if (upload->at("path") == "/images") {
+            break ;
+        }
+    }
+
+    if (upload == _locations.end())
+        return false;
+
+    std::string   max_body_size = (*upload)["client_max_body_size"];
+    std::string    path = (*upload)["path"];
+//    size_t              content_length;
+    std::string         filename;
+    std::string::size_type pos;
+
+    pos = _response_body.find("filename");
+    if (pos == std::string::npos)
+        return false;
+
+    std::string::size_type endpos = _response_body.find('\"', pos + 10);
+    if (endpos == std::string::npos)
+        return false;
+
+    filename = _response_body.substr(pos + 9, endpos);
+
+    return true;
+
+}
+
 void Response::postMethod()
 {
-	if (_request_headers["Content-Type"].compare(0,5,"image")) {
-		uploadImage();
-	}
-	else
-	{
+    MapStr::iterator    it;
+    bool                upload = false;
+
+    for (it = _request_headers.begin(); it != _response_headers.end(); it++) {
+        if (it->second.compare(0, 19, "multipart/form-data") == 0) {
+            upload = uploadFile();
+        }
+    }
+
+    if (upload == false) {
 		std::fstream inputstream;
-		
+
 		inputstream.open(_path,std::fstream::app);
 		inputstream << _request_body;
-	}
-}
+    }
 
-void Response::uploadImage()
-{
-	std::vector<char> buffer;
-	
-	FILE* file_stream = fopen(_path.c_str(), "rb");
-
-	std::string file_str;
-
-	size_t file_size;
-	if (file_stream != nullptr) {
-		fseek(file_stream, 0, SEEK_END);
-		long file_length = ftell(file_stream);
-		rewind(file_stream);
-		
-		buffer.resize(file_length);
-		
-		file_size = fread(&buffer[0], 1, file_length, file_stream);
-//		if (buffer.back() != nullptr) {
-//			file_size = fread(buffer, 1, file_length, file_stream);
-//
-//			std::stringstream out;
-//
-//			for (size_t i = 0; i < file_size; i++) {
-//				out << buffer[i];
-//			}
-//
-//			std::string copy = out.str();
-//
-//			file_str = copy;
-//		}
+//	if (_request_headers["Content-Type"].second.compare(0, 19, "multipart/form-data")) {
+//		uploadFile();
 //	}
-//
-//	if(file_str.length() > 0)
+//	else
 //	{
-//		std::string file_size_str = std::to_string(file_str.length());
+//		std::fstream inputstream;
 //
-//		std::string html = "HTTP/1.1 200 Okay\r\nContent-Type: image/png; Content-Transfer-Encoding: binary; Content-Length: " + file_size_str + ";charset=ISO-8859-4 \r\n\r\n" + file_str;
-//
-//		printf("\n\nHTML -> %s\n\nfile_str -> %ld\n\n\n", html.c_str(), file_str.length());
+//		inputstream.open(_path,std::fstream::app);
+//		inputstream << _request_body;
 //	}
-//
-	}
 }
+
+//void Response::uploadImage()
+//{
+//	std::vector<char> buffer;
+//
+//	FILE* file_stream = fopen(_path.c_str(), "rb");
+//
+//	std::string file_str;
+//
+//	size_t file_size;
+//	if (file_stream != nullptr) {
+//		fseek(file_stream, 0, SEEK_END);
+//		long file_length = ftell(file_stream);
+//		rewind(file_stream);
+//
+//		buffer.resize(file_length);
+//
+//		file_size = fread(&buffer[0], 1, file_length, file_stream);
+////		if (buffer.back() != nullptr) {
+////			file_size = fread(buffer, 1, file_length, file_stream);
+////
+////			std::stringstream out;
+////
+////			for (size_t i = 0; i < file_size; i++) {
+////				out << buffer[i];
+////			}
+////
+////			std::string copy = out.str();
+////
+////			file_str = copy;
+////		}
+////	}
+////
+////	if(file_str.length() > 0)
+////	{
+////		std::string file_size_str = std::to_string(file_str.length());
+////
+////		std::string html = "HTTP/1.1 200 Okay\r\nContent-Type: image/png; Content-Transfer-Encoding: binary; Content-Length: " + file_size_str + ";charset=ISO-8859-4 \r\n\r\n" + file_str;
+////
+////		printf("\n\nHTML -> %s\n\nfile_str -> %ld\n\n\n", html.c_str(), file_str.length());
+////	}
+////
+//	}
+//}
 
 
 void Response::deleteMethod()
