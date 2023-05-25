@@ -12,10 +12,9 @@ Request::Request(std::string request, Server& server_conf)
 	_isDir = false;
 	_locations = server_conf.getLocations();
 	_disabledMethod = server_conf.getDisabledMethods();
-  
-  parseRequest(request);
+	
+	parseRequest(request);
 
-	//is_valid(request);.
 }
 
 Request::~Request() {}
@@ -57,15 +56,12 @@ int Request::parseRequest(std::string &Request) {
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
 		setStatus("400");
+	Request.erase(0,Request.find("\n", 0) + 1);
+//	std::cout << "\nREQUEST IS: "<< Request << "\n\n";
 	parseHeaders(Request);
 	Request.erase(0,2);
 	_request_body = Request;
-	std::cout << "Body is "<<_request_body<< std::endl;
-//	std::cout << "method: " << _method <<std::endl;
-//    std::cout << "pt: " << _path <<std::endl;
-//    std::cout << "version: " << _version <<std::endl;
-//
-//    std::cout << _status<<std::endl;
+//	std::cout << "Body is "<<_request_body<< std::endl;
 	
 	return 0;
 }
@@ -77,6 +73,8 @@ int Request::parseHeaders(std::string &Request) {
 	size_t pos = 0;
 	size_t pos_2 = 0;
 	while ((pos = Request.find(':')) != std::string::npos) {
+		if (Request.find("\r\n", 0) == 0)
+			break;
 		h_key = (Request.substr(0, pos));
 		Request.erase(0, pos + 1);
 		pos_2 = Request.find('\n');
@@ -87,6 +85,7 @@ int Request::parseHeaders(std::string &Request) {
 		if (h_key.find(' ') != std::string::npos)
       setStatus("400");
     _request_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
+//	std::cout << "\nHEADERS" << h_key << h_value << std::endl;
 	}
 	_status = "200";
 	return 0;

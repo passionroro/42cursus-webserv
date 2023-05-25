@@ -36,12 +36,13 @@ protected:
 	std::string 		_method;
 	bool				_isDir;
 	std::string			_request_body;
+	std::map<std::string, std::string>	_request_headers;
+
 
 private:
 
 	std::string 						_requestPath;
 	std::string 						_version;
-	std::map<std::string, std::string>	_request_headers;
 	std::string 						_status;
 	std::vector<std::string>			_disabledMethod;
 

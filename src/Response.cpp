@@ -39,11 +39,62 @@ Response::~Response(void)
 
 void Response::postMethod()
 {
-	std::fstream inputstream;
-	
-	inputstream.open(_path,std::fstream::app);
-	inputstream << _request_body;
+	if (_request_headers["Content-Type"].compare(0,5,"image")) {
+		uploadImage();
+	}
+	else
+	{
+		std::fstream inputstream;
+		
+		inputstream.open(_path,std::fstream::app);
+		inputstream << _request_body;
+	}
 }
+
+void Response::uploadImage()
+{
+	std::vector<char> buffer;
+	
+	FILE* file_stream = fopen(_path.c_str(), "rb");
+
+	std::string file_str;
+
+	size_t file_size;
+	if (file_stream != nullptr) {
+		fseek(file_stream, 0, SEEK_END);
+		long file_length = ftell(file_stream);
+		rewind(file_stream);
+		
+		buffer.resize(file_length);
+		
+		file_size = fread(&buffer[0], 1, file_length, file_stream);
+//		if (buffer.back() != nullptr) {
+//			file_size = fread(buffer, 1, file_length, file_stream);
+//
+//			std::stringstream out;
+//
+//			for (size_t i = 0; i < file_size; i++) {
+//				out << buffer[i];
+//			}
+//
+//			std::string copy = out.str();
+//
+//			file_str = copy;
+//		}
+//	}
+//
+//	if(file_str.length() > 0)
+//	{
+//		std::string file_size_str = std::to_string(file_str.length());
+//
+//		std::string html = "HTTP/1.1 200 Okay\r\nContent-Type: image/png; Content-Transfer-Encoding: binary; Content-Length: " + file_size_str + ";charset=ISO-8859-4 \r\n\r\n" + file_str;
+//
+//		printf("\n\nHTML -> %s\n\nfile_str -> %ld\n\n\n", html.c_str(), file_str.length());
+//	}
+//
+	}
+}
+
 
 void Response::deleteMethod()
 {
