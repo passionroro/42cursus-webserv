@@ -41,9 +41,31 @@ Response::~Response(void)
 // read into a buffer
 // append into the new file
 
-bool Response::uploadFile() {
+std::string Response::getUploadFilename() {
+
+    std::string filename;
+    size_t      pos;
+    size_t      end_pos;
+
+    filename.clear();
+    pos = _request_body.find(std::string("filename")) ;
+    if (pos != std::string::npos) {
+        pos += 10;
+        end_pos = _request_body.find('\"', pos);
+        if (end_pos != std::string::npos)
+            filename = _request_body.substr(pos, end_pos - pos);
+    }
+
+    return filename;
+}
+
+void Response::uploadFile() {
 
     Locations::iterator upload;
+    std::string filename;
+    size_t      max_body_size;
+    size_t      total_read = 0;
+    size_t      content_length;
 
     for (upload = _locations.begin(); upload != _locations.end(); upload++) {
         if (upload->at("path") == "/images") {
@@ -52,57 +74,41 @@ bool Response::uploadFile() {
     }
 
     if (upload == _locations.end())
-        return false;
+        return ;
 
-    std::string   max_body_size = (*upload)["client_max_body_size"];
-    std::string    path = (*upload)["path"];
-//    size_t              content_length;
-    std::string         filename;
-    size_t pos = 0;
+    max_body_size = std::stoi((*upload)["client_max_body_size"]);
+    filename = getUploadFilename();
+    if (filename.empty())
+        return ;
+    content_length = std::stoi(_request_headers["Content-Type"]);
 
-    pos = _request_body.find(std::string("filename"));
-    if (pos == std::string::npos)
-        return false;
-	
-	pos += 10;
-	
-	size_t endpos = _request_body.find('\"', pos);
-    if (endpos == std::string::npos)
-        return false;
+    std::string path = (*upload)["root"] + (*upload)["path"] + "/";
+    std::ofstream ofs(path + filename, std::fstream::out);
 
-    filename = _request_body.substr(pos, endpos - pos);
+    if (!ofs) {
+        std::cerr << "Failure opening " << std::endl;
+        return ;
+    }
 
-    return true;
+    ofs << _response_body;
+
+    (void)max_body_size;
+    (void)content_length;
+    (void)total_read;
 
 }
 
 void Response::postMethod()
 {
-    MapStr::iterator    it;
-    bool                upload = false;
-
 	if (_request_headers["Content-Type"].compare(0, 19, "multipart/form-data") == 0)
-		upload = uploadFile();
-
-	//check return values instead of boolean
-	
-    if (upload == false) {
+		uploadFile();
+    else {
 		std::fstream inputstream;
 
 		inputstream.open(_path,std::fstream::app);
 		inputstream << _request_body;
     }
 
-//	if (_request_headers["Content-Type"].second.compare(0, 19, "multipart/form-data")) {
-//		uploadFile();
-//	}
-//	else
-//	{
-//		std::fstream inputstream;
-//
-//		inputstream.open(_path,std::fstream::app);
-//		inputstream << _request_body;
-//	}
 }
 
 //void Response::uploadImage()

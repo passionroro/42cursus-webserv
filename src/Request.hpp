@@ -35,7 +35,7 @@ protected:
 	Locations::iterator	_locIndex;
 	std::string 		_method;
 	bool				_isDir;
-	std::string			_request_body;
+	std::string         _request_body;
 	std::map<std::string, std::string>	_request_headers;
 
 

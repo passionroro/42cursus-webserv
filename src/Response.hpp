@@ -33,7 +33,8 @@ public:
 	
 	void 	postMethod();
 	void 	deleteMethod();
-	bool 	uploadFile();
+	void 	uploadFile();
+    std::string getUploadFilename();
 	
 	
 	
