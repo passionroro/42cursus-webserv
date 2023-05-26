@@ -95,7 +95,7 @@ void Response::uploadFile() {
 	while (total_read < content_length) {
 		size_t buff_size = (content_length > max_body_size) ? max_body_size : content_length - total_read;
 		ofs.write(_request_body.c_str(), buff_size);
-		total_read += max_body_size;
+		total_read += buff_size;
 	}
 
 //    ofs << _request_body;
