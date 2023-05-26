@@ -11,6 +11,8 @@ Request::Request(std::string request, Server& server_conf)
 {
 	_isDir = false;
 	_locations = server_conf.getLocations();
+	_disabledMethods = server_conf.getDisabledMethods();
+	
 	parseRequest(request, server_conf);
 }
 
@@ -20,23 +22,28 @@ Request::~Request() {}
 
 int Request::parseRequest(std::string &request, Server& conf) {
 	
-	std::vector<std::string> firstLine;
-	std::string R_line;
-	int spaceCount = 0;
+	std::vector<std::string>	firstLine;
+	std::string					R_line;
+	int 						spaceCount = 0;
+	
 	setStatus("200");
 	
 	firstLine = split(request.substr(0,request.find('\r')), ' ');
-	if (firstLine.size() != 3) {
+	
+	if (firstLine.size() != 3)
+	{
 		setStatus("400");
 		return 0;
 	}
 	
 	R_line = request.substr(0, request.find('\r'));
   
-	for (int i = 0; i < (int)R_line.size(); ++i) {
+	for (int i = 0; i < (int)R_line.size(); ++i)
+	{
 		if(isspace(R_line[i]))
 			spaceCount++;
 	}
+	
 	if(spaceCount != 2)
 		setStatus("400");
 	
@@ -45,18 +52,21 @@ int Request::parseRequest(std::string &request, Server& conf) {
 	
 	_path = firstLine.at(1);
 	_requestPath = _path;
-    if (_path.find('?') != std::string::npos){
+	
+    if (_path.find('?') != std::string::npos)
         _path = _path.substr(0, _path.find('?'));
-    }
+	
 	checkRedirection(conf);
+	
 	if (_status[0] != '3')
 		checkPath();
 	
 	_version = firstLine.at(2);
+	
 	if (_version != "HTTP/1.1")
 		setStatus("400");
+	
 	request.erase(0, request.find_first_of('\n') + 1);
-
 	parseHeaders(request);
 	checkHost(conf);
 	parseBody(request);
@@ -101,21 +111,27 @@ void	Request::checkRedirection(Server& conf)
 
 int Request::parseHeaders(std::string &request) {
 
-	std::string h_key;
-	std::string h_value;
-	size_t pos = 0;
-	size_t pos_2 = 0;
-	while ((pos = request.find(':')) != std::string::npos) {
-		h_key = (request.substr(0, pos));
+	std::string	headerKey;
+	std::string	headerValue;
+	size_t		pos = 0;
+	size_t		pos_2 = 0;
+	
+	while ((pos = request.find(':')) != std::string::npos)
+	{
+		headerKey = (request.substr(0, pos));
 		request.erase(0, pos + 1);
 		pos_2 = request.find('\r');
-		h_value = (request.substr(0, pos_2));
-		if (h_value[0] == ' ')
-			h_value.erase(0, 1);
+		headerValue= (request.substr(0, pos_2));
+		
+		if (headerValue[0] == ' ')
+			headerValue.erase(0, 1);
+		
 		request.erase(0, pos_2 + 2);
-		if (h_key.find(' ') != std::string::npos)
+		
+		if (headerKey.find(' ') != std::string::npos)
       		setStatus("400");
-    	_requestHeaders.insert(std::pair<std::string, std::string>(h_key, h_value));
+		
+    	_requestHeaders.insert(std::pair<std::string, std::string>(headerKey, headerValue));
 	}
 	//printHeaders();
 	return 0;
@@ -130,7 +146,10 @@ void	Request::printHeaders(void)
 
 void	Request::checkHost(Server& conf)
 {
-
+	std::string					host;
+	size_t						sep;
+	std::vector<std::string>&	addr = conf.getAddress();
+	
 	//printHeaders();
 	//MapStr::iterator it = _request_headers.find("Host");
 	//std::cout << "checkHost: " << it->first << ", " << it->second << std::endl;
@@ -139,10 +158,9 @@ void	Request::checkHost(Server& conf)
 		_status = "400";
 		return ;
 	}
-	std::string host;
+	
 	host = _requestHeaders.at("Host");
 
-	size_t sep;
 	if ((sep = host.find_first_of(':')) != host.npos)
 		host = host.substr(0, sep);
 	//std::cout << "parsed host: " << host << std::endl;
@@ -151,7 +169,6 @@ void	Request::checkHost(Server& conf)
 	if (host == conf.getServerName())
 		return ;
 
-	std::vector<std::string>& addr = conf.getAddress();
 	for (unsigned long i = 0 ; i < addr.size() ; i++)
 	{
 		if (host == addr[i])
@@ -161,9 +178,12 @@ void	Request::checkHost(Server& conf)
 	_status = "400";
 }
 
-void Request::parseBody(std::string &request) {
-	request.erase(0,2);
+void Request::parseBody(std::string &request)
+{
 	int i;
+	
+	request.erase(0,2);
+	
 	if (_requestHeaders["Transfer-Encoding"] == "chunked")
 	{
 		while (!request.empty())
@@ -179,31 +199,36 @@ void Request::parseBody(std::string &request) {
 		}
 	}
 	else
-	{
 		_requestBody = request;
-	}
 }
 
-void Request::checkMethod() {
+void Request::checkMethod()
+{
 	std::vector<std::string> NotImplemented = split("CONNECT HEAD OPTIONS PUT TRACE PATCH",' ');
 	
 	for (std::vector<std::string>::iterator it = NotImplemented.begin();it != NotImplemented.end(); it++) {
 		if (_method == *it)
+		{
 			setStatus("501");
+			return;
+		}
 	}
-//	for (std::vector<std::string>::iterator it = _disabled_methods.begin();it != _disabled_methods.end(); it++) {
-//		if (_method == *it)
-//			setStatus("405");
-//	}
-	if (_method != "GET" && _method != "POST" && _method != "DELETE" && _status != "405")
+	for (std::vector<std::string>::iterator it = _disabledMethods.begin();it != _disabledMethods.end(); it++) {
+		if (_method == *it)
+		{
+			setStatus("405");
+			return;
+		}
+	}
+	if (_method != "GET" && _method != "POST" && _method != "DELETE")
 		setStatus("400");
 }
 
 void Request::checkPath()
 {
-	std::fstream fs;
-	std::vector<std::string> location;
-    Locations::iterator it;
+	std::fstream 				fs;
+	std::vector<std::string>	location;
+    Locations::iterator			it;
 	
     for (it = _locations.begin();it != _locations.end(); it++) {
         if (_path == it->at("path"))

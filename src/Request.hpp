@@ -37,11 +37,10 @@ public:
 protected:
 
 	Locations			_locations;
+	Locations::iterator	_locIndex;
 	std::string			_path;
-	Locations::iterator		_locIndex;
 	std::string			_newURL;
-
-	bool	_isDir;
+	bool				_isDir;
 
 private:
 
@@ -51,6 +50,7 @@ private:
 	std::map<std::string, std::string>	_requestHeaders;
 	std::string							_requestBody;
 	std::string 						_status;
+	std::vector<std::string>			_disabledMethods;
 	
 //	bool								_isChunked;
 
