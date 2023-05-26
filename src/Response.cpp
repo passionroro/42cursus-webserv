@@ -77,24 +77,31 @@ void Response::uploadFile() {
         return ;
 
     max_body_size = std::stoi((*upload)["client_max_body_size"]);
+    content_length = std::stoi(_request_headers["Content-Length"]);
     filename = getUploadFilename();
-    if (filename.empty())
+    if (filename.empty()) {
+		std::cerr << "Failure opening upload file." << std::endl;
         return ;
-    content_length = std::stoi(_request_headers["Content-Type"]);
+	}
 
-    std::string path = (*upload)["root"] + (*upload)["path"] + "/";
-    std::ofstream ofs(path + filename, std::fstream::out);
+    std::string		path = (*upload)["root"] + (*upload)["path"] + "/" + filename;
+    std::ofstream	ofs(path, std::fstream::out);
 
     if (!ofs) {
-        std::cerr << "Failure opening " << std::endl;
+        std::cerr << "Failure opening file at " << path << std::endl;
         return ;
     }
 
-    ofs << _response_body;
+	while (total_read < content_length) {
+		size_t buff_size = (content_length > max_body_size) ? max_body_size : content_length - total_read;
+		ofs.write(_request_body.c_str(), buff_size);
+		total_read += max_body_size;
+	}
 
-    (void)max_body_size;
-    (void)content_length;
-    (void)total_read;
+//    ofs << _request_body;
+//    (void)max_body_size;
+//    (void)content_length;
+//    (void)total_read;
 
 }
 
