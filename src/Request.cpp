@@ -48,7 +48,9 @@ int Request::parseRequest(std::string &request, Server& conf) {
     if (_path.find('?') != std::string::npos){
         _path = _path.substr(0, _path.find('?'));
     }
-	checkPath();
+	checkRedirection(conf);
+	if (_status[0] != '3')
+		checkPath();
 	
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
@@ -58,14 +60,43 @@ int Request::parseRequest(std::string &request, Server& conf) {
 	parseHeaders(request);
 	checkHost(conf);
 	parseBody(request);
-	std::cout << "Body is "<<_requestBody<< std::endl;
-//	std::cout << "method: " << _method <<std::endl;
-//    std::cout << "pt: " << _path <<std::endl;
-//    std::cout << "version: " << _version <<std::endl;
-//
-//    std::cout << _status<<std::endl;
-	
+	//std::cout << "Body is "<<_requestBody<< std::endl;
 	return 0;
+}
+
+void	Request::checkRedirection(Server& conf)
+{
+	Redirection const& redirection = conf.getRedirection();
+	//std::cout << "path: " << _path << std::endl;
+
+    Redirection::const_iterator it;
+	
+    
+	for (it = redirection.begin() ; it != redirection.end(); it++)
+	{
+		try
+		{
+			it->at("old_url");
+			it->at("new_url");
+			it->at("type");
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Redirection badly defined" << std::endl;
+		}
+        if (_path == it->at("old_url") && it->at("type") == "permanent")
+		{
+			std::cout << "Redirection!!!" << std::endl;
+			_newURL = it->at("new_url");
+			_status = "301";
+		}
+        if (_path == it->at("old_url") && it->at("type") == "tmp")
+		{
+			std::cout << "Redirection!!!" << std::endl;
+			_newURL = it->at("new_url");
+			_status = "302";
+		}
+    }
 }
 
 int Request::parseHeaders(std::string &request) {
@@ -77,17 +108,16 @@ int Request::parseHeaders(std::string &request) {
 	while ((pos = request.find(':')) != std::string::npos) {
 		h_key = (request.substr(0, pos));
 		request.erase(0, pos + 1);
-		pos_2 = request.find('\n');
+		pos_2 = request.find('\r');
 		h_value = (request.substr(0, pos_2));
 		if (h_value[0] == ' ')
 			h_value.erase(0, 1);
-		request.erase(0, pos_2 + 1);
+		request.erase(0, pos_2 + 2);
 		if (h_key.find(' ') != std::string::npos)
       		setStatus("400");
     	_requestHeaders.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
 	//printHeaders();
-	_status = "200";
 	return 0;
 }
 
@@ -109,21 +139,25 @@ void	Request::checkHost(Server& conf)
 		_status = "400";
 		return ;
 	}
-	std::string	host = _requestHeaders.at("Host");
+	std::string host;
+	host = _requestHeaders.at("Host");
 
 	size_t sep;
 	if ((sep = host.find_first_of(':')) != host.npos)
 		host = host.substr(0, sep);
-	std::cout << "parsed host: " << host << std::endl;
+	//std::cout << "parsed host: " << host << std::endl;
 
 
 	if (host == conf.getServerName())
 		return ;
-	for (unsigned long i = 0 ; i < conf.getAddress().size() ; i++)
+
+	std::vector<std::string>& addr = conf.getAddress();
+	for (unsigned long i = 0 ; i < addr.size() ; i++)
 	{
-		if (host == conf.getAddress()[i])
+		if (host == addr[i])
 			return ;
 	}
+	std::cout << "Bad host, bad request" << std::endl;
 	_status = "400";
 }
 

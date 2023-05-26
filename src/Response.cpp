@@ -8,15 +8,15 @@ Response::Response(void)
 
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
-
-	if (getStatus() != "200")
+	if (getStatus()[0] == '4')
 	{
 		_path = "home/www/error_404.html";
 		//std::cout << "new path is error_404" << std::endl;
 		_locIndex = _locations.end();
 	}
-
-	if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
+	else if (getStatus()[0] == '3')
+		redirectRequest();
+	else if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();
@@ -47,13 +47,6 @@ void	Response::getContentType(void)
 		return ;
 	extension = _path.substr(start + 1);
 	_response_headers.insert(std::make_pair("Content-Type", mt.getMap()[extension]));
-
-
-
-
-
-	//std::cout << "mimetype: " << mt.getMap()["html"] << std::endl;
-	//_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
 }
 
 void	Response::getContentLength(void)
@@ -74,6 +67,9 @@ std::string	Response::getStatusText(void)
 	texts.insert(std::make_pair("200", "OK"));
 	texts.insert(std::make_pair("201", "Created"));
 	texts.insert(std::make_pair("301", "Moved Permanently"));
+	texts.insert(std::make_pair("302", "Found"));
+	texts.insert(std::make_pair("307", "Temporary Redirect"));
+	texts.insert(std::make_pair("308", "Permanent Redirect"));
 	texts.insert(std::make_pair("400", "Bad Request"));
 	texts.insert(std::make_pair("404", "Not found"));
 	texts.insert(std::make_pair("405", "Method Not Allowed"));
@@ -82,7 +78,6 @@ std::string	Response::getStatusText(void)
 	texts.insert(std::make_pair("501", "Not Implemented"));
 
 	return (texts[getStatus()]);
-
 }
 
 void	Response::createHeaders(void)
@@ -133,6 +128,14 @@ int	Response::readStaticPage(void)
 	}
 }
 
+void	Response::redirectRequest(void)
+{
+	std::cout << "Redirect Request called" << std::endl;
+	std::cout << "new_url: " << _newURL << std::endl;
+	_response_headers.insert(std::make_pair("Location", _newURL));
+	_response_headers.insert(std::make_pair("Connection", "keep-alive"));
+}
+
 void	Response::cgi(Server& server_conf)
 {
 	std::cout << "cgi called" << std::endl;
@@ -145,7 +148,6 @@ void	Response::directoryListing(void)
 {
 	std::cout << "directory listing called" << std::endl;
 
-	//std::string	path = ".";
 	DIR*	dir;
 	struct dirent*				ent;
 	std::vector<struct dirent>	entries;

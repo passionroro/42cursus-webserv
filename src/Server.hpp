@@ -26,7 +26,6 @@ public:
     int         getClientBodySize() const;
     bool        getAutoIndex() const;
     MapStr      getErrorPages() const;
-    Locations   getLocations() const;
     std::vector<std::string>    getAddress() const;
     std::vector<std::string>    getDisabledMethods() const;
 
@@ -43,9 +42,10 @@ public:
 
 	int	getPort(void)	{ return _port; }
 	std::string	getServerName(void)	{ return _server_name; }
-	std::vector<std::string>	getAddress(void) { return _address; }
+	std::vector<std::string>&	getAddress(void) { return _address; }
 	std::vector<std::string>	getDisabledMethods(void) { return _disabled_methods; }
-	std::vector< std::map<std::string, std::string> > getLocations(void) { return _locations; }
+	Locations		getLocations(void) { return _locations; }
+	Redirection		getRedirection(void) { return _redirection; }
 
 
 protected:
@@ -65,6 +65,7 @@ private:
     std::vector<std::string>    _disabled_methods;
     MapStr      _error_pages;
     Locations   _locations;
+	Redirection	_redirection;
 
     /* SERVER UTILS */
     unsigned int	_host; //still useful ?
