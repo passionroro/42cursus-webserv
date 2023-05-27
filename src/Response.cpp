@@ -64,9 +64,9 @@ void Response::uploadFile() {
     Locations::iterator upload;
     std::string filename;
     size_t      max_body_size;
-    size_t      total_read = 0;
     size_t      content_length;
 
+    // Get config file attributes for the /images folder
     for (upload = _locations.begin(); upload != _locations.end(); upload++) {
         if (upload->at("path") == "/images") {
             break ;
@@ -78,6 +78,12 @@ void Response::uploadFile() {
 
     max_body_size = std::stoi((*upload)["client_max_body_size"]);
     content_length = std::stoi(_request_headers["Content-Length"]);
+	if (content_length > max_body_size) {
+		std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
+		return ;
+	}
+
+    // File creation
     filename = getUploadFilename();
     if (filename.empty()) {
 		std::cerr << "Failure opening upload file." << std::endl;
@@ -85,23 +91,25 @@ void Response::uploadFile() {
 	}
 
     std::string		path = (*upload)["root"] + (*upload)["path"] + "/" + filename;
-    std::ofstream	ofs(path, std::fstream::out);
+    std::ofstream	ofs(path, std::fstream::out | std::fstream::binary);
 
-    if (!ofs) {
+    if (!ofs.good() || !ofs.is_open()) {
         std::cerr << "Failure opening file at " << path << std::endl;
         return ;
     }
 
-	while (total_read < content_length) {
-		size_t buff_size = (content_length > max_body_size) ? max_body_size : content_length - total_read;
-		ofs.write(_request_body.c_str(), buff_size);
-		total_read += buff_size;
-	}
+    // Trim the body
+    std::string::size_type bodyStart = 0;
+    bodyStart = _request_body.find(std::string("filename"), bodyStart);
+    bodyStart = _request_body.find(std::string("\r\n\r\n"), bodyStart);
+    if (bodyStart == std::string::npos)
+        return ;
+    _request_body.erase(0, bodyStart + 4);
 
-//    ofs << _request_body;
-//    (void)max_body_size;
-//    (void)content_length;
-//    (void)total_read;
+    // Write to file
+    ofs.write(_request_body.c_str(), _request_body.size());
+
+    ofs.close();
 
 }
 
