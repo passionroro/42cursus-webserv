@@ -41,10 +41,11 @@ protected:
 	std::string			_path;
 	std::string			_newURL;
 	bool				_isDir;
+	std::string 		_method;
+
 
 private:
 
-	std::string 						_method;
 	std::string 						_requestPath;
 	std::string 						_version;
 	std::map<std::string, std::string>	_requestHeaders;

@@ -34,6 +34,7 @@ public:
 	void	getContentLength(void);
 
 	std::string&	getResponseHead(void)		{ return _response_head; }
+	void	deleteMethod();
 
 private:
 
