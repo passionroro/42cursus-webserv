@@ -108,6 +108,7 @@ void Response::uploadFile() {
 
     // Write to file
     ofs.write(_request_body.c_str(), _request_body.size());
+// If the write is too big to handle, use getline()
 
     ofs.close();
 
