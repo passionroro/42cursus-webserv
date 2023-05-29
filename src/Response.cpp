@@ -59,6 +59,40 @@ std::string Response::getUploadFilename() {
     return filename;
 }
 
+void Response::eraseBodyBoundaries() {
+
+    std::string::size_type bodyStart = 0;
+    bodyStart = _request_body.find(std::string("filename"), bodyStart);
+    bodyStart = _request_body.find(std::string("\r\n\r\n"), bodyStart);
+    _request_body.erase(0, bodyStart + 4);
+
+    std::string::size_type bodyEnd = _request_body.find(std::string("--"));
+    if (bodyEnd != std::string::npos)
+        _request_body.erase(bodyEnd, _request_body.size());
+
+}
+
+int Response::getLocationAttributes(Locations::iterator *upload, size_t *max_body_size, size_t *content_length) {
+
+    for (*upload = _locations.begin(); *upload != _locations.end(); *upload++) {
+        if ((**upload)["path"] == "/images") {
+            break ;
+        }
+    }
+
+    if (*upload == _locations.end())
+        return 1;
+
+    *max_body_size = std::stoi((**upload)["client_max_body_size"]);
+    *content_length = std::stoi(_request_headers["Content-Length"]);
+    if (*content_length > *max_body_size) {
+        std::cerr << "Max upload file is " << *max_body_size << "MB." << std::endl;
+        return 2;
+    }
+
+    return 0;
+}
+
 void Response::uploadFile() {
 
     Locations::iterator upload;
@@ -67,21 +101,8 @@ void Response::uploadFile() {
     size_t      content_length;
 
     // Get config file attributes for the /images folder
-    for (upload = _locations.begin(); upload != _locations.end(); upload++) {
-        if (upload->at("path") == "/images") {
-            break ;
-        }
-    }
-
-    if (upload == _locations.end())
+    if (getLocationAttributes(&upload, &max_body_size, &content_length) > 0)
         return ;
-
-    max_body_size = std::stoi((*upload)["client_max_body_size"]);
-    content_length = std::stoi(_request_headers["Content-Length"]);
-	if (content_length > max_body_size) {
-		std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
-		return ;
-	}
 
     // File creation
     filename = getUploadFilename();
@@ -98,17 +119,21 @@ void Response::uploadFile() {
         return ;
     }
 
-    // Trim the body
-    std::string::size_type bodyStart = 0;
-    bodyStart = _request_body.find(std::string("filename"), bodyStart);
-    bodyStart = _request_body.find(std::string("\r\n\r\n"), bodyStart);
-    if (bodyStart == std::string::npos)
-        return ;
-    _request_body.erase(0, bodyStart + 4);
+    eraseBodyBoundaries();
 
     // Write to file
-    ofs.write(_request_body.c_str(), _request_body.size());
-// If the write is too big to handle, use getline()
+    // 1
+//    ofs.write(_request_body.c_str(), _request_body.size());
+
+    // 2
+//    std::string             tmpBody = _response_body;
+//    std::string::size_type  bodySize = tmpBody.find(std::string("\n"));
+//    while (bodySize != std::string::npos) {
+//        ofs.write(tmpBody.c_str(), bodySize);
+//        tmpBody.erase(0, bodySize + 1);
+//        bodySize = tmpBody.find(std::string("\n"));
+//    }
+//    ofs.write(tmpBody.c_str(), tmpBody.size());
 
     ofs.close();
 

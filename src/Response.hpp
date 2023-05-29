@@ -35,7 +35,8 @@ public:
 	void 	deleteMethod();
 	void 	uploadFile();
     std::string getUploadFilename();
-	
+	void    eraseBodyBoundaries();
+    int     getLocationAttributes(Locations::iterator *upload, size_t *max_body_size, size_t *content_length);
 	
 	
 	std::string&	getResponseHead(void)		{ return _response_head; }
