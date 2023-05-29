@@ -69,7 +69,7 @@ void Response::eraseBodyBoundaries() {
     std::string::size_type bodyEnd = _request_body.find(std::string("--"));
     if (bodyEnd != std::string::npos)
         _request_body.erase(bodyEnd, _request_body.size());
-
+	_request_body.erase(_request_body.find_last_of("\r\n") - 1, 2);
 }
 
 void Response::uploadFile() {
@@ -91,10 +91,10 @@ void Response::uploadFile() {
 
     max_body_size = std::stoi((*upload)["client_max_body_size"]);
     content_length = std::stoi(_request_headers["Content-Length"]);
-    if (content_length > max_body_size) {
-        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
-        return ;
-    }
+//    if (content_length > max_body_size) {
+//        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
+//        return ;
+//    }
 
     // File creation
     filename = getUploadFilename();
@@ -118,17 +118,22 @@ void Response::uploadFile() {
 //    ofs.write(_request_body.c_str(), _request_body.size());
 
     // 2
-//    std::string             tmpBody = _response_body;
-//    std::string::size_type  bodySize = tmpBody.find(std::string("\n"));
-//    while (bodySize != std::string::npos) {
-//        ofs.write(tmpBody.c_str(), bodySize);
-//        tmpBody.erase(0, bodySize + 1);
-//        bodySize = tmpBody.find(std::string("\n"));
-//    }
-//    ofs.write(tmpBody.c_str(), tmpBody.size());
-
+    std::string             tmpBody = _request_body;
+    std::string::size_type  bodySize = tmpBody.find(std::string("\n"));
+	while (bodySize != std::string::npos) {
+        ofs.write(tmpBody.c_str(), bodySize);
+        tmpBody.erase(0, bodySize);
+        bodySize = tmpBody.find(std::string("\n"));
+		if (bodySize != std::string::npos)
+			bodySize +=1;
+		else
+			break;
+		
+    }
+    ofs.write(tmpBody.c_str(), tmpBody.size());
     ofs.close();
-
+	(void) content_length;
+	(void) max_body_size;
 }
 
 void Response::postMethod()
