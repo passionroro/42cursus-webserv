@@ -72,27 +72,6 @@ void Response::eraseBodyBoundaries() {
 
 }
 
-int Response::getLocationAttributes(Locations::iterator *upload, size_t *max_body_size, size_t *content_length) {
-
-    for (*upload = _locations.begin(); *upload != _locations.end(); *upload++) {
-        if ((**upload)["path"] == "/images") {
-            break ;
-        }
-    }
-
-    if (*upload == _locations.end())
-        return 1;
-
-    *max_body_size = std::stoi((**upload)["client_max_body_size"]);
-    *content_length = std::stoi(_request_headers["Content-Length"]);
-    if (*content_length > *max_body_size) {
-        std::cerr << "Max upload file is " << *max_body_size << "MB." << std::endl;
-        return 2;
-    }
-
-    return 0;
-}
-
 void Response::uploadFile() {
 
     Locations::iterator upload;
@@ -101,8 +80,21 @@ void Response::uploadFile() {
     size_t      content_length;
 
     // Get config file attributes for the /images folder
-    if (getLocationAttributes(&upload, &max_body_size, &content_length) > 0)
+    for (upload = _locations.begin(); upload != _locations.end(); upload++) {
+        if ((*upload)["path"] == "/images") {
+            break ;
+        }
+    }
+
+    if (upload == _locations.end())
         return ;
+
+    max_body_size = std::stoi((*upload)["client_max_body_size"]);
+    content_length = std::stoi(_request_headers["Content-Length"]);
+    if (content_length > max_body_size) {
+        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
+        return ;
+    }
 
     // File creation
     filename = getUploadFilename();
@@ -151,50 +143,6 @@ void Response::postMethod()
     }
 
 }
-
-//void Response::uploadImage()
-//{
-//	std::vector<char> buffer;
-//
-//	FILE* file_stream = fopen(_path.c_str(), "rb");
-//
-//	std::string file_str;
-//
-//	size_t file_size;
-//	if (file_stream != nullptr) {
-//		fseek(file_stream, 0, SEEK_END);
-//		long file_length = ftell(file_stream);
-//		rewind(file_stream);
-//
-//		buffer.resize(file_length);
-//
-//		file_size = fread(&buffer[0], 1, file_length, file_stream);
-////		if (buffer.back() != nullptr) {
-////			file_size = fread(buffer, 1, file_length, file_stream);
-////
-////			std::stringstream out;
-////
-////			for (size_t i = 0; i < file_size; i++) {
-////				out << buffer[i];
-////			}
-////
-////			std::string copy = out.str();
-////
-////			file_str = copy;
-////		}
-////	}
-////
-////	if(file_str.length() > 0)
-////	{
-////		std::string file_size_str = std::to_string(file_str.length());
-////
-////		std::string html = "HTTP/1.1 200 Okay\r\nContent-Type: image/png; Content-Transfer-Encoding: binary; Content-Length: " + file_size_str + ";charset=ISO-8859-4 \r\n\r\n" + file_str;
-////
-////		printf("\n\nHTML -> %s\n\nfile_str -> %ld\n\n\n", html.c_str(), file_str.length());
-////	}
-////
-//	}
-//}
 
 
 void Response::deleteMethod()
