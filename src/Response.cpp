@@ -62,11 +62,12 @@ std::string Response::getUploadFilename() {
 void Response::eraseBodyBoundaries() {
 
     std::string::size_type bodyStart = 0;
+	std::string boundary = _request_headers["Content-Type"].substr(_request_headers["Content-Type"].find('=') + 1);
     bodyStart = _request_body.find(std::string("filename"), bodyStart);
     bodyStart = _request_body.find(std::string("\r\n\r\n"), bodyStart);
     _request_body.erase(0, bodyStart + 4);
 
-    std::string::size_type bodyEnd = _request_body.find(std::string("--"));
+    std::string::size_type bodyEnd = _request_body.find(boundary);
     if (bodyEnd != std::string::npos)
         _request_body.erase(bodyEnd, _request_body.size());
 	_request_body.erase(_request_body.find_last_of("\r\n") - 1, 2);
