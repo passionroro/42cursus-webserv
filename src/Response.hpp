@@ -20,6 +20,8 @@ public:
 	std::string	buildPath(void);
 
 	void		appendHeaders(std::string & str);
+
+	void		redirectRequest(void);
 	void		cgi(Server& server_conf);
 	void		directoryListing(void);
 	int			readStaticPage(void);

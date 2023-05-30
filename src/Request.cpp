@@ -12,29 +12,27 @@ Request::Request(std::string request, Server& server_conf)
 	_isDir = false;
 	_locations = server_conf.getLocations();
 	_disabledMethod = server_conf.getDisabledMethods();
-	
-	parseRequest(request);
-
+	parseRequest(request, server_conf);
 }
 
 Request::~Request() {}
 
 /* MEMBER FUNCTIONS */
 
-int Request::parseRequest(std::string &Request) {
+int Request::parseRequest(std::string &request, Server& conf) {
 	
 	std::vector<std::string> firstLine;
 	std::string R_line;
 	int spaceCount = 0;
 	setStatus("200");
 	
-	firstLine = split(Request.substr(0,Request.find('\r')), ' ');
+	firstLine = split(request.substr(0,request.find('\r')), ' ');
 	if (firstLine.size() != 3) {
 		setStatus("400");
 		return 0;
 	}
 	
-	R_line = Request.substr(0,Request.find('\r'));
+	R_line = request.substr(0, request.find('\r'));
   
 	for (int i = 0; i < (int)R_line.size(); ++i) {
 		if(isspace(R_line[i]))
@@ -51,21 +49,56 @@ int Request::parseRequest(std::string &Request) {
     if (_path.find('?') != std::string::npos){
         _path = _path.substr(0, _path.find('?'));
     }
-	checkPath();
+	checkRedirection(conf);
+	if (_status[0] != '3')
+		checkPath();
 	
 	_version = firstLine.at(2);
 	if (_version != "HTTP/1.1")
 		setStatus("400");
-	Request.erase(0,Request.find("\n", 0) + 1);
-//	std::cout << "\nREQUEST IS: "<< Request << "\n\n";
-	parseHeaders(Request);
-	Request.erase(0,2);
-	_request_body = Request;
-	
+	request.erase(0, request.find_first_of('\n') + 1);
+	parseHeaders(request);
+	checkHost(conf);
+	parseBody(request);
 	return 0;
 }
 
-int Request::parseHeaders(std::string &Request) {
+void	Request::checkRedirection(Server& conf)
+{
+	Redirection const& redirection = conf.getRedirection();
+	//std::cout << "path: " << _path << std::endl;
+
+    Redirection::const_iterator it;
+	
+    
+	for (it = redirection.begin() ; it != redirection.end(); it++)
+	{
+		try
+		{
+			it->at("old_url");
+			it->at("new_url");
+			it->at("type");
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Redirection badly defined" << std::endl;
+		}
+        if (_path == it->at("old_url") && it->at("type") == "permanent")
+		{
+			std::cout << "Redirection!!!" << std::endl;
+			_newURL = it->at("new_url");
+			_status = "301";
+		}
+        if (_path == it->at("old_url") && it->at("type") == "tmp")
+		{
+			std::cout << "Redirection!!!" << std::endl;
+			_newURL = it->at("new_url");
+			_status = "302";
+		}
+    }
+}
+
+int Request::parseHeaders(std::string &request) {
 
 	std::string h_key;
 	std::string h_value;
@@ -74,20 +107,83 @@ int Request::parseHeaders(std::string &Request) {
 	while ((pos = Request.find(':')) != std::string::npos) {
 		if (Request.find("\r\n", 0) == 0)
 			break;
-		h_key = (Request.substr(0, pos));
-		Request.erase(0, pos + 1);
-		pos_2 = Request.find('\n');
-		h_value = (Request.substr(0, pos_2));
+		h_key = (request.substr(0, pos));
+		request.erase(0, pos + 1);
+		pos_2 = request.find('\r');
+		h_value = (request.substr(0, pos_2));
+  
 		if (h_value[0] == ' ')
 			h_value.erase(0, 1);
-		Request.erase(0,pos_2 + 1);
+		request.erase(0, pos_2 + 2);
 		if (h_key.find(' ') != std::string::npos)
-      setStatus("400");
-    _request_headers.insert(std::pair<std::string, std::string>(h_key, h_value));
-//	std::cout << "\nHEADERS" << h_key << h_value << std::endl;
+      		setStatus("400");
+    	_requestHeaders.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
-	_status = "200";
+	//printHeaders();
 	return 0;
+}
+
+void	Request::printHeaders(void)
+{
+	std::cout << "request headers:" << std::endl;
+	for (MapStr::iterator it = _requestHeaders.begin() ; it != _requestHeaders.end() ; it++)
+		std::cout << '[' << it->first << ']' << ", " << it->second << std::endl;
+}
+
+void	Request::checkHost(Server& conf)
+{
+
+	//printHeaders();
+	//MapStr::iterator it = _request_headers.find("Host");
+	//std::cout << "checkHost: " << it->first << ", " << it->second << std::endl;
+	if (_requestHeaders.find("Host") == _requestHeaders.end())
+	{
+		_status = "400";
+		return ;
+	}
+	std::string host;
+	host = _requestHeaders.at("Host");
+
+	size_t sep;
+	if ((sep = host.find_first_of(':')) != host.npos)
+		host = host.substr(0, sep);
+	//std::cout << "parsed host: " << host << std::endl;
+
+
+	if (host == conf.getServerName())
+		return ;
+
+	std::vector<std::string>& addr = conf.getAddress();
+	for (unsigned long i = 0 ; i < addr.size() ; i++)
+	{
+		if (host == addr[i])
+			return ;
+	}
+	std::cout << "Bad host, bad request" << std::endl;
+	_status = "400";
+}
+
+void Request::parseBody(std::string &request) {
+	request.erase(0,2);
+	int i;
+	if (_requestHeaders["Transfer-Encoding"] == "chunked")
+	{
+		while (!request.empty())
+		{
+			std::istringstream iss(request.substr(0,'\r'));
+			iss >> std::hex >> i;
+			if (i == 0)
+				break;
+			_requestBody += request.substr(request.find('\n') + 1,i);
+			std::cout << "is :"<< _requestBody << std::endl;
+			request.erase(0,request.find('\n') + 1);
+			request.erase(0,i + 2);
+		}
+	}
+	else
+	{
+		_requestBody = request;
+	}
 }
 
 void Request::checkMethod() {

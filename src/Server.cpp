@@ -175,15 +175,16 @@ void Server::assignNewConfig(Object & object) {
     }
 
     //location block
-    if (object.getArray().find(std::string("locations")) != object.getArray().end()) {
-
+    if (object.getArray().find(std::string("locations")) != object.getArray().end())
+	{
         std::vector<Object>             new_loc;
         std::vector<Object>::iterator   it;
 
         new_loc = object.getArray()["locations"].getObject();
 
         // Iterate through every location block from the config file.
-        for (it = new_loc.begin() ; it != new_loc.end() ; it++) {
+        for (it = new_loc.begin() ; it != new_loc.end() ; it++)
+		{
 
             MapStr              new_content;
             MapStr::iterator    path;
@@ -192,24 +193,25 @@ void Server::assignNewConfig(Object & object) {
             new_content = it->getString();
             path = new_content.find(std::string("path"));
 
-            if (path != new_content.end()) {
-
+            if (path != new_content.end())
+			{
                 bool new_location = true;
 
                 // Iterate through every DEFAULT location block.
-                for (def_it = _locations.begin(); def_it != _locations.end(); def_it++) {
-
+                for (def_it = _locations.begin(); def_it != _locations.end(); def_it++)
+				{
                     MapStr::iterator    new_path;
 
                     new_path = def_it->find(std::string("path"));
-
                     if (new_path == def_it->end())
                         break ;
 
                     // If both location block share the same path, overwrite them.
-                    else if (new_path->second == path->second) {
+                    else if (new_path->second == path->second)
+					{
                         MapStr::iterator    search;
-                        for (search = new_content.begin(); search != new_content.end(); search++) {
+                        for (search = new_content.begin(); search != new_content.end(); search++)
+						{
                             new_path = def_it->find(std::string(search->first));
                             if (new_path != def_it->end())
                                 new_path->second = search->second;
@@ -218,15 +220,21 @@ void Server::assignNewConfig(Object & object) {
                         break ;
                     }
                 }
-
                 if (new_location)
                     _locations.push_back(new_content);
-
             }
             else
                 std::cerr << "cfg: location block needs a path: no creation." << std::endl;
 
         }
+    }
+
+    std::vector<Object>             tmp_redirection;
+    std::vector<Object>::iterator   it;
+
+    tmp_redirection = object.getArray()["redirection"].getObject();
+    for (it = tmp_redirection.begin() ; it != tmp_redirection.end() ; it++) {
+        _redirection.push_back(it->getString());
     }
 }
 
@@ -239,7 +247,6 @@ std::vector<std::string> Server::getAddress() const { return _address; }
 std::vector<std::string> Server::getDisabledMethods() const { return _disabled_methods; }
 
 MapStr      Server::getErrorPages() const { return _error_pages; }
-Locations   Server::getLocations() const { return _locations; }
 std::string Server::getServerName() const { return _server_name; }
 bool        Server::getAutoIndex() const { return _auto_index; }
 int         Server::getClientBodySize() const { return _clt_body_size; }

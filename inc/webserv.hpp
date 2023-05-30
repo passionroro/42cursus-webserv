@@ -26,6 +26,7 @@
 # define BUFSIZE 4096
 
 typedef std::vector<std::map<std::string, std::string> > Locations;
+typedef std::vector<std::map<std::string, std::string> > Redirection;
 typedef std::map<std::string, std::string> MapStr;
 
 class	Server;
