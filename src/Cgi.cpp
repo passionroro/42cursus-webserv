@@ -1,10 +1,11 @@
 #include "Cgi.hpp"
+#include "Server.hpp"
 #include <unistd.h>
 
 Cgi::Cgi(Request & request, Server& conf) : _r(request), _headers(request.getRequestHeaders())
 {
 	initEnv(conf);
-	execute();
+	execute(conf);
 }
 
 Cgi::~Cgi(void)
@@ -47,8 +48,9 @@ void	Cgi::initEnv(Server& conf)
 	_env["SERVER_SOFTWARE"] = "nou";
 }
 
-void	Cgi::execute(void)
+void	Cgi::execute(Server& conf)
 {
+	(void)conf;
 	pid_t	pid;
 	int	pipe1[2];
 	int	pipe2[2];
@@ -68,12 +70,17 @@ void	Cgi::execute(void)
 	{
 		std::cout << "child alive" << std::endl;
 		
-		std::string	path = "cgi-bin/cgi-hello";
+		std::string	bin = _r.getCgiBin();
+		std::string	path = _r.getPath();
+
+
 		char**	arg;
-		arg = new char*[2];
-		arg[0] = new char[path.size() + 1];
-		arg[0] = ::strcpy(arg[0], path.c_str());
-		arg[1] = NULL;
+		arg = new char*[3];
+		arg[0] = new char[bin.size() + 1];
+		arg[0] = ::strcpy(arg[0], bin.c_str());
+		arg[1] = new char[path.size() + 1];
+		arg[1] = ::strcpy(arg[0], path.c_str());
+		arg[2] = NULL;
 
 		std::cout << "path: " << path << std::endl;
 		std::cout << "arg: " << arg[0] << std::endl;
@@ -93,6 +100,7 @@ void	Cgi::execute(void)
 	}
 	else
 	{
+		//sleep(1);
 		std::cout << "parent alive" << std::endl;
 
 		close(pipe1[0]);
@@ -112,9 +120,10 @@ void	Cgi::execute(void)
 		_res = readRes(pipe2[0]);
 		close(pipe2[0]);
 		std::cout << "all closed" << std::endl;
+		std::cout << "Res:" << std::endl;
+		std::cout << _res << std::endl;
 
 
-		
 	}
 
 }
