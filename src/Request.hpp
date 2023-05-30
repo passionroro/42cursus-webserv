@@ -38,19 +38,20 @@ protected:
 
 	Locations			_locations;
 	std::string			_path;
-	Locations::iterator		_locIndex;
+	Locations::iterator	_locIndex;
+	std::string 		_method;
+	bool				_isDir;
+	std::string         _requestBody;
+	std::map<std::string, std::string>	_requestHeaders;
 	std::string			_newURL;
 
-	bool	_isDir;
 
 private:
 
-	std::string 						_method;
 	std::string 						_requestPath;
 	std::string 						_version;
-	std::map<std::string, std::string>	_requestHeaders;
-	std::string							_requestBody;
 	std::string 						_status;
+	std::vector<std::string>			_disabledMethod;
 	
 //	bool								_isChunked;
 

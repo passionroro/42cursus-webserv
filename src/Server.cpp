@@ -67,8 +67,9 @@ int	Server::recv(int socket)
     while ((tmp = ::recv(socket, buf, BUFSIZE - 1, 0)) > 0)
     {
 		buf[tmp] = '\0';
-        request += buf;
-        bytes_read += tmp;
+       request += std::string(buf, tmp);
+//		request += buf;
+		bytes_read += tmp;
     }
     buf[BUFSIZE - 1] = '\0';
     if (bytes_read == 0)

@@ -11,6 +11,7 @@ Request::Request(std::string request, Server& server_conf)
 {
 	_isDir = false;
 	_locations = server_conf.getLocations();
+	_disabledMethod = server_conf.getDisabledMethods();
 	parseRequest(request, server_conf);
 }
 
@@ -56,11 +57,9 @@ int Request::parseRequest(std::string &request, Server& conf) {
 	if (_version != "HTTP/1.1")
 		setStatus("400");
 	request.erase(0, request.find_first_of('\n') + 1);
-
 	parseHeaders(request);
 	checkHost(conf);
 	parseBody(request);
-	//std::cout << "Body is "<<_requestBody<< std::endl;
 	return 0;
 }
 
@@ -105,11 +104,14 @@ int Request::parseHeaders(std::string &request) {
 	std::string h_value;
 	size_t pos = 0;
 	size_t pos_2 = 0;
-	while ((pos = request.find(':')) != std::string::npos) {
+	while ((pos = Request.find(':')) != std::string::npos) {
+		if (Request.find("\r\n", 0) == 0)
+			break;
 		h_key = (request.substr(0, pos));
 		request.erase(0, pos + 1);
 		pos_2 = request.find('\r');
 		h_value = (request.substr(0, pos_2));
+  
 		if (h_value[0] == ' ')
 			h_value.erase(0, 1);
 		request.erase(0, pos_2 + 2);
@@ -191,10 +193,10 @@ void Request::checkMethod() {
 		if (_method == *it)
 			setStatus("501");
 	}
-//	for (std::vector<std::string>::iterator it = _disabled_methods.begin();it != _disabled_methods.end(); it++) {
-//		if (_method == *it)
-//			setStatus("405");
-//	}
+	for (std::vector<std::string>::iterator it = _disabledMethod.begin();it != _disabledMethod.end(); it++) {
+		if (_method == *it)
+			setStatus("405");
+	}
 	if (_method != "GET" && _method != "POST" && _method != "DELETE" && _status != "405")
 		setStatus("400");
 }

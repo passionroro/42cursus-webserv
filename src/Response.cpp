@@ -20,6 +20,10 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		cgi(server_conf);
 	else if (_isDir)
 		directoryListing();
+	else if(_method == "POST")
+		postMethod();
+	else if(_method == "DELETE")
+		deleteMethod();
 	else
 		readStaticPage();
 	
@@ -31,6 +35,131 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 
 Response::~Response(void)
 {
+}
+
+// create a file in /images
+// read into a buffer
+// append into the new file
+
+std::string Response::getUploadFilename() {
+
+    std::string filename;
+    size_t      pos;
+    size_t      end_pos;
+
+    filename.clear();
+    pos = _request_body.find(std::string("filename")) ;
+    if (pos != std::string::npos) {
+        pos += 10;
+        end_pos = _request_body.find('\"', pos);
+        if (end_pos != std::string::npos)
+            filename = _request_body.substr(pos, end_pos - pos);
+    }
+
+    return filename;
+}
+
+void Response::eraseBodyBoundaries() {
+
+    std::string::size_type bodyStart = 0;
+	std::string boundary = _request_headers["Content-Type"].substr(_request_headers["Content-Type"].find('=') + 1);
+    bodyStart = _request_body.find(std::string("filename"), bodyStart);
+    bodyStart = _request_body.find(std::string("\r\n\r\n"), bodyStart);
+    _request_body.erase(0, bodyStart + 4);
+
+    std::string::size_type bodyEnd = _request_body.find(boundary);
+    if (bodyEnd != std::string::npos)
+        _request_body.erase(bodyEnd, _request_body.size());
+	_request_body.erase(_request_body.find_last_of("\r\n") - 1, 2);
+}
+
+void Response::uploadFile() {
+
+    Locations::iterator upload;
+    std::string filename;
+    size_t      max_body_size;
+    size_t      content_length;
+
+    // Get config file attributes for the /images folder
+    for (upload = _locations.begin(); upload != _locations.end(); upload++) {
+        if ((*upload)["path"] == "/images") {
+            break ;
+        }
+    }
+
+    if (upload == _locations.end())
+        return ;
+
+    max_body_size = std::stoi((*upload)["client_max_body_size"]);
+    content_length = std::stoi(_request_headers["Content-Length"]);
+//    if (content_length > max_body_size) {
+//        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
+//        return ;
+//    }
+
+    // File creation
+    filename = getUploadFilename();
+    if (filename.empty()) {
+		std::cerr << "Failure opening upload file." << std::endl;
+        return ;
+	}
+
+    std::string		path = (*upload)["root"] + (*upload)["path"] + "/" + filename;
+    std::ofstream	ofs(path, std::fstream::out | std::fstream::binary);
+
+    if (!ofs.good() || !ofs.is_open()) {
+        std::cerr << "Failure opening file at " << path << std::endl;
+        return ;
+    }
+
+    eraseBodyBoundaries();
+
+    // Write to file
+    // 1
+//    ofs.write(_request_body.c_str(), _request_body.size());
+
+    // 2
+    std::string             tmpBody = _request_body;
+    std::string::size_type  bodySize = tmpBody.find(std::string("\n"));
+	while (bodySize != std::string::npos) {
+        ofs.write(tmpBody.c_str(), bodySize);
+        tmpBody.erase(0, bodySize);
+        bodySize = tmpBody.find(std::string("\n"));
+		if (bodySize != std::string::npos)
+			bodySize +=1;
+		else
+			break;
+		
+    }
+    ofs.write(tmpBody.c_str(), tmpBody.size());
+    ofs.close();
+	(void) content_length;
+	(void) max_body_size;
+}
+
+void Response::postMethod()
+{
+	if (_request_headers["Content-Type"].compare(0, 19, "multipart/form-data") == 0)
+		uploadFile();
+    else {
+		std::fstream inputstream;
+
+		inputstream.open(_path,std::fstream::app);
+		inputstream << _request_body;
+    }
+
+}
+
+
+void Response::deleteMethod()
+{
+	if ((remove(_path.c_str()) == 0))
+		_status_code = ("204");
+	else
+	{
+		_status_text = "Delete failed";
+		_status_code = ("200");
+	}
 }
 
 void	Response::getContentType(void)

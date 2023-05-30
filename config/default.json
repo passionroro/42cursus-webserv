@@ -21,7 +21,7 @@
         {
           "path": "/",
           "index": "index.html",
-          "client_max_body_size": "2000000",
+          "client_max_body_size": "0",
       	  "root": "home/www"
         },
         {
@@ -29,6 +29,11 @@
 		  "index": "index.php",
 		  "bin": "cgi-hello",
       	  "root": "home/cgi",
+          "client_max_body_size": "50000"
+        },
+        {
+          "path": "/images",
+          "root": "home/www",
           "client_max_body_size": "2000000"
         }
       ]
