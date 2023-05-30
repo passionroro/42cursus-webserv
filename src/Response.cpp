@@ -244,7 +244,8 @@ void	Response::appendHeaders(std::string & str)
 	{
 		str.append(it->first + ": " + it->second + "\r\n");
 	}
-	str += "\r\n";
+	if (_cgiDone == false)
+		str += "\r\n";
 }
 
 int	Response::readStaticPage(void)

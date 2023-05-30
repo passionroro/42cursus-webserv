@@ -27,6 +27,8 @@ void	Cgi::initEnv(Server& conf)
 
 	_env["GATEWAY_INTERFACE"] = "CGI/1.1";
 
+	_env["REDIRECT_STATUS"] = "200";
+
 	// PATH_INFO
 	// PATH_TRANSLATED
 	// QUERY_STRING
@@ -79,11 +81,11 @@ void	Cgi::execute(Server& conf)
 		arg[0] = new char[bin.size() + 1];
 		arg[0] = ::strcpy(arg[0], bin.c_str());
 		arg[1] = new char[path.size() + 1];
-		arg[1] = ::strcpy(arg[0], path.c_str());
+		arg[1] = ::strcpy(arg[1], path.c_str());
 		arg[2] = NULL;
 
-		std::cout << "path: " << path << std::endl;
-		std::cout << "arg: " << arg[0] << std::endl;
+		std::cout << "bin: " << arg[0] << std::endl;
+		std::cout << "file: " << arg[1] << std::endl;
 
 		dup2(pipe1[0], STDIN_FILENO);
 		dup2(pipe2[1], STDOUT_FILENO);
@@ -93,7 +95,7 @@ void	Cgi::execute(Server& conf)
 		close(pipe2[0]);
 		close(pipe2[1]);
 
-		execve(path.c_str(), arg, getEnvv());
+		execve(bin.c_str(), arg, getEnvv());
 		std::cout << "child bug" << std::endl;
 		perror("yo: ");
 		exit(1);
