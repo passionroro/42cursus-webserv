@@ -85,8 +85,8 @@ int	Server::recv(int socket)
 
     _response = Response(request, *this);
   
-    std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
-		<< " ----------------------------------" << std::endl;
+//    std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
+//		<< " ----------------------------------" << std::endl;
     return (0);
 }
 
@@ -95,8 +95,8 @@ int	Server::send(int socket)
     std::string	str = _response.renderString();
 
     //std::cout << "Webserv: send" << std::endl;
-    std::cout << "----------- Response: -----------" << std::endl << _response.getResponseHead() << std::endl
-		<< "-------------------------------" << std::endl;
+//    std::cout << "----------- Response: -----------" << std::endl << _response.getResponseHead() << std::endl
+//		<< "-------------------------------" << std::endl;
     if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else
