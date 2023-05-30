@@ -48,12 +48,12 @@ std::string Response::getUploadFilename() {
     size_t      end_pos;
 
     filename.clear();
-    pos = _request_body.find(std::string("filename")) ;
+    pos = _requestBody.find(std::string("filename")) ;
     if (pos != std::string::npos) {
         pos += 10;
-        end_pos = _request_body.find('\"', pos);
+        end_pos = _requestBody.find('\"', pos);
         if (end_pos != std::string::npos)
-            filename = _request_body.substr(pos, end_pos - pos);
+            filename = _requestBody.substr(pos, end_pos - pos);
     }
 
     return filename;
@@ -62,15 +62,15 @@ std::string Response::getUploadFilename() {
 void Response::eraseBodyBoundaries() {
 
     std::string::size_type bodyStart = 0;
-	std::string boundary = _request_headers["Content-Type"].substr(_request_headers["Content-Type"].find('=') + 1);
-    bodyStart = _request_body.find(std::string("filename"), bodyStart);
-    bodyStart = _request_body.find(std::string("\r\n\r\n"), bodyStart);
-    _request_body.erase(0, bodyStart + 4);
+	std::string boundary = _requestHeaders["Content-Type"].substr(_requestHeaders["Content-Type"].find('=') + 1);
+    bodyStart = _requestBody.find(std::string("filename"), bodyStart);
+    bodyStart = _requestBody.find(std::string("\r\n\r\n"), bodyStart);
+    _requestBody.erase(0, bodyStart + 4);
 
-    std::string::size_type bodyEnd = _request_body.find(boundary);
+    std::string::size_type bodyEnd = _requestBody.find(boundary);
     if (bodyEnd != std::string::npos)
-        _request_body.erase(bodyEnd, _request_body.size());
-	_request_body.erase(_request_body.find_last_of("\r\n") - 1, 2);
+        _requestBody.erase(bodyEnd, _requestBody.size());
+	_requestBody.erase(_requestBody.find_last_of("\r\n") - 1, 2);
 }
 
 void Response::uploadFile() {
@@ -91,7 +91,7 @@ void Response::uploadFile() {
         return ;
 
     max_body_size = std::stoi((*upload)["client_max_body_size"]);
-    content_length = std::stoi(_request_headers["Content-Length"]);
+    content_length = std::stoi(_requestHeaders["Content-Length"]);
 //    if (content_length > max_body_size) {
 //        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
 //        return ;
@@ -119,7 +119,7 @@ void Response::uploadFile() {
 //    ofs.write(_request_body.c_str(), _request_body.size());
 
     // 2
-    std::string             tmpBody = _request_body;
+    std::string             tmpBody = _requestBody;
     std::string::size_type  bodySize = tmpBody.find(std::string("\n"));
 	while (bodySize != std::string::npos) {
         ofs.write(tmpBody.c_str(), bodySize);
@@ -139,13 +139,13 @@ void Response::uploadFile() {
 
 void Response::postMethod()
 {
-	if (_request_headers["Content-Type"].compare(0, 19, "multipart/form-data") == 0)
+	if (_requestHeaders["Content-Type"].compare(0, 19, "multipart/form-data") == 0)
 		uploadFile();
     else {
 		std::fstream inputstream;
 
 		inputstream.open(_path,std::fstream::app);
-		inputstream << _request_body;
+		inputstream << _requestBody;
     }
 
 }

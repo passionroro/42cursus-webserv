@@ -104,8 +104,8 @@ int Request::parseHeaders(std::string &request) {
 	std::string h_value;
 	size_t pos = 0;
 	size_t pos_2 = 0;
-	while ((pos = Request.find(':')) != std::string::npos) {
-		if (Request.find("\r\n", 0) == 0)
+	while ((pos = request.find(':')) != std::string::npos) {
+		if (request.find("\r\n", 0) == 0)
 			break;
 		h_key = (request.substr(0, pos));
 		request.erase(0, pos + 1);
