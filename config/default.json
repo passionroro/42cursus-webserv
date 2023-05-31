@@ -4,18 +4,16 @@
       "server_name": "www.example.com",
       "address": ["127.0.0.1", "localhost"],
       "port": 8082,
-      "client_max_body_size": 0,
       "disabled_methods": [""],
       "auto_index": true,
       "error_pages": {
         "path": "home/www/error_pages/",
-        "400": "custom_400.html",
-        "403": "custom_403.html",
-        "404": "custom_404.html",
-        "405": "custom_405.html",
-        "410": "custom_410.html",
-        "413": "custom_413.html",
-        "500": "custom_500.html"
+        "400": "400.html",
+        "404": "404.html",
+        "405": "405.html",
+        "409": "409.html",
+        "500": "500.html",
+        "501": "501.html"
       },
       "cgi": [
         {

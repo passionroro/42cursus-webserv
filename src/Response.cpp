@@ -13,8 +13,6 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 	std::cout << "path: " << _path << std::endl;
 	if (getStatus()[0] == '4')
 	{
-		//_path = "home/www/error_pages/custom_404.html";
-        //readStaticPage();
         _locIndex = _locations.end();
 		readErrorPage(server_conf, getStatus());
 	}
