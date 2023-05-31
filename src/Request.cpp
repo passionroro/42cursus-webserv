@@ -209,7 +209,6 @@ void Request::checkPath()
         if (fs.is_open())
 		{
 			_locIndex = it;
-			std::cout << "Valid path is : " << _path << std::endl;
             return;
 		}
         else
@@ -231,7 +230,6 @@ void Request::checkPath()
 					closedir(dir);
 				}
 				_path = location.back();
-				std::cout << "Valid path is : " << _path << std::endl;
 				_locIndex = it;
 				break;
 			}

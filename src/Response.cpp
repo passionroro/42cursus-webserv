@@ -108,7 +108,7 @@ void Response::uploadFile() {
     // File creation
     filename = getUploadFilename();
     if (filename.empty()) {
-		std::cerr << "Failure opening upload file." << std::endl;
+		std::cerr << BOLD << RED << "Failure opening upload file." << std::endl;
         return ;
 	}
 
@@ -116,7 +116,7 @@ void Response::uploadFile() {
     std::ofstream	ofs(path, std::fstream::out | std::fstream::binary);
 
     if (!ofs.good() || !ofs.is_open()) {
-        std::cerr << "Failure opening file at " << path << std::endl;
+        std::cerr << BOLD << RED << "Failure opening file at " << path << std::endl;
         return ;
     }
 
@@ -240,37 +240,29 @@ int	Response::readStaticPage(void)
 		sstream << file.rdbuf();
 		_response_body = sstream.str();
 		file.close();
-		//std::cout << "PAGE:" << std::endl << _page << std::endl;
 		return (200);
 	}
 	else
 	{
 		std::cout << "bro nul" << std::endl;
-		//todo default error page 404
 		return (404);
 	}
 }
 
 void	Response::redirectRequest(void)
 {
-	std::cout << "Redirect Request called" << std::endl;
-	std::cout << "new_url: " << _newURL << std::endl;
 	_response_headers.insert(std::make_pair("Location", _newURL));
 	_response_headers.insert(std::make_pair("Connection", "keep-alive"));
 }
 
 void	Response::cgi(Server& server_conf)
 {
-	std::cout << "cgi called" << std::endl;
-
 	Cgi	cgi(*this, server_conf);
 	_response_body = cgi.getRes();
 }
 
 void	Response::directoryListing(void)
 {
-	std::cout << "directory listing called" << std::endl;
-
 	DIR*	dir;
 	struct dirent*				ent;
 	std::vector<struct dirent>	entries;

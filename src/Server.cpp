@@ -7,7 +7,7 @@ Server::Server(Object & default_obj) {
 
     assignDefaultConfig(default_obj);
 
-    std::cout << "Server listening on " << _address[0] << ":" << _port << std::endl;
+    std::cout << "Server listening on " << RED << _address[0] << ":" << _port << DEFAULT << std::endl;
 
 }
 
@@ -21,7 +21,7 @@ Server::Server(Object & default_obj, Object & object) {
 		exit(1);
 	}
 
-    std::cout << "Server listening on " << _address[0] << ":" << _port << std::endl;
+    std::cout << "Server listening on " << RED << _address[0] << ":" << _port << DEFAULT << std::endl;
 
 }
 
@@ -31,7 +31,7 @@ int	Server::setup(void)
     _listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (_listen_fd == -1)
     {
-        std::cerr << "Error: socket" << std::endl;
+        std::cerr << BOLD << RED << "Error: socket" << std::endl;
         return (-1);
     }
     _addr.sin_family = AF_INET;
@@ -40,12 +40,12 @@ int	Server::setup(void)
     _addr.sin_port = htons(_port);
     if (bind(_listen_fd, (saddr*)&_addr, sizeof(_addr)) == -1)
     {
-        std::cerr << "Error: bind" << std::endl;
+        std::cerr << BOLD << RED << "Error: bind" << std::endl;
         return (-2);
     }
     if (listen(_listen_fd, SERVER_BACKLOG) == -1)
     {
-        std::cerr << "Error: bind" << std::endl;
+        std::cerr << BOLD << RED << "Error: bind" << std::endl;
         return (-3);
     }
     return (0);
@@ -57,8 +57,11 @@ void	Server::accept(void)
     if (socket != -1)
         fcntl(socket, F_SETFL, O_NONBLOCK);
     else
-        std::cerr << "Error: accept" << std::endl;
+        std::cerr << BOLD << RED << "Error: accept" << std::endl;
     _socket.push(socket);
+
+    std::cout << "---------- " << GREEN << "New request" << DEFAULT << " ----------\n" << std::endl;
+
 }
 
 int	Server::recv(int socket)
@@ -72,7 +75,6 @@ int	Server::recv(int socket)
     {
 		buf[tmp] = '\0';
        request += std::string(buf, tmp);
-//		request += buf;
 		bytes_read += tmp;
     }
     buf[BUFSIZE - 1] = '\0';
@@ -83,14 +85,15 @@ int	Server::recv(int socket)
     }
     if (bytes_read == -1)
     {
-        std::cerr << "Error: recv: " << strerror(errno) << std::endl;
+        std::cerr << BOLD << RED << "Error: recv: " << strerror(errno) << std::endl;
         return (-1);
     }
 
     _response = Response(request, *this);
-  
-//    std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
-//		<< " ----------------------------------" << std::endl;
+
+    std::string print = request.substr(0, request.find('\n'));
+    std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
+
     return (0);
 }
 
@@ -98,9 +101,9 @@ int	Server::send(int socket)
 {
     std::string	str = _response.renderString();
 
-    //std::cout << "Webserv: send" << std::endl;
-//    std::cout << "----------- Response: -----------" << std::endl << _response.getResponseHead() << std::endl
-//		<< "-------------------------------" << std::endl;
+    std::string print = _response.getResponseHead().substr(0, _response.getResponseHead().find('\n'));
+    std::cout << "Response: " << LGREEN << print << DEFAULT << std::endl;
+
     if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else
@@ -109,7 +112,6 @@ int	Server::send(int socket)
 
 void	Server::close(void)
 {
-    std::cout << "Webserv: close" << std::endl;
     if (_socket.size() && _socket.front() > 0)
 	{
         ::close(_socket.front());
