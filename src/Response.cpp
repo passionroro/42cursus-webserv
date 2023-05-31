@@ -282,20 +282,24 @@ void	Response::directoryListing(void)
 
 	std::sort(entries.begin(), entries.end(), comp);
 
+	std::string path = getRequestPath();
+	if (path.back() == '?')
+		path.pop_back();
+
 	std::string	html("<!DOCTYPE html>\r\n"
 					"<html lang=\"en\">\r\n"
 					"<head>\r\n"
 					"</head>\r\n"
 					"<body>\r\n"
-					"<h1>Index of " + getRequestPath() + "</h1>\r\n");
+					"<h1>Index of " + path + "</h1>\r\n");
 
 	for (unsigned long i = 0 ; i < entries.size() ; i++)
 	{
 		std::string line;
 
 		line += "<a href=\"";
-		line += getRequestPath();
-		if (getRequestPath()[getRequestPath().size() - 1] != '/')
+		line += path;
+		if (path[path.size() - 1] != '/')
 			line += '/';
 		line += entries[i].d_name;
 		line += "\">";
