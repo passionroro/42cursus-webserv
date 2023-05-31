@@ -27,7 +27,7 @@ int	Server::setup(void)
     _listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (_listen_fd == -1)
     {
-        std::cerr << "Error: socket" << std::endl;
+        std::cerr << BOLD << RED << "Error: socket" << std::endl;
         return (-1);
     }
     _addr.sin_family = AF_INET;
@@ -36,12 +36,12 @@ int	Server::setup(void)
     _addr.sin_port = htons(_port);
     if (bind(_listen_fd, (saddr*)&_addr, sizeof(_addr)) == -1)
     {
-        std::cerr << "Error: bind" << std::endl;
+        std::cerr << BOLD << RED << "Error: bind" << std::endl;
         return (-2);
     }
     if (listen(_listen_fd, SERVER_BACKLOG) == -1)
     {
-        std::cerr << "Error: bind" << std::endl;
+        std::cerr << BOLD << RED << "Error: bind" << std::endl;
         return (-3);
     }
     return (0);
@@ -53,8 +53,11 @@ void	Server::accept(void)
     if (socket != -1)
         fcntl(socket, F_SETFL, O_NONBLOCK);
     else
-        std::cerr << "Error: accept" << std::endl;
+        std::cerr << BOLD << RED << "Error: accept" << std::endl;
     _socket.push(socket);
+
+    std::cout << "---------- " << GREEN << "New request" << DEFAULT << " ----------\n" << std::endl;
+
 }
 
 int	Server::recv(int socket)
@@ -78,7 +81,7 @@ int	Server::recv(int socket)
     }
     if (bytes_read == -1)
     {
-        std::cerr << "Error: recv: " << strerror(errno) << std::endl;
+        std::cerr << BOLD << RED << "Error: recv: " << strerror(errno) << std::endl;
         return (-1);
     }
 
@@ -105,7 +108,6 @@ int	Server::send(int socket)
 
 void	Server::close(void)
 {
-    std::cout << "Webserv: " << GREEN << "close" << DEFAULT << std::endl;
     if (_socket.size() && _socket.front() > 0)
 	{
         ::close(_socket.front());

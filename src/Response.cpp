@@ -10,7 +10,7 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 {
 	if (getStatus()[0] == '4')
 	{
-		_path = "home/www/error_404.html";
+		_path = "home/www/error_pages/custom_404.html";
 		_locIndex = _locations.end();
 	}
 	else if (getStatus()[0] == '3')
@@ -101,7 +101,7 @@ void Response::uploadFile() {
     // File creation
     filename = getUploadFilename();
     if (filename.empty()) {
-		std::cerr << "Failure opening upload file." << std::endl;
+		std::cerr << BOLD << RED << "Failure opening upload file." << std::endl;
         return ;
 	}
 
@@ -109,7 +109,7 @@ void Response::uploadFile() {
     std::ofstream	ofs(path, std::fstream::out | std::fstream::binary);
 
     if (!ofs.good() || !ofs.is_open()) {
-        std::cerr << "Failure opening file at " << path << std::endl;
+        std::cerr << BOLD << RED << "Failure opening file at " << path << std::endl;
         return ;
     }
 

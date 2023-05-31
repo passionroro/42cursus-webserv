@@ -22,6 +22,7 @@
 # include <queue>
 
 # define DEFAULT "\033[0m"
+# define BOLD "\033[1m"
 # define RED "\033[31m"
 # define GREEN "\033[32m"
 # define LGREEN "\033[92m"
