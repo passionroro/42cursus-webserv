@@ -191,6 +191,8 @@ void Request::checkPath()
 	std::vector<std::string> location;
     Locations::iterator it;
 	
+	if (_path.size() != 1 && _path.back() == '/')
+		_path.pop_back();
     for (it = _locations.begin();it != _locations.end(); it++)
 	{
 		if (_path.substr(0, _path.find('/',1)) == it->at("path") && _path != it->at("path"))
