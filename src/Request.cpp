@@ -19,8 +19,8 @@ Request::~Request() {}
 
 /* MEMBER FUNCTIONS */
 
-int Request::parseRequest(std::string &request, Server& conf) {
-	
+int Request::parseRequest(std::string &request, Server& conf)
+{
 	std::vector<std::string> firstLine;
 	std::string R_line;
 	int spaceCount = 0;
@@ -66,36 +66,23 @@ int Request::parseRequest(std::string &request, Server& conf) {
 void	Request::checkRedirection(Server& conf)
 {
 	Redirection const& redirection = conf.getRedirection();
-	//std::cout << "path: " << _path << std::endl;
 
     Redirection::const_iterator it;
 	
-    
 	for (it = redirection.begin() ; it != redirection.end(); it++)
 	{
-		try
-		{
-			it->at("old_url");
-			it->at("new_url");
-			it->at("type");
-		}
-		catch (std::exception& e)
-		{
-			std::cerr << "Redirection badly defined" << std::endl;
-		}
         if (_path == it->at("old_url") && it->at("type") == "permanent")
 		{
-			std::cout << "Redirection!!!" << std::endl;
 			_newURL = it->at("new_url");
 			_status = "301";
 		}
         if (_path == it->at("old_url") && it->at("type") == "tmp")
 		{
-			std::cout << "Redirection!!!" << std::endl;
 			_newURL = it->at("new_url");
 			_status = "302";
 		}
     }
+	_status = "200";
 }
 
 int Request::parseHeaders(std::string &request) {
@@ -133,9 +120,6 @@ void	Request::printHeaders(void)
 void	Request::checkHost(Server& conf)
 {
 
-	//printHeaders();
-	//MapStr::iterator it = _request_headers.find("Host");
-	//std::cout << "checkHost: " << it->first << ", " << it->second << std::endl;
 	if (_requestHeaders.find("Host") == _requestHeaders.end())
 	{
 		_status = "400";
@@ -147,7 +131,6 @@ void	Request::checkHost(Server& conf)
 	size_t sep;
 	if ((sep = host.find_first_of(':')) != host.npos)
 		host = host.substr(0, sep);
-	//std::cout << "parsed host: " << host << std::endl;
 
 
 	if (host == conf.getServerName())
@@ -193,7 +176,8 @@ void Request::checkMethod() {
 		if (_method == *it)
 			setStatus("501");
 	}
-	for (std::vector<std::string>::iterator it = _disabledMethod.begin();it != _disabledMethod.end(); it++) {
+	for (std::vector<std::string>::iterator it = _disabledMethod.begin() ; it != _disabledMethod.end() ; it++)
+	{
 		if (_method == *it)
 			setStatus("405");
 	}
@@ -213,8 +197,11 @@ void Request::checkPath()
     }
 	
 	if (it != _locations.end()) {
+		_path.clear();
+		_path = it->at("root");
+		if (_path.back() != '/')
+			_path.append("/");
         _path.append(it->at("index"));
-        _path.insert(0,it->at("root"));
         fs.open(_path);
         if (fs.is_open())
 		{

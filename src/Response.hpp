@@ -26,6 +26,8 @@ public:
 	void		directoryListing(void);
 	int			readStaticPage(void);
 
+	bool	pathIsCGI(Server& server_conf);
+
 	std::string	getStatusText(void);
 
 	std::string	renderString(void);

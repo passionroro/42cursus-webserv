@@ -15,7 +15,11 @@ Server::Server(Object & default_obj) {
 Server::Server(Object & default_obj, Object & object) {
 
     assignDefaultConfig(default_obj);
-    assignNewConfig(object);
+    if (assignNewConfig(object))
+	{
+		std::cout << "Bad config file!" << std::endl;
+		exit(1);
+	}
 
     std::cout << "Server listening on " << _address[0] << ":" << _port << std::endl;
 
@@ -141,11 +145,22 @@ void Server::assignDefaultConfig(Object &object) {
     for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
         _locations.push_back(it->getString());
     }
+	
+	//	CGI BLOCK
+	{
+		std::vector<Object>             tmp_cgi;
+		std::vector<Object>::iterator   it;
+
+		tmp_cgi = object.getArray()["cgi"].getObject();
+		for (it = tmp_cgi.begin() ; it != tmp_cgi.end() ; it++) {
+			_cgi.push_back(it->getString());
+		}
+	}
 
 }
 
-void Server::assignNewConfig(Object & object) {
-
+bool Server::assignNewConfig(Object & object)
+{
     if (object.getString().find(std::string("server_name")) != object.getString().end())
         _server_name = object.getString()["server_name"];
     if (object.getInt().find(std::string("port")) != object.getInt().end())
@@ -227,15 +242,47 @@ void Server::assignNewConfig(Object & object) {
                 std::cerr << "cfg: location block needs a path: no creation." << std::endl;
 
         }
-    }
+	}
 
-    std::vector<Object>             tmp_redirection;
-    std::vector<Object>::iterator   it;
+	//	REDIRECTION BLOCK
+	{
+		std::vector<Object>             tmp_redirection;
+		std::vector<Object>::iterator   it;
 
-    tmp_redirection = object.getArray()["redirection"].getObject();
-    for (it = tmp_redirection.begin() ; it != tmp_redirection.end() ; it++) {
-        _redirection.push_back(it->getString());
-    }
+		tmp_redirection = object.getArray()["redirection"].getObject();
+		for (it = tmp_redirection.begin() ; it != tmp_redirection.end() ; it++) {
+			_redirection.push_back(it->getString());
+		}
+
+		Redirection::const_iterator	it2;
+
+		for (it2 = _redirection.begin() ; it2 != _redirection.end() ; it2++)
+		{
+			try
+			{
+				it2->at("old_url");
+				it2->at("new_url");
+				it2->at("type");
+			}
+			catch (std::exception& e)
+			{
+				std::cerr << "Redirection badly defined" << std::endl;
+				return true;
+			}
+		}
+	}
+    
+	//	CGI BLOCK
+	{
+		std::vector<Object>             tmp_cgi;
+		std::vector<Object>::iterator   it;
+
+		tmp_cgi = object.getArray()["cgi"].getObject();
+		for (it = tmp_cgi.begin() ; it != tmp_cgi.end() ; it++) {
+			_cgi.push_back(it->getString());
+		}
+	}
+	return false;
 }
 
 /* ACCESSORS */

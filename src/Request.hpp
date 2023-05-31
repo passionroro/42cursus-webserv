@@ -34,16 +34,22 @@ public:
 	void		printHeaders(void);
 	std::map<std::string, std::string> getRequestHeaders(void) { return _requestHeaders; }
 
+	std::string&	getPath(void)		{ return _path; }
+	std::string&	getCgiBin(void)		{ return _cgiBin; }
+
 protected:
 
 	Locations			_locations;
 	std::string			_path;
-	Locations::iterator	_locIndex;
+	Locations::iterator			_locIndex;
 	std::string 		_method;
 	bool				_isDir;
 	std::string         _requestBody;
 	std::map<std::string, std::string>	_requestHeaders;
 	std::string			_newURL;
+	std::string			_cgiBin;
+
+	bool		_cgiDone;
 
 
 private:
