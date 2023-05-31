@@ -37,8 +37,8 @@
         {
           "path": "/site2",
           "index": "index.html",
-          "root": "home/www",
-          "client_max_body_size": "2000000"
+          "client_max_body_size": "2000000",
+          "root": "home/www"
         }
       ]
     }
