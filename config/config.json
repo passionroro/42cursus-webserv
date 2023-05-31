@@ -4,23 +4,12 @@
 	  "server_name": "webserv42.ch",
       "address": ["127.0.0.1", "localhost"],
       "port": 80,
-      "root": "/home/www",
-      "client_max_body_size": 0,
       "disabled_methods": [""],
       "error_pages": {
-        "path": "/error_pages",
-        "404": "custom_404_BITE.html",
+        "path": "home/www/custom_error_pages/",
+        "404": "custom_404.html",
         "500": "custom_500.html"
       },
-      "locations": [
-        {
-          "path": "/images",
-          "client_max_body_size": "2000000"
-        },
-        {
-          "path": "/php"
-        }
-      ],
 	  "redirection": [
 		{
 			"old_url": "/old_page",
@@ -38,7 +27,6 @@
 	  "server_name": "webserv42.ch",
       "address": ["127.0.0.1", "localhost"],
       "port": 82,
-      "root": "/home/www",
       "disabled_methods": ["GET", "POST"],
       "locations": [
         {
@@ -53,7 +41,6 @@
 	  "server_name": "webserv42.ch",
       "address": ["127.0.0.1", "localhost"],
       "port": 81,
-      "root": "/home/www",
       "disabled_methods": ["GET", "DELETE"]
     }
   ]

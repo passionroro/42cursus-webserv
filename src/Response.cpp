@@ -10,13 +10,8 @@ Response::Response(void)
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
 	_cgiDone = false;
-	std::cout << "path: " << _path << std::endl;
 	if (getStatus()[0] == '4')
-	{
-		_path = "home/www/error_pages/custom_404.html";
-        readStaticPage();
         _locIndex = _locations.end();
-	}
 	else if (getStatus()[0] == '3')
 		redirectRequest();
 	else if (_locIndex != _locations.end() && pathIsCGI(server_conf))
@@ -32,6 +27,9 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		deleteMethod();
 	else
 		readStaticPage();
+
+	if (getStatus()[0] == '4' || getStatus()[0] == '5')
+		readErrorPage(server_conf, getStatus());
 	
 	createHeaders();
 	_status_code = getStatus();
@@ -284,20 +282,24 @@ void	Response::directoryListing(void)
 
 	std::sort(entries.begin(), entries.end(), comp);
 
+	std::string path = getRequestPath();
+	if (path.back() == '?')
+		path.pop_back();
+
 	std::string	html("<!DOCTYPE html>\r\n"
 					"<html lang=\"en\">\r\n"
 					"<head>\r\n"
 					"</head>\r\n"
 					"<body>\r\n"
-					"<h1>Index of " + getRequestPath() + "</h1>\r\n");
+					"<h1>Index of " + path + "</h1>\r\n");
 
 	for (unsigned long i = 0 ; i < entries.size() ; i++)
 	{
 		std::string line;
 
 		line += "<a href=\"";
-		line += getRequestPath();
-		if (getRequestPath()[getRequestPath().size() - 1] != '/')
+		line += path;
+		if (path[path.size() - 1] != '/')
 			line += '/';
 		line += entries[i].d_name;
 		line += "\">";
@@ -334,6 +336,30 @@ bool	Response::pathIsCGI(Server& server_conf)
 		}
 	}
 	return false;
+}
+
+void	Response::readErrorPage(Server& conf, std::string const & status)
+{
+	std::ifstream	file;
+	std::stringstream	sstream;
+	std::string		newPath;
+
+	newPath = conf.getErrorPages()["path"] + conf.getErrorPages()[status];
+
+	std::cout << "newPath: " << newPath << std::endl;
+
+	file.open(newPath.c_str(), std::fstream::in);
+	if (file.is_open() == true)
+	{
+		sstream << file.rdbuf();
+		_response_body = sstream.str();
+		file.close();
+	}
+	else
+	{
+		std::cout << "Error page not found" << std::endl;
+		//todo default error page 404
+	}
 }
 
 std::string	Response::renderString(void)
