@@ -13,15 +13,12 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 	std::cout << "path: " << _path << std::endl;
 	if (getStatus()[0] == '4')
 	{
-		std::cout << "t-es la?" << std::endl;
-		_path = "home/www/error_404.html";
-		//std::cout << "new path is error_404" << std::endl;
-		_locIndex = _locations.end();
+		_path = "home/www/error_pages/custom_404.html";
+        readStaticPage();
+        _locIndex = _locations.end();
 	}
 	else if (getStatus()[0] == '3')
 		redirectRequest();
-	//else if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
-	//	cgi(server_conf);
 	else if (_locIndex != _locations.end() && pathIsCGI(server_conf))
 	{
 		cgi(server_conf);
@@ -103,10 +100,10 @@ void Response::uploadFile() {
 
     max_body_size = std::stoi((*upload)["client_max_body_size"]);
     content_length = std::stoi(_requestHeaders["Content-Length"]);
-//    if (content_length > max_body_size) {
-//        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
-//        return ;
-//    }
+    if (content_length > max_body_size) {
+        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
+        return ;
+    }
 
     // File creation
     filename = getUploadFilename();
@@ -125,12 +122,9 @@ void Response::uploadFile() {
 
     eraseBodyBoundaries();
 
-    // Write to file
     ofs.write(_requestBody.c_str(), _requestBody.size());
 
     ofs.close();
-	(void) content_length;
-	(void) max_body_size;
 }
 
 void Response::postMethod()
