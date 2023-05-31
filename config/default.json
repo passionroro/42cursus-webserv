@@ -17,6 +17,16 @@
         "413": "custom_413.html",
         "500": "custom_500.html"
       },
+      "cgi": [
+        {
+          "extension": ".php",
+          "bin": "/opt/homebrew/bin/php-cgi"
+        },
+        {
+          "extension": ".sh",
+          "bin": "/bin/bash"
+        }
+      ],
       "locations": [
         {
           "path": "/",
@@ -25,11 +35,9 @@
       	  "root": "home/www"
         },
         {
-          "path": "/cgi-bin",
-		  "index": "index.php",
-		  "bin": "cgi-hello",
-      	  "root": "home/cgi",
-          "client_max_body_size": "50000"
+          "path": "/site2",
+          "index": "index.html",
+          "root": "home/www"
         },
         {
           "path": "/images",

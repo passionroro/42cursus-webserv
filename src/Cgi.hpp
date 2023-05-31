@@ -12,11 +12,13 @@ public:
 	virtual ~Cgi(void);
 
 	void	initEnv(Server& conf);
-	void	execute(void);
+	void	execute(Server& conf);
 
 	char	**getEnvv(void) const;
 
 	std::string	readRes(int fd);
+
+	std::string	getBin(Server& conf);
 
 	std::string	getRes(void) const { return _res; }
 	

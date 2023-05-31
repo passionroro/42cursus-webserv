@@ -1,4 +1,5 @@
 #include "Response.hpp"
+#include "Server.hpp"
 #include "MimeTypes.hpp"
 #include <dirent.h>
 
@@ -8,15 +9,21 @@ Response::Response(void)
 
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
+	_cgiDone = false;
+	std::cout << "path: " << _path << std::endl;
 	if (getStatus()[0] == '4')
 	{
 		_path = "home/www/error_pages/custom_404.html";
-		_locIndex = _locations.end();
+        readStaticPage();
+        _locIndex = _locations.end();
 	}
 	else if (getStatus()[0] == '3')
 		redirectRequest();
-	else if (_locIndex != _locations.end() && (*_locIndex)["bin"] != "")
+	else if (_locIndex != _locations.end() && pathIsCGI(server_conf))
+	{
 		cgi(server_conf);
+		_cgiDone = true;
+	}
 	else if (_isDir)
 		directoryListing();
 	else if(_method == "POST")
@@ -93,10 +100,10 @@ void Response::uploadFile() {
 
     max_body_size = std::stoi((*upload)["client_max_body_size"]);
     content_length = std::stoi(_requestHeaders["Content-Length"]);
-//    if (content_length > max_body_size) {
-//        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
-//        return ;
-//    }
+    if (content_length > max_body_size) {
+        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
+        return ;
+    }
 
     // File creation
     filename = getUploadFilename();
@@ -115,12 +122,9 @@ void Response::uploadFile() {
 
     eraseBodyBoundaries();
 
-    // Write to file
     ofs.write(_requestBody.c_str(), _requestBody.size());
 
     ofs.close();
-	(void) content_length;
-	(void) max_body_size;
 }
 
 void Response::postMethod()
@@ -155,6 +159,9 @@ void	Response::getContentType(void)
 	if (mt.getMap().find("html") == mt.getMap().end())
 		return ;
 	
+	if (_cgiDone)
+		_response_headers.insert(std::make_pair("Content-Type", mt.getMap()["html"]));
+
 	std::string	extension;
 
 	size_t	start = _path.find_last_of('.');
@@ -218,7 +225,8 @@ void	Response::appendHeaders(std::string & str)
 	{
 		str.append(it->first + ": " + it->second + "\r\n");
 	}
-	str += "\r\n";
+	if (_cgiDone == false)
+		str += "\r\n";
 }
 
 int	Response::readStaticPage(void)
@@ -295,6 +303,30 @@ void	Response::directoryListing(void)
 	_response_body += html;
 }
 
+bool	Response::pathIsCGI(Server& server_conf)
+{
+	std::string	extension;
+	size_t	sep = _path.find_last_of('.');
+
+	Locations const&	cgi = server_conf.getCgi();
+
+	if (sep != _path.npos)
+	{
+		extension = _path.substr(sep, _path.back());
+		//std::cout << "pathIsCGI, path: " << _path << std::endl;
+		//std::cout << "pathIsCGI, sep: " << sep << std::endl;
+		//std::cout << "pathIsCGI, extension: " << extension << std::endl;
+	}
+	for (Locations::const_iterator it = cgi.begin() ; it != cgi.end() ; it++)
+	{
+		if (extension == it->at("extension"))
+		{
+			_cgiBin = it->at("bin");
+			return true;
+		}
+	}
+	return false;
+}
 
 std::string	Response::renderString(void)
 {

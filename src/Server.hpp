@@ -45,13 +45,14 @@ public:
 	std::vector<std::string>&	getAddress(void) { return _address; }
 	std::vector<std::string>	getDisabledMethods(void) { return _disabled_methods; }
 	Locations		getLocations(void) { return _locations; }
+	Locations		getCgi(void) { return _cgi; }
 	Redirection		getRedirection(void) { return _redirection; }
 
 
 protected:
     /* CFG UTILS */
     void    assignDefaultConfig(Object & object);
-    void    assignNewConfig(Object & object);
+    bool	assignNewConfig(Object & object);
 
 
 private:
@@ -66,6 +67,7 @@ private:
     MapStr      _error_pages;
     Locations   _locations;
 	Redirection	_redirection;
+	Locations	_cgi;
 
     /* SERVER UTILS */
     unsigned int	_host; //still useful ?
