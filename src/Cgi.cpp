@@ -30,17 +30,29 @@ void	Cgi::initEnv(Server& conf)
 	_env["REDIRECT_STATUS"] = "200";
 
 	// PATH_INFO
+	//_env["PATH_INFO"] = _r.getPath();
 	// PATH_TRANSLATED
 	// QUERY_STRING
 	
 	// REMOTE_ADDR
 	//
 	// REQUEST_METHOD
+	_env["REQUEST_METHOD"] = _r.getMethod();
 	//
 	// SCRIPT_NAME = path before path info
-	//
-	// SERVER_NAME
-	//
+	char	buf[80];
+	getcwd(buf, 80);
+	std::string	cwd = buf;
+	//std::cout << "cwd: " << cwd << std::endl;
+	//_env["SCRIPT_NAME"] = cwd + "/" + _r.getPath();
+	_env["SCRIPT_NAME"] = _r.getRequestPath();
+	_env["SCRIPT_FILENAME"] = _r.getPath();
+	//_env["PATH_INFO"] = cwd + "/" + _r.getPath();
+	_env["PATH_INFO"] = "";
+	_env["SERVER_NAME"] = conf.getServerName();
+
+	_env["DOCUMENT_ROOT"] = cwd + "/" + _r.getPath().substr(0, _r.getPath().find(_r.getRequestPath()));;
+
 	// todo continue read from 4.1.15
 
 	_env["SERVER_PROTOCOL"] = "HTTP/1.1";
@@ -73,8 +85,14 @@ void	Cgi::execute(Server& conf)
 		std::cout << "child alive" << std::endl;
 		
 		std::string	bin = _r.getCgiBin();
-		std::string	path = _r.getPath();
+		//std::string	path = _r.getPath();
+	
+		char	buf[80];
+		getcwd(buf, 80);
+		std::string	cwd = buf;
 
+		std::string	path = cwd + "/" + _r.getPath();
+	//_env["PATH_INFO"] = cwd + "/" + _r.getPath();
 
 		char**	arg;
 		arg = new char*[3];
