@@ -26,10 +26,10 @@ std::vector<std::string>	split(std::string string, char delimiter){
 	return ret;
 }
 
-
 std::string trim(std::string string, char to_erase){
 	size_t position;
 	while ((position = string.find(to_erase)) != std::string::npos){
 		string.erase(position, 1);}
 	return string;
 }
+

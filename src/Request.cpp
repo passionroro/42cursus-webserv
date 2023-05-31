@@ -208,18 +208,17 @@ void Request::checkPath()
     Locations::iterator it;
 	
     for (it = _locations.begin();it != _locations.end(); it++) {
-        if (_path == it->at("path"))
+        if (_path == (*it)["path"])
             break;
     }
 	
 	if (it != _locations.end()) {
-        _path.append(it->at("index"));
-        _path.insert(0,it->at("root"));
+        _path.append((*it)["index"]);
+        _path.insert(0, (*it)["root"]);
         fs.open(_path);
         if (fs.is_open())
 		{
 			_locIndex = it;
-			std::cout << "Valid path is : " << _path << std::endl;
             return;
 		}
         else
@@ -241,7 +240,6 @@ void Request::checkPath()
 					closedir(dir);
 				}
 				_path = location.back();
-				std::cout << "Valid path is : " << _path << std::endl;
 				_locIndex = it;
 				break;
 			}

@@ -11,7 +11,6 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 	if (getStatus()[0] == '4')
 	{
 		_path = "home/www/error_404.html";
-		//std::cout << "new path is error_404" << std::endl;
 		_locIndex = _locations.end();
 	}
 	else if (getStatus()[0] == '3')
@@ -233,37 +232,29 @@ int	Response::readStaticPage(void)
 		sstream << file.rdbuf();
 		_response_body = sstream.str();
 		file.close();
-		//std::cout << "PAGE:" << std::endl << _page << std::endl;
 		return (200);
 	}
 	else
 	{
 		std::cout << "bro nul" << std::endl;
-		//todo default error page 404
 		return (404);
 	}
 }
 
 void	Response::redirectRequest(void)
 {
-	std::cout << "Redirect Request called" << std::endl;
-	std::cout << "new_url: " << _newURL << std::endl;
 	_response_headers.insert(std::make_pair("Location", _newURL));
 	_response_headers.insert(std::make_pair("Connection", "keep-alive"));
 }
 
 void	Response::cgi(Server& server_conf)
 {
-	std::cout << "cgi called" << std::endl;
-
 	Cgi	cgi(*this, server_conf);
 	_response_body = cgi.getRes();
 }
 
 void	Response::directoryListing(void)
 {
-	std::cout << "directory listing called" << std::endl;
-
 	DIR*	dir;
 	struct dirent*				ent;
 	std::vector<struct dirent>	entries;

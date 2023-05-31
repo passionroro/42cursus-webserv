@@ -20,7 +20,6 @@ MimeTypes::MimeTypes(void)
 		split >> value;
 		split >> key;
 		key.pop_back();
-		//std::cout << key << value << std::endl;
 		_map.insert(std::make_pair(key, value));
 	}
 	in.close();

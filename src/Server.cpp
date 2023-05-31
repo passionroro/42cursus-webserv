@@ -7,7 +7,7 @@ Server::Server(Object & default_obj) {
 
     assignDefaultConfig(default_obj);
 
-    std::cout << "Server listening on " << _address[0] << ":" << _port << std::endl;
+    std::cout << "Server listening on " << RED << _address[0] << ":" << _port << DEFAULT << std::endl;
 
 }
 
@@ -17,7 +17,7 @@ Server::Server(Object & default_obj, Object & object) {
     assignDefaultConfig(default_obj);
     assignNewConfig(object);
 
-    std::cout << "Server listening on " << _address[0] << ":" << _port << std::endl;
+    std::cout << "Server listening on " << RED << _address[0] << ":" << _port << DEFAULT << std::endl;
 
 }
 
@@ -68,7 +68,6 @@ int	Server::recv(int socket)
     {
 		buf[tmp] = '\0';
        request += std::string(buf, tmp);
-//		request += buf;
 		bytes_read += tmp;
     }
     buf[BUFSIZE - 1] = '\0';
@@ -84,9 +83,10 @@ int	Server::recv(int socket)
     }
 
     _response = Response(request, *this);
-  
-//    std::cout << "-----------  Request: ------------" << std::endl << request << std::endl
-//		<< " ----------------------------------" << std::endl;
+
+    std::string print = request.substr(0, request.find('\n'));
+    std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
+
     return (0);
 }
 
@@ -94,9 +94,9 @@ int	Server::send(int socket)
 {
     std::string	str = _response.renderString();
 
-    //std::cout << "Webserv: send" << std::endl;
-//    std::cout << "----------- Response: -----------" << std::endl << _response.getResponseHead() << std::endl
-//		<< "-------------------------------" << std::endl;
+    std::string print = _response.getResponseHead().substr(0, _response.getResponseHead().find('\n'));
+    std::cout << "Response: " << LGREEN << print << DEFAULT << std::endl;
+
     if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
     else
@@ -105,7 +105,7 @@ int	Server::send(int socket)
 
 void	Server::close(void)
 {
-    std::cout << "Webserv: close" << std::endl;
+    std::cout << "Webserv: " << GREEN << "close" << DEFAULT << std::endl;
     if (_socket.size() && _socket.front() > 0)
 	{
         ::close(_socket.front());
