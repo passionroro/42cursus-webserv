@@ -70,7 +70,9 @@ void Response::eraseBodyBoundaries() {
     std::string::size_type bodyEnd = _requestBody.find(boundary);
     if (bodyEnd != std::string::npos)
         _requestBody.erase(bodyEnd, _requestBody.size());
+
 	_requestBody.erase(_requestBody.find_last_of("\r\n") - 1, 2);
+	_requestBody.erase(_requestBody.find_last_of("--") - 1, 2);
 }
 
 void Response::uploadFile() {
@@ -115,23 +117,8 @@ void Response::uploadFile() {
     eraseBodyBoundaries();
 
     // Write to file
-    // 1
-//    ofs.write(_request_body.c_str(), _request_body.size());
+    ofs.write(_requestBody.c_str(), _requestBody.size());
 
-    // 2
-    std::string             tmpBody = _requestBody;
-    std::string::size_type  bodySize = tmpBody.find(std::string("\n"));
-	while (bodySize != std::string::npos) {
-        ofs.write(tmpBody.c_str(), bodySize);
-        tmpBody.erase(0, bodySize);
-        bodySize = tmpBody.find(std::string("\n"));
-		if (bodySize != std::string::npos)
-			bodySize +=1;
-		else
-			break;
-		
-    }
-    ofs.write(tmpBody.c_str(), tmpBody.size());
     ofs.close();
 	(void) content_length;
 	(void) max_body_size;
