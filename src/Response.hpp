@@ -25,6 +25,7 @@ public:
 	void		cgi(Server& server_conf);
 	void		directoryListing(void);
 	int			readStaticPage(void);
+	void		readErrorPage(Server& server_conf, std::string const & status);
 
 	bool	pathIsCGI(Server& server_conf);
 

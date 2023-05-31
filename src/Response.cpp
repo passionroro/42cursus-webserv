@@ -13,9 +13,10 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 	std::cout << "path: " << _path << std::endl;
 	if (getStatus()[0] == '4')
 	{
-		_path = "home/www/error_pages/custom_404.html";
-        readStaticPage();
+		//_path = "home/www/error_pages/custom_404.html";
+        //readStaticPage();
         _locIndex = _locations.end();
+		readErrorPage(server_conf, getStatus());
 	}
 	else if (getStatus()[0] == '3')
 		redirectRequest();
@@ -334,6 +335,30 @@ bool	Response::pathIsCGI(Server& server_conf)
 		}
 	}
 	return false;
+}
+
+void	Response::readErrorPage(Server& conf, std::string const & status)
+{
+	std::ifstream	file;
+	std::stringstream	sstream;
+	std::string		newPath;
+
+	newPath = conf.getErrorPages()["path"] + conf.getErrorPages()[status];
+
+	std::cout << "newPath: " << newPath << std::endl;
+
+	file.open(newPath.c_str(), std::fstream::in);
+	if (file.is_open() == true)
+	{
+		sstream << file.rdbuf();
+		_response_body = sstream.str();
+		file.close();
+	}
+	else
+	{
+		std::cout << "Error page not found" << std::endl;
+		//todo default error page 404
+	}
 }
 
 std::string	Response::renderString(void)

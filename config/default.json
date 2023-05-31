@@ -8,7 +8,7 @@
       "disabled_methods": [""],
       "auto_index": true,
       "error_pages": {
-        "path": "/error_pages",
+        "path": "home/www/error_pages/",
         "400": "custom_400.html",
         "403": "custom_403.html",
         "404": "custom_404.html",
