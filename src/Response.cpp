@@ -10,7 +10,6 @@ Response::Response(void)
 Response::Response(std::string request, Server& server_conf) : Request(request, server_conf)
 {
 	_cgiDone = false;
-	std::cout << "path: " << _path << std::endl;
 	if (getStatus()[0] == '4')
 	{
         _locIndex = _locations.end();

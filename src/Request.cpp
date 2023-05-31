@@ -75,11 +75,13 @@ void	Request::checkRedirection(Server& conf)
 		{
 			_newURL = it->at("new_url");
 			_status = "301";
+			return ;
 		}
         if (_path == it->at("old_url") && it->at("type") == "tmp")
 		{
 			_newURL = it->at("new_url");
 			_status = "302";
+			return ;
 		}
     }
 	_status = "200";
@@ -106,7 +108,6 @@ int Request::parseHeaders(std::string &request) {
       		setStatus("400");
     	_requestHeaders.insert(std::pair<std::string, std::string>(h_key, h_value));
 	}
-	//printHeaders();
 	return 0;
 }
 
@@ -211,7 +212,7 @@ void Request::checkPath()
         if (fs.is_open())
 		{
 			_locIndex = it;
-			std::cout << "Valid path is : " << _path << std::endl;
+			//std::cout << "Valid path is : " << _path << std::endl;
             return;
 		}
         else
@@ -233,7 +234,7 @@ void Request::checkPath()
 					closedir(dir);
 				}
 				_path = location.back();
-				std::cout << "Valid path is : " << _path << std::endl;
+				//std::cout << "Valid path is : " << _path << std::endl;
 				_locIndex = it;
 				break;
 			}
@@ -241,9 +242,6 @@ void Request::checkPath()
 		if (!fs.is_open() && _isDir == false)
 			setStatus("404");
 	}
-	//std::cout << "404 not found: " << _path << std::endl;
-//	ADD REDIRECTIONS
-//  CLOSE PATH WHEN ??
 }
 
 /* SETTERS */

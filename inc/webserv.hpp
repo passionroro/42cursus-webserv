@@ -21,9 +21,15 @@
 # include <set>
 # include <queue>
 
-
 # define SERVER_BACKLOG 1000
 # define BUFSIZE 4096
+
+# define DEFAULT "\033[0m"
+# define BOLD "\033[1m"
+# define RED "\033[31m"
+# define GREEN "\033[32m"
+# define LGREEN "\033[92m"
+# define BLUE "\033[34m"
 
 typedef std::vector<std::map<std::string, std::string> > Locations;
 typedef std::vector<std::map<std::string, std::string> > Redirection;

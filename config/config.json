@@ -10,15 +10,6 @@
         "404": "custom_404.html",
         "500": "custom_500.html"
       },
-      "locations": [
-        {
-          "path": "/images",
-          "client_max_body_size": "2000000"
-        },
-        {
-          "path": "/php"
-        }
-      ],
 	  "redirection": [
 		{
 			"old_url": "/old_page",
