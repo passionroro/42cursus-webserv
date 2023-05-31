@@ -11,10 +11,7 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 {
 	_cgiDone = false;
 	if (getStatus()[0] == '4')
-	{
         _locIndex = _locations.end();
-		readErrorPage(server_conf, getStatus());
-	}
 	else if (getStatus()[0] == '3')
 		redirectRequest();
 	else if (_locIndex != _locations.end() && pathIsCGI(server_conf))
@@ -30,6 +27,9 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 		deleteMethod();
 	else
 		readStaticPage();
+
+	if (getStatus()[0] == '4' || getStatus()[0] == '5')
+		readErrorPage(server_conf, getStatus());
 	
 	createHeaders();
 	_status_code = getStatus();
