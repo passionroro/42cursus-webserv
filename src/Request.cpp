@@ -198,7 +198,7 @@ void Request::checkPath()
         if (_path == it->at("path"))
             break;
     }
-	
+    
 	if (it != _locations.end()) {
 		_path.clear();
 		_path = it->at("root");
@@ -216,30 +216,28 @@ void Request::checkPath()
     }
 	
 	else
-	{
-		DIR*	dir = NULL;
-    	for (it = _locations.begin() ;it != _locations.end(); it++)
-		{
-			location.push_back((*it)["root"].append(_path));
-			
-			fs.open(location.back());
-			if (fs.is_open() || (dir = opendir(location.back().c_str())) != NULL) {
-				if (dir)
-				{
-					_isDir = true;
-					closedir(dir);
-				}
-				_path = location.back();
-				_locIndex = it;
-				break;
-			}
-		}
-		if (!fs.is_open() && _isDir == false)
-			setStatus("404");
-	}
-	//std::cout << "404 not found: " << _path << std::endl;
-//	ADD REDIRECTIONS
-//  CLOSE PATH WHEN ??
+    {
+        DIR*	dir = NULL;
+        for (it = _locations.begin() ;it != _locations.end(); it++)
+        {
+            location.push_back((*it)["root"].append(_path));
+
+            fs.open(location.back());
+            if (fs.is_open() || (dir = opendir(location.back().c_str())) != NULL) {
+                if (dir)
+                {
+                    _isDir = true;
+                    closedir(dir);
+                }
+                _path = location.back();
+                _locIndex = it;
+                break;
+            }
+        }
+        if (!fs.is_open() && !_isDir)
+            setStatus("404");
+    }
+
 }
 
 /* SETTERS */

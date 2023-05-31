@@ -40,9 +40,10 @@
           "root": "home/www"
         },
         {
-          "path": "/images",
-          "root": "home/www",
-          "client_max_body_size": "2000000"
+          "path": "/uploads",
+          "index": "uploads",
+          "client_max_body_size": "2000000",
+          "root": "home/www"
         }
       ]
     }

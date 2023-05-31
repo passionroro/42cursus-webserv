@@ -90,7 +90,7 @@ void Response::uploadFile() {
 
     // Get config file attributes for the /images folder
     for (upload = _locations.begin(); upload != _locations.end(); upload++) {
-        if ((*upload)["path"] == "/images") {
+        if ((*upload)["path"] == "/uploads") {
             break ;
         }
     }

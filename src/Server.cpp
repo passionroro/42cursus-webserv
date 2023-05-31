@@ -60,7 +60,7 @@ void	Server::accept(void)
         std::cerr << BOLD << RED << "Error: accept" << std::endl;
     _socket.push(socket);
 
-    std::cout << "---------- " << GREEN << "New request" << DEFAULT << " ----------\n" << std::endl;
+    std::cout << std::endl << "---------- " << GREEN << "New request" << DEFAULT << " ----------" << std::endl;
 
 }
 
