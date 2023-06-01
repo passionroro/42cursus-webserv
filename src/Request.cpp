@@ -43,6 +43,8 @@ int Request::parseRequest(std::string &request, Server& conf)
 	
 	_method = firstLine.front();
 	checkMethod();
+	if (_status[0] != '2')
+		return 0;
 	
 	_path = firstLine.at(1);
 	_requestPath = _path;
@@ -84,7 +86,6 @@ void	Request::checkRedirection(Server& conf)
 			return ;
 		}
     }
-	_status = "200";
 }
 
 int Request::parseHeaders(std::string &request) {
