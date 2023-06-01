@@ -137,12 +137,15 @@ void Server::assignDefaultConfig(Object &object) {
 
     _error_pages = object.getObject()["error_pages"].getString();
 
-    std::vector<Object>             tmp_location;
-    std::vector<Object>::iterator   it;
+    // LOCATIONS BLOCK
+    {
+        std::vector<Object> tmp_location;
+        std::vector<Object>::iterator it;
 
-    tmp_location = object.getArray()["locations"].getObject();
-    for (it = tmp_location.begin() ; it != tmp_location.end() ; it++) {
-        _locations.push_back(it->getString());
+        tmp_location = object.getArray()["locations"].getObject();
+        for (it = tmp_location.begin(); it != tmp_location.end(); it++) {
+            _locations.push_back(it->getString());
+        }
     }
 	
 	//	CGI BLOCK
@@ -199,46 +202,50 @@ bool Server::assignNewConfig(Object & object)
         // Iterate through every location block from the config file.
         for (it = new_loc.begin() ; it != new_loc.end() ; it++)
 		{
-
             MapStr              new_content;
             MapStr::iterator    path;
             Locations::iterator def_it;
 
             new_content = it->getString();
-            path = new_content.find(std::string("path"));
-
-            if (path != new_content.end())
-			{
-                bool new_location = true;
-
-                // Iterate through every DEFAULT location block.
-                for (def_it = _locations.begin(); def_it != _locations.end(); def_it++)
-				{
-                    MapStr::iterator    new_path;
-
-                    new_path = def_it->find(std::string("path"));
-                    if (new_path == def_it->end())
-                        break ;
-
-                    // If both location block share the same path, overwrite them.
-                    else if (new_path->second == path->second)
-					{
-                        MapStr::iterator    search;
-                        for (search = new_content.begin(); search != new_content.end(); search++)
-						{
-                            new_path = def_it->find(std::string(search->first));
-                            if (new_path != def_it->end())
-                                new_path->second = search->second;
-                        }
-                        new_location = false;
-                        break ;
-                    }
-                }
-                if (new_location)
-                    _locations.push_back(new_content);
+            try {
+                new_content.at("path");
+                new_content.at("index");
+                new_content.at("root");
+                new_content.at("client_max_body_size");
             }
-            else
-                std::cerr << "cfg: location block needs a path: no creation." << std::endl;
+            catch (std::exception& e) {
+                std::cerr << "New location badly defined" << std::endl;
+                return true;
+            }
+
+            path = new_content.find(std::string("path"));
+            bool new_location = true;
+
+            // Iterate through every DEFAULT location block.
+            for (def_it = _locations.begin(); def_it != _locations.end(); def_it++)
+            {
+                MapStr::iterator    new_path;
+
+                new_path = def_it->find(std::string("path"));
+                if (new_path == def_it->end())
+                    break ;
+
+                // If both location block share the same path, overwrite them.
+                else if (new_path->second == path->second)
+                {
+                    MapStr::iterator    search;
+                    for (search = new_content.begin(); search != new_content.end(); search++)
+                    {
+                        new_path = def_it->find(std::string(search->first));
+                        if (new_path != def_it->end())
+                            new_path->second = search->second;
+                    }
+                    new_location = false;
+                    break ;
+                }
+            }
+            if (new_location)
+                _locations.push_back(new_content);
 
         }
 	}
