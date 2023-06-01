@@ -12,7 +12,8 @@ Server::Server(Object & default_obj) {
 }
 
 // Server constructor if a config file is given
-Server::Server(Object & default_obj, Object & object) {
+Server::Server(Object & default_obj, Object & object)
+{
 
     assignDefaultConfig(default_obj);
     if (assignNewConfig(object))
@@ -63,48 +64,62 @@ void	Server::accept(void)
 
 int	Server::recv(int socket)
 {
-    int			tmp = 0;
-    int			bytes_read = 0;
+    int			res = 0;
     char		buf[BUFSIZE];
-    std::string	request;
 
-    while ((tmp = ::recv(socket, buf, BUFSIZE - 1, 0)) > 0)
+    res = ::recv(socket, buf, BUFSIZE - 1, 0);
+	if (res > 0)
     {
-		buf[tmp] = '\0';
-       request += std::string(buf, tmp);
-		bytes_read += tmp;
+		buf[res] = '\0';
+		_recvStr[socket] += std::string(buf, res);
+		if (_recvStr[socket].find("\r\n\r\n") == _recvStr[socket].npos)
+			return 1;
+		if (_recvStr[socket].find("Content-Length:") != _recvStr[socket].npos)
+		{
+			//TODO
+			res = 0;
+		}
+		std::string	print = _recvStr[socket].substr(0, _recvStr[socket].find('\n'));
+		std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
+
+		_response = Response(_recvStr[socket], *this);
+		_toSend = _response.renderString();
+		_recvStr.erase(socket);
     }
-    buf[BUFSIZE - 1] = '\0';
-    if (bytes_read == 0)
+    //buf[BUFSIZE - 1] = '\0';
+	/*else if (res == 0)
     {
-        std::cerr << "t-as rien lu bro" << std::endl;
-        return (1);
-    }
-    if (bytes_read == -1)
+		std::string	print = request.substr(0, request.find('\n'));
+		std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
+
+		_response = Response(request, *this);
+		_toSend = _response.renderString();
+	  
+    }*/
+    /*if (bytes_read == -1)
     {
         std::cerr << "Error: recv: " << strerror(errno) << std::endl;
         return (-1);
-    }
-
-    _response = Response(request, *this);
-  
-	std::string	print = request.substr(0, request.find('\n'));
-	std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
+    }*/
 
     return (0);
 }
 
 int	Server::send(int socket)
 {
-    std::string	str = _response.renderString();
+	ssize_t	res;
+	unsigned long	bufsize = BUFSIZE;
 
-	std::string	print = _response.getResponseHead().substr(0, _response.getResponseHead().find('\n'));
-	std::cout << "Response: " << LGREEN << print << DEFAULT << std::endl;
+	res = ::send(socket, _toSend.c_str(), std::min(bufsize, _toSend.size()), 0);
+	_toSend.erase(0, res);
+	
 
-    if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
-        return (-1);
-    else
-        return (0);
+	if (res == 0)
+	{
+		std::string	print = _response.getResponseHead().substr(0, _response.getResponseHead().find('\n'));
+		std::cout << "Response: " << LGREEN << print << DEFAULT << std::endl;
+	}
+	return res;
 }
 
 void	Server::close(void)

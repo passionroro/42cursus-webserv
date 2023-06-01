@@ -69,6 +69,9 @@ private:
 	Redirection	_redirection;
 	Locations	_cgi;
 
+	std::map<int, std::string>	_recvStr;
+	std::string	_toSend;
+
     /* SERVER UTILS */
     unsigned int	_host; //still useful ?
     Response	_response;
