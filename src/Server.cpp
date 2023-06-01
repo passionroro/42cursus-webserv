@@ -99,7 +99,7 @@ int	Server::send(int socket)
     std::string	str = _response.renderString();
 
 	std::string	print = _response.getResponseHead().substr(0, _response.getResponseHead().find('\n'));
-	std::cout << "Request: " << LGREEN << print << DEFAULT << std::endl;
+	std::cout << "Response: " << LGREEN << print << DEFAULT << std::endl;
 
     if ((::send(socket, str.c_str(), str.size(), 0)) < 0)
         return (-1);
