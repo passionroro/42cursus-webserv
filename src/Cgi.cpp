@@ -105,9 +105,18 @@ void	Cgi::execute(Server& conf)
 		std::cout << "bin: " << arg[0] << std::endl;
 		std::cout << "file: " << arg[1] << std::endl;
 
+		if (_r.getMethod() == "POST")
+		{
+			std::cout << "RequestBody sent to CGI: " << std::endl;
+			std::cout << _r.getRequestBody() << std::endl;
+		}
 		dup2(pipe1[0], STDIN_FILENO);
 		dup2(pipe2[1], STDOUT_FILENO);
 
+		if (_r.getMethod() == "POST")
+		{
+			write(0, _r.getRequestBody().c_str(), _r.getRequestBody().size());
+		}
 		close(pipe1[0]);
 		close(pipe1[1]);
 		close(pipe2[0]);
@@ -124,9 +133,8 @@ void	Cgi::execute(Server& conf)
 		std::cout << "parent alive" << std::endl;
 
 		close(pipe1[0]);
-		close(pipe1[1]);
 		close(pipe2[1]);
-
+		close(pipe1[1]);
 		std::cout << "parent wait for " << pid << std::endl;
 		int	status;
 		waitpid(pid, &status, 0);
@@ -154,7 +162,6 @@ std::string	Cgi::readRes(int fd)
 	int		tmp = 0;
 	char	buf[BUFSIZE];
 
-	//lseek(fd, 0, SEEK_SET);
 	while ((tmp = read(fd, buf, BUFSIZE - 1)) > 0)
 	{
 		if (tmp == -1)

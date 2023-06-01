@@ -36,6 +36,7 @@ public:
 
 	std::string&	getPath(void)		{ return _path; }
 	std::string&	getRequestPath(void)		{ return _requestPath; }
+	std::string&	getRequestBody(void)		{ return _requestBody; }
 	std::string&	getMethod(void)		{ return _method; }
 	std::string&	getCgiBin(void)		{ return _cgiBin; }
 

@@ -23,6 +23,10 @@
         {
           "extension": ".sh",
           "bin": "/bin/bash"
+        },
+        {
+          "extension": ".cgi",
+          "bin": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3"
         }
       ],
       "locations": [
