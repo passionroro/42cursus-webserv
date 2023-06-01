@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "MimeTypes.hpp"
 #include <dirent.h>
+#include <sys/stat.h>
 
 Response::Response(void)
 {
@@ -88,7 +89,7 @@ void Response::uploadFile() {
 
     // Get config file attributes for the /images folder
     for (upload = _locations.begin(); upload != _locations.end(); upload++) {
-        if ((*upload)["path"] == "/images") {
+        if ((*upload)["path"] == "/uploads") {
             break ;
         }
     }
@@ -230,15 +231,15 @@ void	Response::appendHeaders(std::string & str)
 int	Response::readStaticPage(void)
 {
 	std::ifstream	file;
-	std::stringstream	sstream;
+    std::stringstream	sstream;
 
 	file.open(_path.c_str(), std::fstream::in);
-	if (file.is_open() == true)
+	if (file.is_open())
 	{
-		sstream << file.rdbuf();
-		_response_body = sstream.str();
+        sstream << file.rdbuf();
+        _response_body = sstream.str();
+
 		file.close();
-		//std::cout << "PAGE:" << std::endl << _page << std::endl;
 		return (200);
 	}
 	else
