@@ -84,7 +84,6 @@ void	Request::checkRedirection(Server& conf)
 			return ;
 		}
     }
-	_status = "200";
 }
 
 int Request::parseHeaders(std::string &request) {
