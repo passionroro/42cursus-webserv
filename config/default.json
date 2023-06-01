@@ -18,7 +18,7 @@
       "cgi": [
         {
           "extension": ".php",
-          "bin": "/opt/homebrew/bin/php-cgi"
+          "bin": "./cgi-bin/php-cgi"
         },
         {
           "extension": ".sh",

@@ -35,6 +35,8 @@ public:
 	std::map<std::string, std::string> getRequestHeaders(void) { return _requestHeaders; }
 
 	std::string&	getPath(void)		{ return _path; }
+	std::string&	getRequestPath(void)		{ return _requestPath; }
+	std::string&	getMethod(void)		{ return _method; }
 	std::string&	getCgiBin(void)		{ return _cgiBin; }
 
 protected:
