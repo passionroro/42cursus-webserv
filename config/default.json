@@ -18,7 +18,7 @@
       "cgi": [
         {
           "extension": ".php",
-          "bin": "./cgi-bin/php-cgi"
+          "bin": "./cgi-exec/php-cgi"
         },
         {
           "extension": ".sh",
@@ -26,7 +26,7 @@
         },
         {
           "extension": ".cgi",
-          "bin": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3"
+          "bin": "./cgi-exec/python3"
         }
       ],
       "locations": [
