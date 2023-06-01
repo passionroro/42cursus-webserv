@@ -171,19 +171,27 @@ void Request::parseBody(std::string &request) {
 	}
 }
 
-void Request::checkMethod() {
+void Request::checkMethod()
+{
 	std::vector<std::string> NotImplemented = split("CONNECT HEAD OPTIONS PUT TRACE PATCH",' ');
 	
-	for (std::vector<std::string>::iterator it = NotImplemented.begin();it != NotImplemented.end(); it++) {
+	for (std::vector<std::string>::iterator it = NotImplemented.begin();it != NotImplemented.end(); it++)
+	{
 		if (_method == *it)
+		{
 			setStatus("501");
+			return ;
+		}
 	}
 	for (std::vector<std::string>::iterator it = _disabledMethod.begin() ; it != _disabledMethod.end() ; it++)
 	{
 		if (_method == *it)
+		{
 			setStatus("405");
+			return ;
+		}
 	}
-	if (_method != "GET" && _method != "POST" && _method != "DELETE" && _status != "405")
+	if (_method != "GET" && _method != "POST" && _method != "DELETE")
 		setStatus("400");
 }
 

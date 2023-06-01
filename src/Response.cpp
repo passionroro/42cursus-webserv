@@ -262,7 +262,10 @@ void	Response::cgi(Server& server_conf)
 	std::cout << "cgi called" << std::endl;
 
 	Cgi	cgi(*this, server_conf);
-	_response_body = cgi.getRes();
+	if (cgi.cgiFailed())
+		setStatus("500");
+	else
+		_response_body = cgi.getRes();
 }
 
 void	Response::directoryListing(void)
@@ -289,6 +292,16 @@ void	Response::directoryListing(void)
 	std::string	html("<!DOCTYPE html>\r\n"
 					"<html lang=\"en\">\r\n"
 					"<head>\r\n"
+					"<meta charset=\"UTF-8\">"
+    				"<meta name=\"viewport\""
+          			"content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\">"
+    				"<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">"
+    				"<title>webserv - 42</title>"
+    				"<link rel=\"stylesheet\" href=\"css/styles.css\" media=\"screen\">"
+    				"<link rel=\"icon\" href=\"favicon.ico\">"
+    				"<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"
+    				"<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
+    				"<link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap\" rel=\"stylesheet\">"
 					"</head>\r\n"
 					"<body>\r\n"
 					"<h1>Index of " + path + "</h1>\r\n");

@@ -27,7 +27,7 @@ void	Cgi::initEnv(Server& conf)
 
 	_env["GATEWAY_INTERFACE"] = "CGI/1.1";
 
-	_env["REDIRECT_STATUS"] = "200";
+	_env["REDIRECT_STATUS"] = "0";
 
 	// PATH_INFO
 	//_env["PATH_INFO"] = _r.getPath();
@@ -70,29 +70,34 @@ void	Cgi::execute(Server& conf)
 	int	pipe2[2];
 
 	if (pipe(pipe1) < 0)
-		return ; //todo handle error
+	{
+		_error = true;
+		return ;
+	}
 	if (pipe(pipe2) < 0)
-		return ; //todo handle error
+	{
+		_error = true;
+		return ;
+	}
 	
 	pid = fork();
 	if (pid == -1)
 	{
 		std::cout << "fork failed" << std::endl;
-		return ; //todo handle error
+		_error = true;
+		return ;
 	}
 	else if (pid == 0) // child
 	{
 		std::cout << "child alive" << std::endl;
 		
 		std::string	bin = _r.getCgiBin();
-		//std::string	path = _r.getPath();
 	
 		char	buf[80];
 		getcwd(buf, 80);
 		std::string	cwd = buf;
 
 		std::string	path = cwd + "/" + _r.getPath();
-	//_env["PATH_INFO"] = cwd + "/" + _r.getPath();
 
 		char**	arg;
 		arg = new char*[3];
@@ -124,24 +129,27 @@ void	Cgi::execute(Server& conf)
 		std::cout << "parent alive" << std::endl;
 
 		close(pipe1[0]);
-		close(pipe1[1]);
 		close(pipe2[1]);
-
+		if (_r.getMethod() == "POST")
+		{
+			std::cout << "RequestBody sent to CGI: " << std::endl;
+			std::cout << _r.getRequestBody() << std::endl;
+			write(pipe1[1], _r.getRequestBody().c_str(), _r.getRequestBody().size());
+		}
+		close(pipe1[1]);
 		std::cout << "parent wait for " << pid << std::endl;
 		int	status;
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status) && WEXITSTATUS(status))
 		{
-			// todo handle error
+			_error = true;
 			std::cout << "child exit error" << std::endl;
 		}
-		std::cout << "parent waited for " << pid << std::endl;
 
 		_res = readRes(pipe2[0]);
 		close(pipe2[0]);
-		std::cout << "all closed" << std::endl;
-		std::cout << "Res:" << std::endl;
-		std::cout << _res << std::endl;
+		//std::cout << "Res:" << std::endl;
+		//std::cout << _res << std::endl;
 
 
 	}
@@ -154,12 +162,12 @@ std::string	Cgi::readRes(int fd)
 	int		tmp = 0;
 	char	buf[BUFSIZE];
 
-	//lseek(fd, 0, SEEK_SET);
 	while ((tmp = read(fd, buf, BUFSIZE - 1)) > 0)
 	{
 		if (tmp == -1)
 		{
 			std::cout << "Error: cgi readRes read" << std::endl;
+			_error = true;
 			return "";
 		}
 		buf[tmp] = '\0';
