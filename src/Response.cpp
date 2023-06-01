@@ -262,7 +262,10 @@ void	Response::cgi(Server& server_conf)
 	std::cout << "cgi called" << std::endl;
 
 	Cgi	cgi(*this, server_conf);
-	_response_body = cgi.getRes();
+	if (cgi.cgiFailed())
+		setStatus("500");
+	else
+		_response_body = cgi.getRes();
 }
 
 void	Response::directoryListing(void)
