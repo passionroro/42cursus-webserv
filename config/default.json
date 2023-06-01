@@ -18,7 +18,7 @@
       "cgi": [
         {
           "extension": ".php",
-          "bin": "./cgi-bin/php-cgi"
+          "bin": "./cgi-exec/php-cgi"
         },
         {
           "extension": ".sh",

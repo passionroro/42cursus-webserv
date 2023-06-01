@@ -89,7 +89,7 @@ void	Cgi::execute(Server& conf)
 	}
 	else if (pid == 0) // child
 	{
-		std::cout << "child alive" << std::endl;
+		//std::cout << "child alive" << std::endl;
 		
 		std::string	bin = _r.getCgiBin();
 	
@@ -107,8 +107,8 @@ void	Cgi::execute(Server& conf)
 		arg[1] = ::strcpy(arg[1], path.c_str());
 		arg[2] = NULL;
 
-		std::cout << "bin: " << arg[0] << std::endl;
-		std::cout << "file: " << arg[1] << std::endl;
+		//std::cout << "bin: " << arg[0] << std::endl;
+		//std::cout << "file: " << arg[1] << std::endl;
 
 		dup2(pipe1[0], STDIN_FILENO);
 		dup2(pipe2[1], STDOUT_FILENO);
@@ -126,18 +126,14 @@ void	Cgi::execute(Server& conf)
 	else
 	{
 		//sleep(1);
-		std::cout << "parent alive" << std::endl;
+		//std::cout << "parent alive" << std::endl;
 
 		close(pipe1[0]);
 		close(pipe2[1]);
 		if (_r.getMethod() == "POST")
-		{
-			std::cout << "RequestBody sent to CGI: " << std::endl;
-			std::cout << _r.getRequestBody() << std::endl;
 			write(pipe1[1], _r.getRequestBody().c_str(), _r.getRequestBody().size());
-		}
 		close(pipe1[1]);
-		std::cout << "parent wait for " << pid << std::endl;
+		//std::cout << "parent wait for " << pid << std::endl;
 		int	status;
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status) && WEXITSTATUS(status))
