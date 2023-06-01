@@ -205,8 +205,10 @@ void Request::checkPath()
 		_path.pop_back();
     for (it = _locations.begin();it != _locations.end(); it++)
 	{
-		if (_path.substr(0, _path.find('/',1)) == it->at("path") && _path != it->at("path"))
-			_path = _path.substr(_path.find('/',1), std::string::npos);
+		if (_path.substr(0, _path.find('/',1)) == it->at("path")
+                && _path != it->at("path")
+                && it->at("path") != "/uploads")
+            _path = _path.substr(_path.find('/',1), std::string::npos);
         if (_path == it->at("path"))
             break;
     }

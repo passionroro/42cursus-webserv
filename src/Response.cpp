@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "MimeTypes.hpp"
 #include <dirent.h>
+#include <sys/stat.h>
 
 Response::Response(void)
 {
@@ -34,16 +35,11 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 	createHeaders();
 	_status_code = getStatus();
 	_status_text = getStatusText();
-	return;
 }
 
 Response::~Response(void)
 {
 }
-
-// create a file in /images
-// read into a buffer
-// append into the new file
 
 std::string Response::getUploadFilename() {
 
@@ -88,7 +84,7 @@ void Response::uploadFile() {
 
     // Get config file attributes for the /images folder
     for (upload = _locations.begin(); upload != _locations.end(); upload++) {
-        if ((*upload)["path"] == "/images") {
+        if ((*upload)["path"] == "/uploads") {
             break ;
         }
     }
@@ -99,14 +95,15 @@ void Response::uploadFile() {
     max_body_size = std::stoi((*upload)["client_max_body_size"]);
     content_length = std::stoi(_requestHeaders["Content-Length"]);
     if (content_length > max_body_size) {
-        std::cerr << "Max upload file is " << max_body_size << "MB." << std::endl;
+        std::cerr << BOLD << RED << "Max upload file is " << max_body_size << " bytes." << DEFAULT << std::endl;
+        setStatus("413");
         return ;
     }
 
     // File creation
     filename = getUploadFilename();
     if (filename.empty()) {
-		std::cerr << "Failure opening upload file." << std::endl;
+		std::cerr << BOLD << RED << "Failure opening upload file." << DEFAULT << std::endl;
         return ;
 	}
 
@@ -114,7 +111,7 @@ void Response::uploadFile() {
     std::ofstream	ofs(path, std::fstream::out | std::fstream::binary);
 
     if (!ofs.good() || !ofs.is_open()) {
-        std::cerr << "Failure opening file at " << path << std::endl;
+        std::cerr << BOLD << RED << "Failure opening file at " << path << DEFAULT << std::endl;
         return ;
     }
 
@@ -193,7 +190,8 @@ std::string	Response::getStatusText(void)
 	texts.insert(std::make_pair("400", "Bad Request"));
 	texts.insert(std::make_pair("404", "Not found"));
 	texts.insert(std::make_pair("405", "Method Not Allowed"));
-	texts.insert(std::make_pair("409", "Conflict"));
+    texts.insert(std::make_pair("409", "Conflict"));
+    texts.insert(std::make_pair("413", "Request Entity Too Large"));
 	texts.insert(std::make_pair("500", "Internal Server Error"));
 	texts.insert(std::make_pair("501", "Not Implemented"));
 
@@ -230,15 +228,15 @@ void	Response::appendHeaders(std::string & str)
 int	Response::readStaticPage(void)
 {
 	std::ifstream	file;
-	std::stringstream	sstream;
+    std::stringstream	sstream;
 
 	file.open(_path.c_str(), std::fstream::in);
-	if (file.is_open() == true)
+	if (file.is_open())
 	{
-		sstream << file.rdbuf();
-		_response_body = sstream.str();
+        sstream << file.rdbuf();
+        _response_body = sstream.str();
+
 		file.close();
-		//std::cout << "PAGE:" << std::endl << _page << std::endl;
 		return (200);
 	}
 	else
@@ -353,16 +351,14 @@ bool	Response::pathIsCGI(Server& server_conf)
 
 void	Response::readErrorPage(Server& conf, std::string const & status)
 {
-	std::ifstream	file;
+	std::ifstream	    file;
 	std::stringstream	sstream;
-	std::string		newPath;
+	std::string		    newPath;
 
 	newPath = conf.getErrorPages()["path"] + conf.getErrorPages()[status];
 
-	std::cout << "newPath: " << newPath << std::endl;
-
 	file.open(newPath.c_str(), std::fstream::in);
-	if (file.is_open() == true)
+	if (file.is_open())
 	{
 		sstream << file.rdbuf();
 		_response_body = sstream.str();
@@ -371,7 +367,6 @@ void	Response::readErrorPage(Server& conf, std::string const & status)
 	else
 	{
 		std::cout << "Error page not found" << std::endl;
-		//todo default error page 404
 	}
 }
 

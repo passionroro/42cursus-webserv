@@ -12,6 +12,7 @@
         "404": "404.html",
         "405": "405.html",
         "409": "409.html",
+        "413": "413.html",
         "500": "500.html",
         "501": "501.html"
       },
@@ -39,6 +40,12 @@
         {
           "path": "/site2",
           "index": "index.html",
+          "client_max_body_size": "0",
+          "root": "home/www"
+        },
+        {
+          "path": "/uploads",
+          "index": "",
           "client_max_body_size": "2000000",
           "root": "home/www"
         }
