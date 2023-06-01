@@ -64,45 +64,69 @@ void	Server::accept(void)
 
 int	Server::recv(int socket)
 {
+	static int	v;
+	static int	sum = 0;
     int			res = 0;
     char		buf[BUFSIZE];
 
-    res = ::recv(socket, buf, BUFSIZE - 1, 0);
-	if (res > 0)
-    {
+	if (sum == 0)
+	{
+		v = 0;
+    	res = ::recv(socket, buf, BUFSIZE - 1, 0);
+		if (res <= 0)
+			return 0;
 		buf[res] = '\0';
+		//std::cout << "add buf into str!" << std::endl;
+		//std::cout << "sum: " << sum << std::endl;
 		_recvStr[socket] += std::string(buf, res);
-		if (_recvStr[socket].find("\r\n\r\n") == _recvStr[socket].npos)
-			return 1;
-		size_t	pos;
-		if ((pos = _recvStr[socket].find("Content-Length:")) != _recvStr[socket].npos)
+		//std::cout << "str size" << _recvStr[socket].size() << std::endl;
+	}
+	if (_recvStr[socket].find("\r\n\r\n") == _recvStr[socket].npos)
+		return 1;
+	size_t	pos;
+	if ((pos = _recvStr[socket].find("Content-Length:")) != _recvStr[socket].npos)
+	{
+		if (sum == 0)
 		{
 			std::string h = _recvStr[socket].substr(pos, _recvStr[socket].find('\r', pos) - pos);
 			std::string	value = h.substr(h.find_last_of(' ') + 1, h.find('\r'));
 			std::stringstream	sstream;
-			int	v;
 			sstream << value;
 			sstream >> v;
 
 			int		diff = _recvStr[socket].size() - _recvStr[socket].find("\r\n\r\n") - 4;
-			int		sum = diff;
-			while (sum < v)
-				sum += ::recv(socket, buf, BUFSIZE - 1, 0);
+			sum = diff;
+
+			//std::cout << "v: " << v << std::endl;
+			//std::cout << "diff: " << diff << std::endl;
 		}
-		std::string	print = _recvStr[socket].substr(0, _recvStr[socket].find('\n'));
-		std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
+		else
+		{
+			int tmp = ::recv(socket, buf, BUFSIZE - 1, 0);
+			buf[tmp] = '\0';
+			//std::cout << "add buf into str!" << std::endl;
+			_recvStr[socket] += std::string(buf, tmp);
+			//std::cout << "str size" << _recvStr[socket].size() << std::endl;
+			sum += tmp;
+			//std::cout << "sum: " << sum << std::endl;
+			//std::cout << "v: " << v << std::endl;
 
-		_response = Response(_recvStr[socket], *this);
-		_toSend = _response.renderString();
-		_recvStr.erase(socket);
-    }
-    /*if (bytes_read == -1)
-    {
-        std::cerr << "Error: recv: " << strerror(errno) << std::endl;
-        return (-1);
-    }*/
+		}
+		if (sum < v)
+			return 1;
+	}
+	std::string	print = _recvStr[socket].substr(0, _recvStr[socket].find('\n'));
+	std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
 
-    return (0);
+	//std::cout << "full request:" << std::endl;
+	//std::cout << _recvStr[socket] << std::endl;
+	//std::cout << "end request:" << std::endl;
+
+	_response = Response(_recvStr[socket], *this);
+	_toSend = _response.renderString();
+	_recvStr.erase(socket);
+	sum = 0;
+	return 0;
 }
 
 int	Server::send(int socket)
