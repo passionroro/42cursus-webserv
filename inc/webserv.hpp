@@ -22,7 +22,7 @@
 # include <queue>
 
 # define SERVER_BACKLOG 1000
-# define BUFSIZE 4096
+# define BUFSIZE 50
 
 # define DEFAULT "\033[0m"
 # define BOLD "\033[1m"

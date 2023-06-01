@@ -58,7 +58,8 @@ void	WebServer::handleResponse(void)
 			continue ;
 		//std::cout << "handle response" << std::endl;
 
-		_servers[i].send(socket); // en vrai meme chose 0 ou -1, a verifier
+		if (_servers[i].send(socket) > 0)
+			continue ;
 		FD_CLR(socket, &_current_write);
 		FD_CLR(socket, &_current_read);
 		_servers[i].close();
@@ -78,28 +79,24 @@ void	WebServer::handleRequest(void)
 			continue ;
 		//std::cout << "handle request" << std::endl;
 
-		int	tmp = _servers[i].recv(socket);
-
-		if (tmp == 0)
-		{
-			//std::cout << "socket into write: " << socket << std::endl;
-			FD_SET(socket, &_current_write);
-			FD_CLR(socket, &_current_read);
-		}
-		else if (tmp == 1)
+		if (_servers[i].recv(socket) > 0)
+			continue ;
+		FD_SET(socket, &_current_write);
+		FD_CLR(socket, &_current_read);
+		/*else if (tmp == 1)
 		{
 			FD_CLR(socket, &_current_read);
 			if (!FD_ISSET(socket, &_current_write))
 				_servers[i].close();
 			continue ;
-		}
-		else
+		}*/
+		/*else
 		{
 			FD_CLR(socket, &_current_read);
 			//FD_CLR(_servers[i].getListenFd(), &_current_read);
 			_servers[i].close();
 			continue ;
-		}
+		}*/
 		break ;
 	}
 }
