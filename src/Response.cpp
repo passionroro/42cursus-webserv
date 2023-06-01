@@ -350,8 +350,6 @@ void	Response::readErrorPage(Server& conf, std::string const & status)
 		sstream << file.rdbuf();
 		_response_body = sstream.str();
 		file.close();
-
-        _path = newPath;
 	}
 	else
 	{
