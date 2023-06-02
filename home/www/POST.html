@@ -10,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
-    <script src="js/myscripts.js"></script>
 </head>
 <body>
 
@@ -34,12 +33,10 @@
     </div>
 
     <h2>Form (using post)</h2>
-    <form action="./results.txt" method="POST">
-        <label for="fname">First name:</label>
-        <input type="text" id="fname" name="fname">
-        <label for="lname">Last name:</label>
-        <input type="text" id="lname" name="lname">
-        <input type="submit" value="Submit">
+    <form action="action.php" method="post">
+        First Name: <input type="text" name="name"><br><br>
+        Last Name: <input type="text" name="last_name"><br><br>
+        <input type="submit" value="Send">
     </form>
     <br>
     
