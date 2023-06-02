@@ -25,7 +25,8 @@ public:
     int         getPort() const;
     int         getClientBodySize() const;
     bool        getAutoIndex() const;
-    MapStr      getErrorPages() const;
+	MapStr      getErrorPages() const;
+	std::vector<std::string>    getUploads() const;
     std::vector<std::string>    getAddress() const;
     std::vector<std::string>    getDisabledMethods() const;
 
@@ -64,7 +65,8 @@ private:
     bool        _auto_index;
     std::vector<std::string>    _address;
     std::vector<std::string>    _disabled_methods;
-    MapStr      _error_pages;
+	std::vector<std::string>	_uploads;
+	MapStr      _error_pages;
     Locations   _locations;
 	Redirection	_redirection;
 	Locations	_cgi;
