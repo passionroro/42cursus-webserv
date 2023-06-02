@@ -141,12 +141,17 @@ void Response::postMethod()
 
 void Response::deleteMethod()
 {
-	if ((remove(_path.c_str()) == 0))
-		_status_code = ("204");
+	FILE * file = fopen(_path.c_str(),"r");
+	if (file == NULL)
+	{
+		_status_code = "404";
+	}
+	else if ((remove(_path.c_str()) == 0))
+		_status_code = ("200");
 	else
 	{
 		_status_text = "Delete failed";
-		_status_code = ("200");
+		_status_code = ("404");
 	}
 }
 
