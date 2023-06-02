@@ -6,6 +6,7 @@
       "port": 8082,
       "disabled_methods": [""],
       "auto_index": true,
+      "uploads": ["home/www/uploads", "2000000"],
       "error_pages": {
         "path": "home/www/error_pages/",
         "400": "400.html",
@@ -41,12 +42,6 @@
           "path": "/site2",
           "index": "index.html",
           "client_max_body_size": "0",
-          "root": "home/www"
-        },
-        {
-          "path": "/uploads",
-          "index": "",
-          "client_max_body_size": "2000000",
           "root": "home/www"
         }
       ]

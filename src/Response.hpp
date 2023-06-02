@@ -36,9 +36,9 @@ public:
 	void	getContentType(void);
 	void	getContentLength(void);
 	
-	void 	postMethod();
+	void 	postMethod(Server &server_conf);
 	void 	deleteMethod();
-	void 	uploadFile();
+	void 	uploadFile(Server &server_conf);
     std::string getUploadFilename();
 	void    eraseBodyBoundaries();
 

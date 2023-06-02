@@ -173,9 +173,10 @@ void Server::assignDefaultConfig(Object &object) {
     _auto_index = object.getBool()["auto_index"];
 
     _address = object.getArray()["address"].getString();
-    _disabled_methods = object.getArray()["disabled_methods"].getString();
-
-    _error_pages = object.getObject()["error_pages"].getString();
+	_disabled_methods = object.getArray()["disabled_methods"].getString();
+	_uploads = object.getArray()["uploads"].getString();
+	
+	_error_pages = object.getObject()["error_pages"].getString();
 
     // LOCATIONS BLOCK
     {
@@ -215,6 +216,15 @@ bool Server::assignNewConfig(Object & object)
         _address = object.getArray()["address"].getString();
     if (object.getArray().find(std::string("disabled_methods")) != object.getArray().end())
         _disabled_methods = object.getArray()["disabled_methods"].getString();
+	if (object.getArray().find(std::string("uploads")) != object.getArray().end()) {
+		_uploads = object.getArray()["uploads"].getString();
+		if (_uploads.size() != 2) {
+			if (_uploads.size() != 0) {
+				std::cerr << "New upload location badly defined" << std::endl;
+				return true;
+			}
+		}
+	}
 
     //error_pages
     if (object.getObject().find(std::string("error_pages")) != object.getObject().end()) {
@@ -338,6 +348,7 @@ std::queue<int>				Server::getSocket() const { return _socket; }
 
 std::vector<std::string> Server::getAddress() const { return _address; }
 std::vector<std::string> Server::getDisabledMethods() const { return _disabled_methods; }
+std::vector<std::string> Server::getUploads() const { return _uploads; }
 
 MapStr      Server::getErrorPages() const { return _error_pages; }
 std::string Server::getServerName() const { return _server_name; }

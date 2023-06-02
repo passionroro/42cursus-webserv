@@ -5,6 +5,7 @@
       "address": ["127.0.0.1", "localhost"],
       "port": 80,
       "disabled_methods": [""],
+      "uploads": ["home/www/new_uploads", "200"],
       "error_pages": {
         "path": "home/www/custom_error_pages/",
         "404": "custom_404.html",

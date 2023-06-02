@@ -23,7 +23,7 @@ Response::Response(std::string request, Server& server_conf) : Request(request, 
 	else if (_isDir)
 		directoryListing();
 	else if(_method == "POST")
-		postMethod();
+		postMethod(server_conf);
 	else if(_method == "DELETE")
 		deleteMethod();
 	else
@@ -75,24 +75,17 @@ void Response::eraseBodyBoundaries() {
 	_requestBody.erase(_requestBody.find_last_of("--") - 1, 2);
 }
 
-void Response::uploadFile() {
+void Response::uploadFile(Server &server_conf) {
 
-    Locations::iterator upload;
+    std::vector<std::string> upload;
     std::string filename;
     size_t      max_body_size;
     size_t      content_length;
 
     // Get config file attributes for the /images folder
-    for (upload = _locations.begin(); upload != _locations.end(); upload++) {
-        if ((*upload)["path"] == "/uploads") {
-            break ;
-        }
-    }
+	upload = server_conf.getUploads();
 
-    if (upload == _locations.end())
-        return ;
-
-    max_body_size = std::stoi((*upload)["client_max_body_size"]);
+    max_body_size = std::stoi(upload.back());
     content_length = std::stoi(_requestHeaders["Content-Length"]);
     if (content_length > max_body_size) {
         std::cerr << BOLD << RED << "Max upload file is " << max_body_size << " bytes." << DEFAULT << std::endl;
@@ -107,7 +100,7 @@ void Response::uploadFile() {
         return ;
 	}
 
-    std::string		path = (*upload)["root"] + (*upload)["path"] + "/" + filename;
+    std::string		path = upload.front() + "/" + filename;
     std::ofstream	ofs(path, std::fstream::out | std::fstream::binary);
 
     if (!ofs.good() || !ofs.is_open()) {
@@ -122,10 +115,10 @@ void Response::uploadFile() {
     ofs.close();
 }
 
-void Response::postMethod()
+void Response::postMethod(Server &server_conf)
 {
 	if (_requestHeaders["Content-Type"].compare(0, 19, "multipart/form-data") == 0)
-		uploadFile();
+		uploadFile(server_conf);
     else {
 		std::fstream inputstream;
 
