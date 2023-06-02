@@ -2,6 +2,7 @@ NAME			=	webserv
 SRC_DIR			=	src
 OBJ_DIR			=	obj
 
+
 CXX				= 	c++
 CXXFLAGS		= 	-g3 -Wall -Wextra -Werror -pedantic -std=c++98
 INC				=	-I./inc
