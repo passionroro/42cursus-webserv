@@ -13,6 +13,7 @@ Request::Request(std::string request, Server& server_conf)
 	_locations = server_conf.getLocations();
 	_disabledMethod = server_conf.getDisabledMethods();
 	parseRequest(request, server_conf);
+	_autoIndex = server_conf.getAutoIndex();
 }
 
 Request::~Request() {}

@@ -194,6 +194,7 @@ std::string	Response::getStatusText(void)
 	texts.insert(std::make_pair("308", "Permanent Redirect"));
 	texts.insert(std::make_pair("400", "Bad Request"));
 	texts.insert(std::make_pair("404", "Not found"));
+	texts.insert(std::make_pair("403", "Forbidden"));
 	texts.insert(std::make_pair("405", "Method Not Allowed"));
     texts.insert(std::make_pair("409", "Conflict"));
     texts.insert(std::make_pair("413", "Request Entity Too Large"));
@@ -273,6 +274,11 @@ void	Response::cgi(Server& server_conf)
 
 void	Response::directoryListing(void)
 {
+	if (_method == "DELETE" || !_autoIndex)
+	{
+		setStatus("403");
+		return;
+	}
 	std::cout << "directory listing called" << std::endl;
 
 	DIR*	dir;
