@@ -2,6 +2,10 @@
 #include "Server.hpp"
 #include <unistd.h>
 
+#include <chrono>
+#include <thread>
+#include <signal.h>
+
 Cgi::Cgi(Request & request, Server& conf) : _r(request), _headers(request.getRequestHeaders())
 {
 	initEnv(conf);
@@ -71,12 +75,12 @@ void	Cgi::execute(Server& conf)
 
 	if (pipe(pipe1) < 0)
 	{
-		_error = true;
+		_error = 1;
 		return ;
 	}
 	if (pipe(pipe2) < 0)
 	{
-		_error = true;
+		_error = 1;
 		return ;
 	}
 	
@@ -84,7 +88,7 @@ void	Cgi::execute(Server& conf)
 	if (pid == -1)
 	{
 		std::cout << "fork failed" << std::endl;
-		_error = true;
+		_error = 1;
 		return ;
 	}
 	else if (pid == 0) // child
@@ -135,19 +139,32 @@ void	Cgi::execute(Server& conf)
 		close(pipe1[1]);
 		//std::cout << "parent wait for " << pid << std::endl;
 		int	status;
-		waitpid(pid, &status, 0);
+		int	ret = 0;
+		int	i = 0;
+
+		ret = waitpid(pid, &status, WNOHANG);
+		while (ret != pid && i < 200)
+		{
+			ret = waitpid(pid, &status, WNOHANG);
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			//std::cout << "ret: " << ret << std::endl;
+			//std::cout << "i: " << i << std::endl;
+			i++;
+		}
+		if (i == 200)
+		{
+			kill(pid, SIGTERM);
+			_error = 2;
+		}
 		if (WIFEXITED(status) && WEXITSTATUS(status))
 		{
-			_error = true;
+			_error = 1;
 			std::cout << "child exit error" << std::endl;
 		}
-
 		_res = readRes(pipe2[0]);
 		close(pipe2[0]);
 		//std::cout << "Res:" << std::endl;
 		//std::cout << _res << std::endl;
-
-
 	}
 
 }
@@ -163,7 +180,7 @@ std::string	Cgi::readRes(int fd)
 		if (tmp == -1)
 		{
 			std::cout << "Error: cgi readRes read" << std::endl;
-			_error = true;
+			_error = 1;
 			return "";
 		}
 		buf[tmp] = '\0';
