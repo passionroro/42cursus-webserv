@@ -193,6 +193,7 @@ std::string	Response::getStatusText(void)
     texts.insert(std::make_pair("413", "Request Entity Too Large"));
 	texts.insert(std::make_pair("500", "Internal Server Error"));
 	texts.insert(std::make_pair("501", "Not Implemented"));
+	texts.insert(std::make_pair("508", "Loop Detected"));
 
 	return (texts[getStatus()]);
 }
@@ -259,8 +260,10 @@ void	Response::cgi(Server& server_conf)
 	std::cout << "cgi called" << std::endl;
 
 	Cgi	cgi(*this, server_conf);
-	if (cgi.cgiFailed())
+	if (cgi.cgiFailed() == 1)
 		setStatus("500");
+	else if (cgi.cgiFailed() == 2)
+		setStatus("508");
 	else
 		_response_body = cgi.getRes();
 }

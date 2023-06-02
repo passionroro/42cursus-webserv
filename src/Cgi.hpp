@@ -22,7 +22,7 @@ public:
 
 	std::string	getRes(void) const { return _res; }
 
-	bool	cgiFailed()	const		{ return _error; }
+	int	cgiFailed()	const		{ return _error; }
 	
 private:
 
@@ -33,7 +33,7 @@ private:
 	std::string	_body;
 	std::string	_res;
 
-	bool	_error;
+	int	_error;
 
 private:
 
