@@ -216,8 +216,15 @@ bool Server::assignNewConfig(Object & object)
         _address = object.getArray()["address"].getString();
     if (object.getArray().find(std::string("disabled_methods")) != object.getArray().end())
         _disabled_methods = object.getArray()["disabled_methods"].getString();
-	if (object.getArray().find(std::string("uploads")) != object.getArray().end())
+	if (object.getArray().find(std::string("uploads")) != object.getArray().end()) {
 		_uploads = object.getArray()["uploads"].getString();
+		if (_uploads.size() != 2) {
+			if (_uploads.size() != 0) {
+				std::cerr << "New upload location badly defined" << std::endl;
+				return true;
+			}
+		}
+	}
 
     //error_pages
     if (object.getObject().find(std::string("error_pages")) != object.getObject().end()) {
