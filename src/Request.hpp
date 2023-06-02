@@ -48,6 +48,7 @@ protected:
 	std::map<std::string, std::string>	_requestHeaders;
 	std::string			_newURL;
 	std::string			_cgiBin;
+	bool				_autoIndex;
 
 	bool		_cgiDone;
 
