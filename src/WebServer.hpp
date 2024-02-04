@@ -21,14 +21,11 @@ public:
 
 private:
 
-//	Config	_config;
 	int		_max_fd;
 	fd_set	_current_read;
 	fd_set	_current_write;
 	fd_set	_read;
 	fd_set	_write;
-
-	//struct timeval	_timeout;
 
 	std::vector<Server>	_servers;
 

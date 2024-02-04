@@ -20,7 +20,6 @@ MimeTypes::MimeTypes(void)
 		split >> value;
 		split >> key;
 		key.pop_back();
-		//std::cout << key << value << std::endl;
 		_map.insert(std::make_pair(key, value));
 	}
 	in.close();
@@ -30,14 +29,3 @@ MapStr&	MimeTypes::getMap(void)
 {
 	return _map;
 }
-
-/*
-int	main(void)
-{
-	MimeTypes	test;
-
-	for (MapStr::iterator it = test.getMap().begin() ; it != test.getMap().end() ; it++)
-		std::cout << it->first << ": " << it->second << std::endl;
-
-	return (0);
-}*/

@@ -33,36 +33,18 @@ void	Cgi::initEnv(Server& conf)
 
 	_env["REDIRECT_STATUS"] = "0";
 
-	// PATH_INFO
-	//_env["PATH_INFO"] = _r.getPath();
-	// PATH_TRANSLATED
-	// QUERY_STRING
-	
-	// REMOTE_ADDR
-	//
-	// REQUEST_METHOD
 	_env["REQUEST_METHOD"] = _r.getMethod();
-	//
-	// SCRIPT_NAME = path before path info
+
 	char	buf[80];
 	getcwd(buf, 80);
 	std::string	cwd = buf;
-	//std::cout << "cwd: " << cwd << std::endl;
-	//_env["SCRIPT_NAME"] = cwd + "/" + _r.getPath();
 	_env["SCRIPT_NAME"] = _r.getRequestPath();
 	_env["SCRIPT_FILENAME"] = _r.getPath();
-	//_env["PATH_INFO"] = cwd + "/" + _r.getPath();
 	_env["PATH_INFO"] = "";
 	_env["SERVER_NAME"] = conf.getServerName();
-
 	_env["DOCUMENT_ROOT"] = cwd + "/" + _r.getPath().substr(0, _r.getPath().find(_r.getRequestPath()));;
-
-	// todo continue read from 4.1.15
-
 	_env["SERVER_PROTOCOL"] = "HTTP/1.1";
-
 	_env["CONTENT_TYPE"] = _headers["Content-Type"];
-
 	_env["SERVER_SOFTWARE"] = "nou";
 }
 
@@ -91,10 +73,8 @@ void	Cgi::execute(Server& conf)
 		_error = 1;
 		return ;
 	}
-	else if (pid == 0) // child
+	else if (pid == 0)
 	{
-		//std::cout << "child alive" << std::endl;
-		
 		std::string	bin = _r.getCgiBin();
 	
 		char	buf[80];
@@ -111,9 +91,6 @@ void	Cgi::execute(Server& conf)
 		arg[1] = ::strcpy(arg[1], path.c_str());
 		arg[2] = NULL;
 
-		//std::cout << "bin: " << arg[0] << std::endl;
-		//std::cout << "file: " << arg[1] << std::endl;
-
 		dup2(pipe1[0], STDIN_FILENO);
 		dup2(pipe2[1], STDOUT_FILENO);
 
@@ -123,21 +100,15 @@ void	Cgi::execute(Server& conf)
 		close(pipe2[1]);
 
 		execve(bin.c_str(), arg, getEnvv());
-		std::cout << "child bug" << std::endl;
-		perror("yo: ");
 		exit(1);
 	}
 	else
 	{
-		//sleep(1);
-		//std::cout << "parent alive" << std::endl;
-
 		close(pipe1[0]);
 		close(pipe2[1]);
 		if (_r.getMethod() == "POST")
 			write(pipe1[1], _r.getRequestBody().c_str(), _r.getRequestBody().size());
 		close(pipe1[1]);
-		//std::cout << "parent wait for " << pid << std::endl;
 		int	status;
 		int	ret = 0;
 		int	i = 0;
@@ -147,8 +118,6 @@ void	Cgi::execute(Server& conf)
 		{
 			ret = waitpid(pid, &status, WNOHANG);
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-			//std::cout << "ret: " << ret << std::endl;
-			//std::cout << "i: " << i << std::endl;
 			i++;
 		}
 		if (i == 200)
@@ -163,8 +132,6 @@ void	Cgi::execute(Server& conf)
 		}
 		_res = readRes(pipe2[0]);
 		close(pipe2[0]);
-		//std::cout << "Res:" << std::endl;
-		//std::cout << _res << std::endl;
 	}
 
 }

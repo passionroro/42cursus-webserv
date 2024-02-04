@@ -21,7 +21,6 @@ std::vector<std::string>	split(std::string string, char delimiter){
 	if (!string.empty())
 		ret.push_back(string.substr(0, position));
 	for (std::vector<std::string>::iterator it = ret.begin(); it != ret.end();it++) {
-//		std::cout << *it << std::endl;
 	}
 	return ret;
 }

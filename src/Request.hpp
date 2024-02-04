@@ -14,7 +14,6 @@ public:
 	virtual ~Request();
 	
 	int 	parseRequest(std::string &Request, Server& conf);
-//	bool	check_path(std::string s);
 	int 	parseHeaders(std::string &Request);
 	void 	parseBody(std::string &Request);
 	

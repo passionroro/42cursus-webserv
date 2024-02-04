@@ -36,7 +36,6 @@ int	Server::setup(void)
         return (-1);
     }
     _addr.sin_family = AF_INET;
-    //_addr.sin_addr.s_addr = htonl(_host);
     _addr.sin_addr.s_addr = INADDR_ANY;
     _addr.sin_port = htons(_port);
     if (bind(_listen_fd, (saddr*)&_addr, sizeof(_addr)) == -1)
@@ -54,7 +53,7 @@ int	Server::setup(void)
 
 void	Server::accept(void)
 {
-    int	socket = ::accept(_listen_fd, NULL, NULL); // should we take client addr ?
+    int	socket = ::accept(_listen_fd, NULL, NULL);
     if (socket != -1)
         fcntl(socket, F_SETFL, O_NONBLOCK);
     else
@@ -76,10 +75,7 @@ int	Server::recv(int socket)
 		if (res <= 0)
 			return 0;
 		buf[res] = '\0';
-		//std::cout << "add buf into str!" << std::endl;
-		//std::cout << "sum: " << sum << std::endl;
 		_recvStr[socket] += std::string(buf, res);
-		//std::cout << "str size" << _recvStr[socket].size() << std::endl;
 	}
 	if (_recvStr[socket].find("\r\n\r\n") == _recvStr[socket].npos)
 		return 1;
@@ -96,31 +92,19 @@ int	Server::recv(int socket)
 
 			int		diff = _recvStr[socket].size() - _recvStr[socket].find("\r\n\r\n") - 4;
 			sum = diff;
-
-			//std::cout << "v: " << v << std::endl;
-			//std::cout << "diff: " << diff << std::endl;
 		}
 		else
 		{
 			int tmp = ::recv(socket, buf, BUFSIZE - 1, 0);
 			buf[tmp] = '\0';
-			//std::cout << "add buf into str!" << std::endl;
 			_recvStr[socket] += std::string(buf, tmp);
-			//std::cout << "str size" << _recvStr[socket].size() << std::endl;
 			sum += tmp;
-			//std::cout << "sum: " << sum << std::endl;
-			//std::cout << "v: " << v << std::endl;
-
 		}
 		if (sum < v)
 			return 1;
 	}
 	std::string	print = _recvStr[socket].substr(0, _recvStr[socket].find('\n'));
 	std::cout << "Request: " << BLUE << print << DEFAULT << std::endl;
-
-	//std::cout << "full request:" << std::endl;
-	//std::cout << _recvStr[socket] << std::endl;
-	//std::cout << "end request:" << std::endl;
 
 	_response = Response(_recvStr[socket], *this);
 	_toSend = _response.renderString();

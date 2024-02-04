@@ -242,7 +242,6 @@ int	Response::readStaticPage(void)
 	else
 	{
 		std::cout << "bro nul" << std::endl;
-		//todo default error page 404
 		return (404);
 	}
 }
@@ -275,7 +274,6 @@ void	Response::directoryListing(void)
 		setStatus("403");
 		return;
 	}
-	std::cout << "directory listing called" << std::endl;
 
 	DIR*	dir;
 	struct dirent*				ent;
@@ -341,9 +339,6 @@ bool	Response::pathIsCGI(Server& server_conf)
 	if (sep != _path.npos)
 	{
 		extension = _path.substr(sep, _path.back());
-		//std::cout << "pathIsCGI, path: " << _path << std::endl;
-		//std::cout << "pathIsCGI, sep: " << sep << std::endl;
-		//std::cout << "pathIsCGI, extension: " << extension << std::endl;
 	}
 	for (Locations::const_iterator it = cgi.begin() ; it != cgi.end() ; it++)
 	{
